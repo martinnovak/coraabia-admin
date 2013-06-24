@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+	<meta charset="utf-8">
+	<meta name="description" content="Coraabia Admin Tools">
+	<meta name="robots" content="noindex,nofollow">
+	<meta name="googlebot" content="nosnippet,noarchive">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<title>{#title|striptags|upper}Coraabia Admin{/#}</title>
+
+	<link href="{$basePath}/css/bootstrap.min.css" rel="stylesheet" media="screen">
+	<link href="{$basePath}/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
+	<link href="{$basePath}/css/jquery-ui.min.css" rel="stylesheet" media="screen">
+	<link href="{$basePath}/css/grido.css" rel="stylesheet" media="screen">
+	<link rel="shortcut icon" href="{$basePath}/favicon.png">
+	{#head}{/#}
+	{hook jsCodes}
+</head>
+
+<body>
+	<script> document.documentElement.className+=' js' </script>
+
+	<div id="header" class="container-fluid">
+	</div>
+	
+	<div id="main" class="container-fluid">
+		<div class="row-fluid">
+			<div class="span2">
+				{#sidebar}{control sidebar}{/#}
+			</div>
+			<div class="span10">
+				
+				<div n:foreach="$flashes as $flash" class="alert alert-{$flash->type}">
+					<button type="button" class="close" data-dismiss="alert">&times;</button>
+					{$flash->message}
+				</div>
+		
+				{include #content}
+				
+			</div>
+		</div>
+    </div>
+	
+	<div id="footer" class="container-fluid">
+		<div class="row-fluid">
+			{control footer}
+		</div>
+	</div>
+
+	{#scripts}
+	<script type="text/javascript" src="{$basePath}/js/jquery.min.js"></script>
+	<script type="text/javascript" src="{$basePath}/js/netteForms.js"></script>
+	<script type="text/javascript" src="{$basePath}/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="{$basePath}/js/nette.ajax.js"></script>
+	<script type="text/javascript">
+		$(function () {
+			$.nette.init();
+		});
+	</script>
+	
+	{hook scripts}
+	{/#}
+</body>
+</html>

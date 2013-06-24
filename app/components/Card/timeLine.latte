@@ -1,0 +1,12 @@
+<div class="well span5" n:inner-foreach="$keys as $day">
+	<h4>{$day|date:'d.m.Y'}</h4>
+	{ifset $start[$day]}
+	<div n:foreach="$start[$day] as $card">{$card->translated_name}</div>
+	{/ifset}
+</div>
+<div class="well span5" n:inner-foreach="$keys as $day">
+	<h4>{$day|date:'d.m.Y'}</h4>
+	{ifset $finish[$day]}
+	<div n:foreach="$finish[$day] as $card">{$card->translated_name}</div>
+	{/ifset}
+</div>

@@ -1,0 +1,15 @@
+<h1>{_'Překlady'}</h1>
+<div class="nette-inner">
+	<table n:foreach="$translations as $lang => $data">
+		<tr>
+			<th>{_'Klíč'}</th>
+			<th>{_'Jazyk'}</th>
+			<th>{_'Hodnota'}</th>
+		</tr>
+		<tr n:foreach="$data as $key => $message">
+			<th>{$key}</th>
+			<th>{$lang}</th>
+			<td>{$message}</td>
+		</tr>
+	</table>
+</div>

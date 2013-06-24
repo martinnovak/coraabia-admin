@@ -1,0 +1,28 @@
+extensions:
+	dibi: DibiNette21Extension
+
+php:
+	date.timezone: Europe/Prague
+	# zlib.output_compression: yes
+
+nette:
+	application:
+		errorPresenter: Error
+		mapping:
+			*: App\*Module\*Presenter
+	session:
+		expiration: 14 days
+	debugger:
+		bar:
+			- Framework\Diagnostics\LocalesPanel(@nette.latte)
+			- Framework\Diagnostics\TranslationPanel(@nette.latte)
+
+services:
+	- App\RouterFactory
+	router: @App\RouterFactory::createRouter
+	- Framework\Hooks\HookManager
+	locales: Model\Locales
+
+factories:
+	nette.latte:
+		setup: [ Framework\Hooks\HookMacros::setup ]

@@ -1,0 +1,24 @@
+{capture $style}
+	{if $locales->server == 'dev'}background-color: #f00;{/if}
+	{if $locales->server == 'beta'}background-color: #0f0;{/if}
+	{if $locales->server == 'stage'}background-color: #ff0;{/if}
+	{if $locales->server == 'static'}background-color: #44f;{/if}
+{/capture}
+
+<h1>{_'Locales'}</h1>
+<div class="nette-inner">
+	<table>
+		<tr>
+			<th>{_'Server'}</th>
+			<td style="{!$style|trim}">{$locales->server|upper}</td>
+		</tr>
+		<tr>
+			<th>{_'Jazyk'}</th>
+			<td>{$locales->lang}</td>
+		</tr>
+		<tr>
+			<th>{_'Čas'}</th>
+			<td>{$locales->timestamp|date:'d.m.Y H:i:s'}</td>
+		</tr>
+	</table>
+</div>

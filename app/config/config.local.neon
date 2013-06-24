@@ -1,0 +1,23 @@
+includes:
+	- passwords.neon
+
+dibi:
+	driver: postgre
+	host: localhost
+	port: 5432
+	database: game
+	lazy: TRUE
+
+services:
+	game: Model\Game(@dibi.connection)
+	- Model\Authenticator(@game, %applicationSecret%, %hashAlgorithm%)
+	authorizator:
+		class: Model\Authorizator(@game)
+		setup: [ setupPermissions ]
+	translator:
+		class: Model\Translator(@game)
+		setup: [ setupTranslations ]
+	user:
+		setup: [ @authorizator::setupOnLoggedOut, @translator::setupOnLoggedOut ]
+	application:
+		setup: [ @locales::setupOnRequest ]
