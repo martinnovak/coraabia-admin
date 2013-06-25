@@ -1,17 +1,17 @@
-<div n:foreach="$keys as $day">
+<div class="row" n:foreach="$keys as $day">
 	{if $day == 0}
 	<h3 style="text-align: center;">{_'Nezařazené'}</h3>
 	{else}
 	<h3 style="text-align: center;">{$day|date:'d.m.Y'}</h3>
 	{/if}
-	<div class="span5 pull-left">
+	<div class="span5" style="text-align: right;">
 		{ifset $start[$day]}
 		{foreach $start[$day] as $card}
 		<a id="start-{$card->card_id}" href="#finish-{$card->card_id}" class="{$card->fraction|lower}">{$card->translated_name}</a>{sep}, {/sep}
 		{/foreach}
 		{/ifset}
 	</div>
-	<div class="span5 pull-right">
+	<div class="span5" style="text-align: left;">
 		{ifset $finish[$day]}
 		{foreach $finish[$day] as $card}
 		<a id="finish-{$card->card_id}" href="#start-{$card->card_id}" class="{$card->fraction|lower}">{$card->translated_name}</a>{sep}, {/sep}

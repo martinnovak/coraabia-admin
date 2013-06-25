@@ -10,7 +10,7 @@
 	<title>{#title|striptags|upper}Coraabia Admin{/#}</title>
 
 	<link href="{$basePath}/css/bootstrap.min.css" rel="stylesheet" media="screen">
-	<link href="{$basePath}/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
+	{*<link href="{$basePath}/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen">*}
 	<link href="{$basePath}/css/jquery-ui.min.css" rel="stylesheet" media="screen">
 	<link href="{$basePath}/css/grido.css" rel="stylesheet" media="screen">
 	<link href="{$basePath}/css/coraabia.css" rel="stylesheet" media="screen">
@@ -22,12 +22,12 @@
 <body>
 	<script> document.documentElement.className+=' js' </script>
 
-	<div id="header" class="container-fluid">
+	<div id="header" class="container">
 		{#menu}{control menu}{/#}
 	</div>
 	
-	<div id="main" class="container-fluid">
-		<div class="row-fluid">
+	<div id="main" class="container">
+		<div class="row">
 			<div class="span2">
 				{#sidebar}{control sidebar}{/#}
 			</div>
@@ -44,8 +44,8 @@
 		</div>
     </div>
 	
-	<div id="footer" class="container-fluid">
-		<div class="row-fluid">
+	<div id="footer" class="container">
+		<div class="row">
 			{control footer}
 		</div>
 	</div>
