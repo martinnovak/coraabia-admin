@@ -25,7 +25,7 @@ class CardControl extends Framework\Application\UI\BaseControl
 			$finish[$card->valid_to ? strtotime((string)$card->valid_to, $this->locales->timestamp) : 0][] = $card;
 		}
 		$keys = array_unique(array_keys($start) + array_keys($finish));
-		sort($keys);
+		rsort($keys);
 		$template->start = $start;
 		$template->finish = $finish;
 		$template->keys = $keys;
