@@ -20,7 +20,7 @@ class CardControl extends Framework\Application\UI\BaseControl
 		$template->setFile(__DIR__ . '/timeLine.latte');
 		
 		$start = $finish = $dates = array();
-		foreach ($this->game->cards->fetchAll() as $card) {
+		foreach ($this->game->cards->orderBy('translated_name')->asc()->fetchAll() as $card) {
 			$start[$card->valid_from ? strtotime((string)$card->valid_from, $this->locales->timestamp) : 0][] = $card;
 			$finish[$card->valid_to ? strtotime((string)$card->valid_to, $this->locales->timestamp) : 0][] = $card;
 		}

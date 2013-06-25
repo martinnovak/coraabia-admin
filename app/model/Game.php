@@ -12,12 +12,13 @@ class Game extends Model
 	 */
 	public function getCards()
 	{
-		return $this->connection
+		$result = $this->connection
 				->select('c.*, t.value AS translated_name')
 				->from('card c')
 				->leftJoin('translation t')
 				->on('t.key = %s || CAST(c.card_id AS TEXT)', 'card.')
 				->where('t.lang = %s', $this->locales->lang);
+		return $this->locales->server == 'dev' ? $result : $result->and('c.ready = %b', TRUE);
 	}
 	
 	

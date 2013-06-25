@@ -1,12 +1,22 @@
-<div class="well span5" n:inner-foreach="$keys as $day">
-	<h4>{$day|date:'d.m.Y'}</h4>
-	{ifset $start[$day]}
-	<div n:foreach="$start[$day] as $card">{$card->translated_name}</div>
-	{/ifset}
-</div>
-<div class="well span5" n:inner-foreach="$keys as $day">
-	<h4>{$day|date:'d.m.Y'}</h4>
-	{ifset $finish[$day]}
-	<div n:foreach="$finish[$day] as $card">{$card->translated_name}</div>
-	{/ifset}
+<div n:foreach="$keys as $day">
+	{if $day == 0}
+	<h3 style="text-align: center;">{_'Nezařazené'}</h3>
+	{else}
+	<h3 style="text-align: center;">{$day|date:'d.m.Y'}</h3>
+	{/if}
+	<div class="span5 pull-left">
+		{ifset $start[$day]}
+		{foreach $start[$day] as $card}
+		<a id="start-{$card->card_id}" href="#finish-{$card->card_id}" class="{$card->fraction|lower}">{$card->translated_name}</a>{sep}, {/sep}
+		{/foreach}
+		{/ifset}
+	</div>
+	<div class="span5 pull-right">
+		{ifset $finish[$day]}
+		{foreach $finish[$day] as $card}
+		<a id="finish-{$card->card_id}" href="#start-{$card->card_id}" class="{$card->fraction|lower}">{$card->translated_name}</a>{sep}, {/sep}
+		{/foreach}
+		{/ifset}
+	</div>
+	<div class="clearfix"></div>
 </div>
