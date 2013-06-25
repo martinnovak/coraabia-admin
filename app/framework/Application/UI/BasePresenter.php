@@ -20,6 +20,12 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	/** @var \Model\Locales @inject */
 	public $locales;
 	
+	/** @var string @persistent */
+	public $server;
+	
+	/** @var string @persistent */
+	public $lang;
+	
 	
 	
 	/**
