@@ -12,6 +12,11 @@ use Nette,
  */
 class SignPresenter extends Framework\Application\UI\BasePresenter
 {
+	/** @var string @persistent */
+	public $backlink = '';
+	
+	
+	
 	/**
 	 * Sign-in form factory.
 	 * @return \Nette\Application\UI\Form
@@ -19,15 +24,15 @@ class SignPresenter extends Framework\Application\UI\BasePresenter
 	protected function createComponentSignInForm()
 	{
 		$form = new Nette\Application\UI\Form;
-		$form->addText('username', 'Username:')
-			->setRequired('Please enter your username.');
+		$form->addText('username', 'Login:')
+			->setRequired('Zadejte přihlašovací jméno.');
 
-		$form->addPassword('password', 'Password:')
-			->setRequired('Please enter your password.');
+		$form->addPassword('password', 'Heslo:')
+			->setRequired('Zadejte svoje heslo.');
 
-		$form->addCheckbox('remember', 'Keep me signed in');
+		$form->addCheckbox('remember', 'Pamatovat si přihlášení');
 
-		$form->addSubmit('send', 'Sign in');
+		$form->addSubmit('send', 'Vstup');
 
 		// call method signInFormSucceeded() on success
 		$form->onSuccess[] = $this->signInFormSucceeded;
@@ -36,6 +41,9 @@ class SignPresenter extends Framework\Application\UI\BasePresenter
 
 
 
+	/**
+	 * @param \Nette\Application\UI\Form $form 
+	 */
 	public function signInFormSucceeded($form)
 	{
 		$values = $form->getValues();
@@ -48,9 +56,9 @@ class SignPresenter extends Framework\Application\UI\BasePresenter
 
 		try {
 			$this->getUser()->login($values->username, $values->password);
-			$this->flashMessage('You have been signed in.', 'success');
+			$this->flashMessage('Byl jste úspěšně přihlášen.', 'success');
+			$this->restoreRequest($this->backlink);
 			$this->redirect('User:showProfile');
-			
 		} catch (Nette\Security\AuthenticationException $e) {
 			$form->addError($e->getMessage());
 		}
@@ -61,7 +69,7 @@ class SignPresenter extends Framework\Application\UI\BasePresenter
 	public function actionIn()
 	{
 		if ($this->getUser()->isLoggedIn()) {
-			$this->flashMessage('You are already signed in.');
+			$this->flashMessage('Už jste přihlášen.');
 			$this->redirect('User:showProfile');
 		}
 	}
@@ -71,7 +79,7 @@ class SignPresenter extends Framework\Application\UI\BasePresenter
 	public function actionOut()
 	{
 		$this->getUser()->logout();
-		$this->flashMessage('You have been signed out.', 'warning');
+		$this->flashMessage('Byl jste úspěšně odhlášen.', 'warning');
 		$this->redirect('in');
 	}
 }
