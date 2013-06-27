@@ -123,18 +123,19 @@ class CardControl extends Framework\Application\UI\BaseControl
 				->setCustomRender(function ($item) {
 					return ucfirst(strtolower($item->subtype));
 				});
-				
-		$grido->addColumn('ready', '')
-				->setCustomRender(function ($item) {
-					return $item->ready ? '<i class="icon-ok"></i>' : '';
-				});
 		
 		if ($this->locales->server == 'dev') {
+			$grido->addColumn('ready', '')
+					->setCustomRender(function ($item) {
+						return $item->ready ? '<i class="icon-ok"></i>' : '';
+					});
+				
 			$grido->addAction('edit', '')
 					->setIcon('edit')
 					->setCustomHref(function ($item) use ($self) {
 						return $self->getPresenter()->lazyLink('showUpdateCard', array('id' => $item->card_id));
 					});
+					
 			$grido->addAction('remove', '')
 					->setIcon('remove')
 					->setCustomHref(function ($item) use ($self) {
