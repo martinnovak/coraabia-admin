@@ -12,11 +12,6 @@ use Nette,
  */
 class SignPresenter extends Framework\Application\UI\BasePresenter
 {
-	/** @var string @persistent */
-	public $backlink = '';
-	
-	
-	
 	/**
 	 * Sign-in form factory.
 	 * @return \Nette\Application\UI\Form
@@ -57,7 +52,7 @@ class SignPresenter extends Framework\Application\UI\BasePresenter
 		try {
 			$this->getUser()->login($values->username, $values->password);
 			$this->flashMessage('Byl jste úspěšně přihlášen.', 'success');
-			$this->restoreRequest($this->backlink);
+			$this->restoreRequest((string)$this->getParameter('backlink'));
 			$this->redirect('User:showProfile');
 		} catch (Nette\Security\AuthenticationException $e) {
 			$form->addError($e->getMessage());

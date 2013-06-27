@@ -14,7 +14,6 @@ class MenuControl extends Framework\Application\UI\BaseControl
 	{
 		$template = $this->template;
 		$template->setFile(__DIR__ . '/menu.latte');
-		$template->server = $this->locales->server;
 		$template->render();
 	}
 }
