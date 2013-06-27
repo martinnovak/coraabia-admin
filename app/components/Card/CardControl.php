@@ -75,25 +75,25 @@ class CardControl extends Framework\Application\UI\BaseControl
 		$grido->addColumn('danger', 'N')
 				->setSortable()
 				->setCustomRender(function ($item) {
-					return $item->type == \Coraabia\Card::CHARACTER ? $item->danger : '';
+					return $item->type == 'CHARACTER' ? $item->danger : '';
 				});
 		
 		$grido->addColumn('intellect', 'I')
 				->setSortable()
 				->setCustomRender(function ($item) {
-					return $item->type == \Coraabia\Card::CHARACTER ? $item->intellect : '';
+					return $item->type == 'CHARACTER' ? $item->intellect : '';
 				});
 		
 		$grido->addColumn('vitality', 'V')
 				->setSortable()
 				->setCustomRender(function ($item) {
-					return $item->type == \Coraabia\Card::CHARACTER ? $item->vitality : '';
+					return $item->type == 'CHARACTER' ? $item->vitality : '';
 				});
 		
 		$grido->addColumn('karma', 'K')
 				->setSortable()
 				->setCustomRender(function ($item) {
-					return $item->type == \Coraabia\Card::CHARACTER ? $item->karma : '';
+					return $item->type == 'CHARACTER' ? $item->karma : '';
 				});
 		
 		$grido->addColumn('rarity', 'R')
@@ -106,7 +106,7 @@ class CardControl extends Framework\Application\UI\BaseControl
 				->setSortable()
 				->setCustomRender(function ($item) use ($baseUri) {
 					return \Nette\Utils\Html::el('img')->src("$baseUri/images/abilities/" .
-							($item->type == \Coraabia\Card::CHARACTER ? 'card' : 'trick') .
+							($item->type == 'CHARACTER' ? 'card' : 'trick') .
 							".png");
 				});
 		
@@ -129,7 +129,7 @@ class CardControl extends Framework\Application\UI\BaseControl
 					return $item->ready ? '<i class="icon-ok"></i>' : '';
 				});
 		
-		if ($this->locales->server == \Coraabia\Server::DEV) {
+		if ($this->locales->server == 'dev') {
 			$grido->addAction('edit', '')
 					->setIcon('edit')
 					->setCustomHref(function ($item) use ($self) {
