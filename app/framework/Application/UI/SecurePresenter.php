@@ -21,12 +21,12 @@ abstract class SecurePresenter extends BasePresenter
 		}
 		
 		// @TODO test, debug
-		if (NULL !== $this->signal) {
+		/*if (NULL !== $this->signal) {
 			$resource = $this->user->getAuthorizator()->buildResourceName($this->locales->server, $this->signal);
 			if (!$this->user->isAllowed($resource)) {
 				throw new Nette\Application\BadRequestException;
 			}
-		}
+		}*/
 		
 		$resource = $this->user->getAuthorizator()->buildResourceName($this->locales->server, $this->getParameter('action'));
 		if (!$this->user->isAllowed($resource)) {
