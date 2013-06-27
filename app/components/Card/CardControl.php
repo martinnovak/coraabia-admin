@@ -3,7 +3,8 @@
 namespace App;
 
 use Nette,
-	Framework;
+	Framework,
+	Grido;
 
 
 
@@ -33,5 +34,35 @@ class CardControl extends Framework\Application\UI\BaseControl
 		$template->keys = $keys;
 		
 		$template->render();
+	}
+	
+	
+	
+	public function renderSpoiler()
+	{
+		$template = $this->template;
+		$template->setFile(__DIR__ . '/spoiler.latte');
+		$template->render();
+	}
+	
+	
+	
+	public function createComponentSpoiler($name)
+	{
+		$grido = new Grido\Grid($this, $name);
+		$grido->setModel($this->game->cards)
+				->setDefaultPerPage(1000)
+				->setPerPageList(array(100, 200, 500, 1000))
+				->setTranslator($this->translator)
+				->setPrimaryKey('card_id')
+				->setFilterRenderType(Grido\Components\Filters\Filter::RENDER_INNER)
+				->setDefaultSort(array('translated_name' => 'asc'));
+		
+		$grido->addColumn('card_id', 'ID');
+		$grido->addColumn('translated_name', 'Jméno')
+				->setSortable()
+				->setFilter();
+		
+		return $grido;
 	}
 }
