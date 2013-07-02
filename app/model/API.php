@@ -34,8 +34,6 @@ class API extends Nette\Object
 	{
 		$data = json_encode((object)$params);
 		
-		Nette\Diagnostics\Debugger::log($data);
-		
 		$context = stream_context_create(array('http' => array(
 			'method'  => 'POST',
 			'header'  => 'Content-type: application/json',
