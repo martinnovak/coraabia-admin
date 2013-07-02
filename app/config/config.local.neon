@@ -8,9 +8,16 @@ dibi:
 	database: game
 	lazy: TRUE
 
+parameters:
+	bazaarUrls:
+		dev: 'http://localhost:8081/bazaar'
+		stage: 'http://localhost:8088/bazaar'
+		beta: 'http://localhost:8082/bazaar'
+
 services:
 	game: Model\Game(@dibi.connection)
 	- Model\Authenticator(@game, %applicationSecret%, %hashAlgorithm%)
+	- Model\API(..., %bazaarUrls%)
 	authorizator:
 		class: Model\Authorizator(@game)
 		setup: [ setupPermissions ]

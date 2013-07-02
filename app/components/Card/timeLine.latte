@@ -1,15 +1,17 @@
-<div class="row" n:foreach="$keys as $day">
-	{if $day == 0}
-	<h3 style="text-align: center;">{_'Nezařazené'}</h3>
-	{else}
-	<h3 style="text-align: center;">{$day|date:'d.m.Y'}</h3>
-	{/if}
+<div class="row-fluid" n:foreach="$keys as $day">
 	<div class="span5" style="text-align: right;">
 		{ifset $start[$day]}
 		{foreach $start[$day] as $card}
 		<a id="start{$card->card_id}" href="#finish{$card->card_id}" class="{$card->fraction|lower}">{$card->translated_name|trim}</a>{sep}, {/sep}
 		{/foreach}
 		{/ifset}
+	</div>
+	<div class="span2" style="text-align: center;">
+		{if $day == 0}
+		<p>{_'Nezařazené'}</p>
+		{else}
+		<p>{$day|date:'d.m.y'}</p>
+		{/if}
 	</div>
 	<div class="span5" style="text-align: left;">
 		{ifset $finish[$day]}
