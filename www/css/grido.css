@@ -57,14 +57,14 @@
     padding:0 6px ;
     border:solid #CACACA;
     border-width: 0 1px 1px 0;
-    height: 30px;
+    /*height: 20px;*/
 }
 /*
 .grido td,
 .grido th.checker{border-width: 0 0 1px 0;}
 .grido .head th {border-width: 0}
 */
-.grido th.column {width: 8%}
+/*.grido th.column {width: 8%}*/
 
 .grido thead {font-size: 1.15em}
 .grido tfoot {font-size: 1.1em}

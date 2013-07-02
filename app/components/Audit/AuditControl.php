@@ -28,6 +28,8 @@ class AuditControl extends Framework\Application\UI\BaseControl
 	
 	public function createComponentBazaar($name)
 	{
+		$self = $this;
+		
 		$transactions = array();
 		foreach ($this->api->query(array('id' => 'transactions'))->txs as $tData) {
 			$tData->node = json_encode($tData->node);
@@ -47,20 +49,24 @@ class AuditControl extends Framework\Application\UI\BaseControl
 		$grido->addColumn('txId', 'ID')
 				->setSortable();
 		
-		$grido->addColumn('userId', 'ID uživatele')
+		$grido->addColumn('userId', 'UID')
 				->setSortable();
 		
-		$grido->addColumn('name', 'Uživatele')
+		$grido->addColumn('name', 'Uživatel')
 				->setSortable();
 				
 		$grido->addColumn('type', 'Typ')
 				->setSortable();
 
 		$grido->addColumn('timestamp', 'Čas')
-				->setSortable();
+				->setSortable()
+				->setCustomRender(function ($item) {
+					return date('d.m.Y H:i:s', $item['timestamp']);
+				});
 		
 		$grido->addColumn('node', 'Data')
-				->setSortable();
+				->setSortable()
+				->setTruncate(100);
 		
 		return $grido;
 	}
