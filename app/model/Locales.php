@@ -33,7 +33,7 @@ class Locales extends Nette\FreezableObject
 			$self->lang = $parameters['lang'];
 			$self->server = $parameters['server'];
 			$self->timestamp = time();
-			$self->freeze();
+			//$self->freeze();
 		};
 	}
 	
