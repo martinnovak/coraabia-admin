@@ -1,24 +1,35 @@
-<div class="row-fluid" n:foreach="$keys as $day">
-	<div class="span5" style="text-align: right;">
-		{ifset $start[$day]}
-		{foreach $start[$day] as $card}
-		<a id="start{$card->card_id}" href="#finish{$card->card_id}" class="{$card->fraction|lower}">{$card->translated_name|trim}</a>{sep}, {/sep}
-		{/foreach}
-		{/ifset}
+<style type="text/css">
+	.timeline .row-fluid.even {
+		background: #f9f9f9;
+	}
+	.timeline .row-fluid:hover {
+		background: #deeefa;
+	}
+</style>
+
+<div class="timeline">
+	<div n:foreach="$keys as $day" n:class="row-fluid, $iterator->even ? even">
+		<div class="span5" style="text-align: right;">
+			{ifset $start[$day]}
+			{foreach $start[$day] as $card}
+			<a id="start{$card->card_id}" href="#finish{$card->card_id}" class="{$card->fraction|lower}">{$card->translated_name|trim}</a>{sep}, {/sep}
+			{/foreach}
+			{/ifset}
+		</div>
+		<div class="span2" style="text-align: center;">
+			{if $day == 0}
+			<p>{_'Nezařazené'}</p>
+			{else}
+			<p>{$day|date:'d.m.Y'}</p>
+			{/if}
+		</div>
+		<div class="span5" style="text-align: left;">
+			{ifset $finish[$day]}
+			{foreach $finish[$day] as $card}
+			<a id="finish{$card->card_id}" href="#start{$card->card_id}" class="{$card->fraction|lower}">{$card->translated_name|trim}</a>{sep}, {/sep}
+			{/foreach}
+			{/ifset}
+		</div>
+		<div class="clearfix"></div>
 	</div>
-	<div class="span2" style="text-align: center;">
-		{if $day == 0}
-		<p>{_'Nezařazené'}</p>
-		{else}
-		<p>{$day|date:'d.m.Y'}</p>
-		{/if}
-	</div>
-	<div class="span5" style="text-align: left;">
-		{ifset $finish[$day]}
-		{foreach $finish[$day] as $card}
-		<a id="finish{$card->card_id}" href="#start{$card->card_id}" class="{$card->fraction|lower}">{$card->translated_name|trim}</a>{sep}, {/sep}
-		{/foreach}
-		{/ifset}
-	</div>
-	<div class="clearfix"></div>
 </div>

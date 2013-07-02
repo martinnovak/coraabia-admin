@@ -1,0 +1,19 @@
+<h3>{_'Transakce'} {$transaction->txId}</h3>
+<div class="row-fluid">
+	<dl class="span6">
+		<dt>{_'UID'}</dt>
+		<dd>{$transaction->userId}</dd>
+		<dt>{_'Uživatel'}</dt>
+		<dd>{$transaction->name}</dd>
+		<dt>{_'Typ'}</dt>
+		<dd>{$transaction->type}</dd>
+		<dt>{_'Čas'}</dt>
+		<dd>{$transaction->timestamp|date:'d.m.Y H:i:s'}</dd>
+		<dt>{_'Čas (raw)'}</dt>
+		<dd>{$transaction->timestamp}</dd>
+	</dl>
+	<dl class="span6" n:inner-foreach="$transaction->node as $key => $value">
+		<dt>{$key}</dt>
+		<dd>{$value}</dd>
+	</dl>
+</div>

@@ -26,5 +26,3 @@ services:
 factories:
 	nette.latte:
 		setup: [ Framework\Hooks\HookMacros::setup ]
-	transaction:
-		implement: Model\Transaction\ITransactionFactory
