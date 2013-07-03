@@ -6,7 +6,7 @@ use Nette;
 
 
 
-class Mapi extends Nette\Object
+class MapiRequest extends Nette\Object
 {
 	/** @var array */
 	private $args;

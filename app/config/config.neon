@@ -21,7 +21,20 @@ services:
 	- App\RouterFactory
 	router: @App\RouterFactory::createRouter
 	- Framework\Hooks\HookManager
+	game: Model\Game(@dibi.connection)
 	locales: Model\Locales
+	- Model\Authenticator(@game, %applicationSecret%, %hashAlgorithm%)
+	- Coraabia\Mapi\MapiRequestFactory(..., %bazaarUrls%)
+	authorizator:
+		class: Model\Authorizator(@game)
+		setup: [ setupPermissions ]
+	translator:
+		class: Model\Translator(@game)
+		setup: [ setupTranslations ]
+	user:
+		setup: [ @authorizator::setupOnLoggedOut, @translator::setupOnLoggedOut ]
+	application:
+		setup: [ @locales::setupOnRequest ]
 
 factories:
 	nette.latte:

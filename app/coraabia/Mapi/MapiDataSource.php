@@ -8,8 +8,8 @@ use Nette;
 
 class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSource
 {
-	/** @var \Coraabia\Mapi\Mapi */
-	private $mapi;
+	/** @var \Coraabia\Mapi\MapiRequest */
+	private $request;
 	
 	/** @var array */
 	private $data = array();
@@ -17,11 +17,11 @@ class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSou
 	
 	
 	/**
-	 * @param \Coraabia\Mapi\Mapi $mapi 
+	 * @param \Coraabia\Mapi\MapiRequest $request 
 	 */
-	public function __construct(Mapi $mapi)
+	public function __construct(MapiRequest $request)
 	{
-		$this->mapi = $mapi;
+		$this->request = $request;
 	}
 	
 	
@@ -31,7 +31,7 @@ class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSou
      */
     public function getData()
     {
-        return $this->data = $this->mapi->load();
+        return $this->data = $this->request->load();
     }
 
 	
@@ -64,8 +64,8 @@ class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSou
      */
     public function limit($offset, $limit)
 	{
-		$this->mapi->setParam('start', $offset);
-		$this->mapi->setParam('count', $limit);
+		$this->request->setParam('start', $offset);
+		$this->request->setParam('count', $limit);
 	}
 
 	

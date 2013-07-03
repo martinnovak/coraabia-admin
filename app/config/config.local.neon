@@ -13,18 +13,3 @@ parameters:
 		dev: 'http://localhost:8081/bazaar'
 		stage: 'http://localhost:8088/bazaar'
 		beta: 'http://localhost:8082/bazaar'
-
-services:
-	game: Model\Game(@dibi.connection)
-	- Model\Authenticator(@game, %applicationSecret%, %hashAlgorithm%)
-	- Coraabia\Mapi\MapiRequestFactory(..., %bazaarUrls%)
-	authorizator:
-		class: Model\Authorizator(@game)
-		setup: [ setupPermissions ]
-	translator:
-		class: Model\Translator(@game)
-		setup: [ setupTranslations ]
-	user:
-		setup: [ @authorizator::setupOnLoggedOut, @translator::setupOnLoggedOut ]
-	application:
-		setup: [ @locales::setupOnRequest ]
