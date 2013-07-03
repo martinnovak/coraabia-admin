@@ -17,7 +17,7 @@ parameters:
 services:
 	game: Model\Game(@dibi.connection)
 	- Model\Authenticator(@game, %applicationSecret%, %hashAlgorithm%)
-	- Model\API(..., %bazaarUrls%)
+	- Coraabia\Mapi\MapiRequestFactory(..., %bazaarUrls%)
 	authorizator:
 		class: Model\Authorizator(@game)
 		setup: [ setupPermissions ]

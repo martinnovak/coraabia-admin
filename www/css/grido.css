@@ -118,10 +118,12 @@
 .grido th.actions {
     width: 15%;
     text-align: center;
+	padding-top: 3px;
+	padding-bottom: 3px;
 }
 
 .grido th.buttons,
-.grido td.actions {text-align: center}
+.grido td.actions {text-align: center;padding-top: 3px;padding-bottom: 3px;}
 
 .grido td.actions a {margin-right: 3px}
 .grido th.checker {width: 0.1%;text-align: center}

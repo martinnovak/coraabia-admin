@@ -130,13 +130,13 @@ class CardControl extends Framework\Application\UI\BaseControl
 						return $item->ready ? '<i class="icon-ok"></i>' : '';
 					});
 				
-			$grido->addAction('edit', '')
+			$grido->addAction('edit', 'Změnit')
 					->setIcon('edit')
 					->setCustomHref(function ($item) use ($self) {
 						return $self->getPresenter()->lazyLink('showUpdateCard', array('id' => $item->card_id));
 					});
 					
-			$grido->addAction('remove', '')
+			$grido->addAction('remove', 'Smazat')
 					->setIcon('remove')
 					->setCustomHref(function ($item) use ($self) {
 						return $self->getPresenter()->lazyLink('deleteCard', array('id' => $item->card_id));

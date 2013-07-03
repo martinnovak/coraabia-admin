@@ -11,8 +11,8 @@ use Nette,
 
 class AuditControl extends Framework\Application\UI\BaseControl
 {
-	/** @var \Model\API @inject */
-	public $api;
+	/** @var \Coraabia\Mapi\MapiRequestFactory @inject */
+	public $mapiRequestFactory;
 		
 	
 	
@@ -28,24 +28,24 @@ class AuditControl extends Framework\Application\UI\BaseControl
 	{
 		$self = $this;
 		
-		$transactions = array_map(function ($item) {
-			$item->node = json_encode($item->node);
-			return (array)$item;
-		}, $this->api->query(array('id' => 'transactions'))->txs);
+		//request
+		$request = $this->mapiRequestFactory->create(array('id' => 'transactions'), 'txs');
 		
+		//types
 		$tmp = array_values(array_unique(array_map(function ($item) {
-			return $item['type'];
-		}, $transactions)));
+			return $item->type;
+		}, $request->load())));
 		array_unshift($tmp, '');
 		$types = array_combine($tmp, $tmp);
 		
+		//grido
 		$grido = new Grido\Grid($this, $name);
-		$grido->setModel($transactions)
+		$grido->setModel(new \Coraabia\Mapi\MapiDataSource($request))
 				->setDefaultPerPage(1000)
 				->setPerPageList(array(100, 200, 500, 1000))
 				->setTranslator($this->translator)
 				->setPrimaryKey('txId')
-				->setDefaultSort(array('txId' => 'asc'))
+				->setDefaultSort(array('txId' => 'ASC'))
 				->setFilterRenderType(Filter::RENDER_OUTER);
 		
 		$grido->addColumn('txId', 'ID')
@@ -66,18 +66,17 @@ class AuditControl extends Framework\Application\UI\BaseControl
 		$grido->addColumn('timestamp', 'Čas')
 				->setSortable()
 				->setCustomRender(function ($item) {
-					return date('d.m.Y H:i:s', $item['timestamp']);
+					return date('d.m.Y H:i:s', $item->timestamp);
 				});
 		
 		$grido->addColumn('node', 'Data')
-				->setSortable()
-				->setTruncate(100)
+				->setTruncate(80)
 				->setFilter();
 		
 		$grido->addAction('show', 'Podrobnosti')
 				->setIcon('list')
 				->setCustomHref(function ($item) use ($self) {
-					return $self->getPresenter()->lazyLink('showViewTransaction', array('id' => $item['txId']));
+					return $self->getPresenter()->lazyLink('showViewTransaction', array('id' => $item->txId));
 				});
 		
 		return $grido;
@@ -91,10 +90,12 @@ class AuditControl extends Framework\Application\UI\BaseControl
 		$template->setFile(__DIR__ . '/transaction.latte');
 		
 		$id = $this->getPresenter()->getParameter('id');
-		$transactions = array_filter($this->api->query(array('id' => 'transactions'))->txs, function ($item) use ($id) {
+		$transactions = array_filter($this->mapiRequestFactory->create(array('id' => 'transactions'), 'txs')->load(), function ($item) use ($id) {
 			return $item->txId == $id;
 		});
-		$template->transaction = array_pop($transactions);
+		$transaction = array_pop($transactions);
+		$transaction->node = json_decode($transaction->node);
+		$template->transaction = $transaction;
 		
 		$template->render();
 	}
