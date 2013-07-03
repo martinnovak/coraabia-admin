@@ -75,17 +75,7 @@ class MapiRequest extends Nette\Object
 			return $result;
 		}
 		
-		//@todo get rid of this
-		$final = array();
-		foreach ($result->{$this->retColumn} as $object) {
-			foreach ($object as $key => $value) {
-				if (is_object($value)) {
-					$object->$key = json_encode($value);
-				}
-			}
-			$final[] = $object;
-		}
-		return $final;
+		return $result->{$this->retColumn};
 	}
 	
 	

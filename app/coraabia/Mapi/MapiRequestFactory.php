@@ -30,12 +30,12 @@ class MapiRequestFactory extends Nette\Object
 	
 	
 	/**
-	 * @param array $args
+	 * @param string $id
 	 * @param string $retColumn
 	 * @return \Coraabia\Mapi\MapiRequest 
 	 */
-	public function create(array $args, $retColumn)
+	public function create($id, $retColumn)
 	{
-		return new MapiRequest($this->urls[$this->locales->server], $args, $retColumn);
+		return new MapiRequest($this->urls[$this->locales->server], array('id' => $id), $retColumn);
 	}
 }

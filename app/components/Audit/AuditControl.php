@@ -29,13 +29,14 @@ class AuditControl extends Framework\Application\UI\BaseControl
 		$self = $this;
 		
 		//request
-		$request = $this->mapiRequestFactory->create(array('id' => 'transactions'), 'txs');
+		$request = $this->mapiRequestFactory->create('transactions', 'txs');
 		
 		//types
-		$tmp = array_values(array_unique(array_map(function ($item) {
+		$tmp = array('');
+		/*$tmp = array_values(array_unique(array_map(function ($item) {
 			return $item->type;
 		}, $request->load())));
-		array_unshift($tmp, '');
+		array_unshift($tmp, '');*/
 		$types = array_combine($tmp, $tmp);
 		
 		//grido
@@ -46,7 +47,8 @@ class AuditControl extends Framework\Application\UI\BaseControl
 				->setTranslator($this->translator)
 				->setPrimaryKey('txId')
 				->setDefaultSort(array('txId' => 'ASC'))
-				->setFilterRenderType(Filter::RENDER_OUTER);
+				->setFilterRenderType(Filter::RENDER_OUTER)
+				->setPropertyAccessor(new \Coraabia\Mapi\MapiPropertyAccessor);
 		
 		$grido->addColumn('txId', 'ID')
 				->setSortable();
@@ -90,11 +92,10 @@ class AuditControl extends Framework\Application\UI\BaseControl
 		$template->setFile(__DIR__ . '/transaction.latte');
 		
 		$id = $this->getPresenter()->getParameter('id');
-		$transactions = array_filter($this->mapiRequestFactory->create(array('id' => 'transactions'), 'txs')->load(), function ($item) use ($id) {
+		$transactions = array_filter($this->mapiRequestFactory->create('transactions', 'txs')->load(), function ($item) use ($id) {
 			return $item->txId == $id;
 		});
 		$transaction = array_pop($transactions);
-		$transaction->node = json_decode($transaction->node);
 		$template->transaction = $transaction;
 		
 		$template->render();

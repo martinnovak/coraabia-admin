@@ -11,8 +11,8 @@ class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSou
 	/** @var \Coraabia\Mapi\MapiRequest */
 	private $request;
 	
-	/** @var array */
-	private $data = array();
+	/** @var \Coraabia\Mapi\MapiResult */
+	private $data;
 	
 	/** @var boolean */
 	private $dirty;
@@ -28,8 +28,31 @@ class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSou
 	public function __construct(MapiRequest $request)
 	{
 		$this->request = $request;
-		$this->dirty = FALSE;
+		$this->dirty = TRUE;
+		$this->data = $this->getData();
 	}
+	
+	
+	
+	/**
+	 * @param array $condition
+	 * @return array 
+	 */
+	protected function formatFilterCondition(array $condition)
+    {
+        $matches = \Nette\Utils\Strings::matchAll($condition[0], '/\[([\w_-]+)\]* [\w\!<>=]+ ([%\w]+)/');
+        
+        if ($matches) {
+            foreach ($matches as $match) {
+                return array(
+                    $match[1],
+                    $match[2]
+                );
+            }
+        } else {
+            return $condition;
+        }
+    }
 	
 	
 	
@@ -39,7 +62,7 @@ class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSou
     public function getData()
     {
 		if ($this->dirty) {
-			$this->data = $this->request->load();
+			$this->data = new MapiResult($this->request->load());
 			$this->dirty = FALSE;
 			if (is_array($this->sorting)) {
 				$this->sort($this->sorting);
@@ -66,7 +89,15 @@ class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSou
      */
     public function filter(array $condition)
 	{
-		//@todo
+		$value = str_replace('%', '', $condition[1]);
+        $condition = $this->formatFilterCondition($condition);
+		switch ($condition[1]) {
+			case '%s': $value = (string)$value; break;
+			case '%f': $value = (int)$value; break;
+			case '%i': $value = (int)$value; break;
+		}
+		$this->request->setParam($condition[0], $value);
+		$this->dirty = TRUE;
 	}
 
 	
@@ -107,12 +138,13 @@ class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSou
 					krsort($data);
 				}
 
-				$this->data = array();
+				$newData = array();
 				foreach($data as $i) {
 					foreach($i as $item) {
-						$this->data[] = $item;
+						$newData[] = $item;
 					}
 				}
+				$this->data = new MapiResult($newData);
 			}
 		} else {
 			$this->sorting = $sorting;
