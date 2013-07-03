@@ -14,6 +14,9 @@ class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSou
 	/** @var array */
 	private $data = array();
 	
+	/** @var boolean */
+	private $dirty;
+	
 	
 	
 	/**
@@ -22,6 +25,8 @@ class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSou
 	public function __construct(MapiRequest $request)
 	{
 		$this->request = $request;
+		$this->data = $this->request->load();
+		$this->dirty = FALSE;
 	}
 	
 	
@@ -31,7 +36,11 @@ class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSou
      */
     public function getData()
     {
-        return $this->data = $this->request->load();
+		if ($this->dirty) {
+			$this->data = $this->request->load();
+			$this->dirty = FALSE;
+		}
+        return $this->data;
     }
 
 	
@@ -66,6 +75,7 @@ class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSou
 	{
 		$this->request->setParam('start', $offset);
 		$this->request->setParam('count', $limit);
+		$this->dirty = TRUE;
 	}
 
 	
