@@ -17,6 +17,9 @@ class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSou
 	/** @var boolean */
 	private $dirty;
 	
+	/** @var array|NULL */
+	private $sorting = NULL;
+	
 	
 	
 	/**
@@ -25,7 +28,6 @@ class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSou
 	public function __construct(MapiRequest $request)
 	{
 		$this->request = $request;
-		$this->data = $this->request->load();
 		$this->dirty = FALSE;
 	}
 	
@@ -39,6 +41,9 @@ class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSou
 		if ($this->dirty) {
 			$this->data = $this->request->load();
 			$this->dirty = FALSE;
+			if (is_array($this->sorting)) {
+				$this->sort($this->sorting);
+			}
 		}
         return $this->data;
     }
@@ -86,25 +91,32 @@ class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSou
      */
     public function sort(array $sorting)
 	{
-		foreach ($sorting as $column => $sort) {
-            $data = array();
-            foreach ($this->data as $item) {
-                $data[(string) $item->$column][] = $item; //HOTFIX: (string)
-            }
+		if (is_array($this->sorting)) {
+			$sorting = $this->sorting;
+			$this->sorting = NULL;
+			
+			foreach ($sorting as $column => $sort) {
+				$data = array();
+				foreach ($this->data as $item) {
+					$data[(string) $item->$column][] = $item; //HOTFIX: (string)
+				}
 
-            if ($sort === 'ASC') {
-                ksort($data);
-            } else {
-                krsort($data);
-            }
+				if ($sort === 'ASC') {
+					ksort($data);
+				} else {
+					krsort($data);
+				}
 
-            $this->data = array();
-            foreach($data as $i) {
-                foreach($i as $item) {
-                    $this->data[] = $item;
-                }
-            }
-        }
+				$this->data = array();
+				foreach($data as $i) {
+					foreach($i as $item) {
+						$this->data[] = $item;
+					}
+				}
+			}
+		} else {
+			$this->sorting = $sorting;
+		}
 	}
 
 	
