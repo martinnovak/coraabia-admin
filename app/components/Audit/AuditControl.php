@@ -32,11 +32,10 @@ class AuditControl extends Framework\Application\UI\BaseControl
 		$request = $this->mapiRequestFactory->create('transactions', 'txs');
 		
 		//types
-		$tmp = array('');
-		/*$tmp = array_values(array_unique(array_map(function ($item) {
+		$tmp = array_values(array_unique(array_map(function ($item) {
 			return $item->type;
 		}, $request->load())));
-		array_unshift($tmp, '');*/
+		array_unshift($tmp, '');
 		$types = array_combine($tmp, $tmp);
 		
 		//grido

@@ -45,7 +45,8 @@ class MapiRequest extends Nette\Object
 	
 	
 	/**
-	 * @param array $params 
+	 * @return mixed
+	 * @throws \LogicException 
 	 */
 	public function load()
 	{
@@ -81,7 +82,8 @@ class MapiRequest extends Nette\Object
 	
 	
 	/**
-	 * @param type $date 
+	 * @param mixed $date 
+	 * @return string 
 	 */
 	public static function formatDate($date)
 	{

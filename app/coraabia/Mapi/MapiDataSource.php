@@ -85,7 +85,6 @@ class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSou
 	
 	/**
      * @param array $condition
-     * @return void
      */
     public function filter(array $condition)
 	{
@@ -105,7 +104,6 @@ class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSou
     /**
      * @param int $offset
      * @param int $limit
-     * @return void
      */
     public function limit($offset, $limit)
 	{
@@ -118,7 +116,6 @@ class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSou
 	
     /**
      * @param array $sorting
-     * @return void
      */
     public function sort(array $sorting)
 	{
@@ -154,11 +151,12 @@ class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSou
 	
 	
     /**
-     * @param mixed $column
-     * @param array $conditions
-     * @return array
-     */
-    public function suggest($column, array $conditions)
+	 * @param mixed $column
+	 * @param array $conditions
+	 * @return array
+	 * @throws \Nette\NotImplementedException 
+	 */
+	public function suggest($column, array $conditions)
 	{
 		throw new Nette\NotImplementedException;
 		return $this->data;

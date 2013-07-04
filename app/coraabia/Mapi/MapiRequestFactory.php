@@ -19,9 +19,9 @@ class MapiRequestFactory extends Nette\Object
 	
 	/**
 	 * @param \Model\Locales $locales
-	 * @param string $urls 
+	 * @param array $urls 
 	 */
-	public function __construct(Model\Locales $locales, $urls)
+	public function __construct(Model\Locales $locales, array $urls)
 	{
 		$this->locales = $locales;
 		$this->urls = $urls;

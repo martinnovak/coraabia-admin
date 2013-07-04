@@ -11,7 +11,7 @@ class MapiPropertyAccessor implements Grido\PropertyAccessors\IPropertyAccessor
 	/**
      * @param mixed $object
      * @param string $name
-     * @return bool
+     * @return boolean
      */
     public static function hasProperty($object, $name)
 	{
@@ -36,7 +36,6 @@ class MapiPropertyAccessor implements Grido\PropertyAccessors\IPropertyAccessor
      * @param mixed $object
      * @param string $name
      * @param string $value
-     * @return void
      */
     public static function setProperty($object, $name, $value)
 	{
