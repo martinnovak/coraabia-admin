@@ -1,5 +1,5 @@
 extensions:
-	dibi: DibiNette21Extension
+	dibi: Framework\Dibi\Bridges\Nette\DibiNette21Extension
 
 php:
 	date.timezone: Europe/Prague
@@ -21,7 +21,7 @@ services:
 	- App\RouterFactory
 	router: @App\RouterFactory::createRouter
 	- Framework\Hooks\HookManager
-	game: Model\Game(@dibi.connection)
+	game: Model\Game(@dibi.game)
 	locales: Model\Locales
 	- Model\Authenticator(@game, %applicationSecret%, %hashAlgorithm%)
 	- Coraabia\Mapi\MapiRequestFactory(..., %bazaarUrls%)

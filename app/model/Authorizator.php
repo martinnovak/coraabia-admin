@@ -14,7 +14,7 @@ class Authorizator extends Nette\Security\Permission
 {
 	const ACCESS_STRING = 'Coraabia_Route_Access';
 	
-	/** @var \Model\Model */
+	/** @var \Model\Game */
 	private $game;
 	
 	/** @var \Nette\Caching\IStorage */
@@ -23,10 +23,10 @@ class Authorizator extends Nette\Security\Permission
 	
 	
 	/**
-	 * @param \Model\Model $game
+	 * @param \Model\Game $game
 	 * @param \Nette\Caching\IStorage $storage
 	 */
-	public function __construct(Model $game, Nette\Caching\IStorage $storage)
+	public function __construct(Game $game, Nette\Caching\IStorage $storage)
 	{
 		$this->game = $game;
 		$this->storage = $storage;

@@ -13,6 +13,9 @@ class AuditControl extends Framework\Application\UI\BaseControl
 {
 	/** @var \Coraabia\Mapi\MapiRequestFactory @inject */
 	public $mapiRequestFactory;
+	
+	/** @var \Model\Game @inject */
+	public $game;
 		
 	
 	
@@ -32,9 +35,7 @@ class AuditControl extends Framework\Application\UI\BaseControl
 		$request = $this->mapiRequestFactory->create('transactions', 'txs');
 		
 		//types
-		$tmp = array_values(array_unique(array_map(function ($item) {
-			return $item->type;
-		}, $request->load())));
+		$tmp = $this->game->bazaarTransactionTypes;
 		array_unshift($tmp, '');
 		$types = array_combine($tmp, $tmp);
 		

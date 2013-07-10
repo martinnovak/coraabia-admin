@@ -9,7 +9,7 @@ use Nette,
 
 class ActivityControl extends Framework\Application\UI\BaseControl
 {
-	/** @var \Model\Model @inject */
+	/** @var \Model\Game @inject */
 	public $game;
 	
 	

@@ -29,7 +29,6 @@ class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSou
 	{
 		$this->request = $request;
 		$this->dirty = TRUE;
-		$this->data = $this->getData();
 	}
 	
 	
@@ -78,7 +77,7 @@ class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSou
      */
     public function getCount()
     {
-        return count($this->data);
+        return count($this->getData());
     }
 	
 	
@@ -159,6 +158,6 @@ class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSou
 	public function suggest($column, array $conditions)
 	{
 		throw new Nette\NotImplementedException;
-		return $this->data;
+		return $this->getData();
 	}
 }

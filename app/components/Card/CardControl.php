@@ -10,7 +10,7 @@ use Nette,
 
 class CardControl extends Framework\Application\UI\BaseControl
 {
-	/** @var \Model\Model @inject */
+	/** @var \Model\Game @inject */
 	public $game;
 	
 	
@@ -105,9 +105,14 @@ class CardControl extends Framework\Application\UI\BaseControl
 		$grido->addColumn('type', 'T')
 				->setSortable()
 				->setCustomRender(function ($item) use ($baseUri) {
-					return \Nette\Utils\Html::el('img')->src("$baseUri/images/abilities/" .
+					$result = \Nette\Utils\Html::el('img')->src("$baseUri/images/abilities/" .
 							($item->type == 'CHARACTER' ? 'card' : 'trick') .
 							".png");
+					switch ($item->type) {
+						case 'TRICK_WIN': $result .= ' &#9898;'; break;
+						case 'TRICK_NOW': $result .= ' &#9723;'; break;
+					}
+					return $result;
 				});
 		
 		$grido->addColumn('fraction', 'F')

@@ -11,7 +11,7 @@ use Nette;
  */
 class Authenticator extends Nette\Object implements Nette\Security\IAuthenticator
 {
-	/** @var \Model\Model */
+	/** @var \Model\Game */
 	private $game;
 	
 	/** @var string */
@@ -23,11 +23,11 @@ class Authenticator extends Nette\Object implements Nette\Security\IAuthenticato
 
 
 	/**
-	 * @param \Model\Model $game
+	 * @param \Model\Game $game
 	 * @param type $applicationSecret
 	 * @param type $hashAlgorithm 
 	 */
-	public function __construct(Model $game, $applicationSecret, $hashAlgorithm)
+	public function __construct(Game $game, $applicationSecret, $hashAlgorithm)
 	{
 		$this->game = $game;
 		$this->applicationSecret = $applicationSecret;

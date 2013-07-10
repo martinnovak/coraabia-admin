@@ -13,7 +13,7 @@ use Nette;
  */
 class Translator extends Nette\Object implements Nette\Localization\ITranslator
 {
-	/** @var \Model\Model */
+	/** @var \Model\Game */
 	private $game;
 	
 	/** @var \Nette\Caching\IStorage */
@@ -28,11 +28,11 @@ class Translator extends Nette\Object implements Nette\Localization\ITranslator
 	
 	
 	/**
-	 * @param \Model\Model $game
+	 * @param \Model\Game $game
 	 * @param \Nette\Caching\IStorage $storage
 	 * @param \Model\Locales $locales 
 	 */
-	public function __construct(Model $game, Nette\Caching\IStorage $storage, Locales $locales)
+	public function __construct(Game $game, Nette\Caching\IStorage $storage, Locales $locales)
 	{
 		$this->game = $game;
 		$this->storage = $storage;
