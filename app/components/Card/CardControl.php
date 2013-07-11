@@ -58,7 +58,7 @@ class CardControl extends Framework\Application\UI\BaseControl
 				->setPerPageList(array(100, 200, 500, 1000))
 				->setTranslator($this->translator)
 				->setPrimaryKey('card_id')
-				->setDefaultSort(array('type' => 'asc', 'fraction' => 'asc', 'rarity' => 'asc', 'translated_name' => 'asc'));
+				->setDefaultSort(array('type' => 'ASC', 'fraction' => 'ASC', 'rarity' => 'ASC', 'translated_name' => 'ASC'));
 		
 		$grido->addColumn('card_id', 'ID')
 				->setSortable();

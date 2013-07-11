@@ -22,6 +22,9 @@ services:
 	router: @App\RouterFactory::createRouter
 	- Framework\Hooks\HookManager
 	game: Model\Game(@dibi.game)
+	dev: Model\Coraabia(@dibi.dev)
+	stage: Model\Coraabia(@dibi.stage)
+	beta: Model\Coraabia(@dibi.beta)
 	locales: Model\Locales
 	- Model\Authenticator(@game, %applicationSecret%, %hashAlgorithm%)
 	- Coraabia\Mapi\MapiRequestFactory(..., %bazaarUrls%)
