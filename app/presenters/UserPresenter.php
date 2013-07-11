@@ -10,7 +10,7 @@ use Nette,
 /**
  * User presenter.
  */
-class UserPresenter extends Framework\Application\UI\SecurePresenter
+class UserPresenter extends Framework\Application\UI\SecuredPresenter
 {
 
 }

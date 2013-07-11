@@ -7,7 +7,7 @@ use Nette,
 
 
 
-class ActivityPresenter extends Framework\Application\UI\SecurePresenter
+class ActivityPresenter extends Framework\Application\UI\SecuredPresenter
 {
 
 }

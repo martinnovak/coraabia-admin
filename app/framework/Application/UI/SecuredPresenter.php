@@ -9,7 +9,7 @@ use Nette;
 /**
  * Secure presenter.
  */
-abstract class SecurePresenter extends BasePresenter
+abstract class SecuredPresenter extends BasePresenter
 {
 	
 	public function checkRequirements($element)

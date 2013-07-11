@@ -7,7 +7,7 @@ use Nette,
 
 
 
-class DeckPresenter extends Framework\Application\UI\SecurePresenter
+class DeckPresenter extends Framework\Application\UI\SecuredPresenter
 {
 
 }

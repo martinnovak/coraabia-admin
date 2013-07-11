@@ -7,7 +7,7 @@ use Nette,
 
 
 
-class AuditPresenter extends Framework\Application\UI\SecurePresenter
+class AuditPresenter extends Framework\Application\UI\SecuredPresenter
 {
 
 }
