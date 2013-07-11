@@ -12,24 +12,21 @@ use Nette;
 abstract class SecurePresenter extends BasePresenter
 {
 	
-	public function startup()
+	public function checkRequirements($element)
 	{
-		parent::startup();
+		parent::checkRequirements($element);
 		
 		if (!$this->user->isLoggedIn()) {
 			$this->redirect('Sign:out', array('backlink' => $this->storeRequest()));
 		}
 		
-		// @TODO test, debug
 		if (NULL !== $this->signal) {
-			$resource = $this->user->getAuthorizator()->buildResourceName($this->locales->server, $this->signal[1]);
-			if (!$this->user->isAllowed($resource)) {
+			if (!$this->user->isAllowed($this->user->getAuthorizator()->buildResourceName($this->locales->server, $this->signal[1]))) {
 				throw new Nette\Application\ForbiddenRequestException;
 			}
 		}
 		
-		$resource = $this->user->getAuthorizator()->buildResourceName($this->locales->server, $this->getParameter('action'));
-		if (!$this->user->isAllowed($resource)) {
+		if (!$this->user->isAllowed($this->user->getAuthorizator()->buildResourceName($this->locales->server, $this->getParameter('action')))) {
 			throw new Nette\Application\ForbiddenRequestException;
 		}
 	}

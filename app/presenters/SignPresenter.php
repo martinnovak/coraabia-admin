@@ -34,7 +34,6 @@ class SignPresenter extends Framework\Application\UI\BasePresenter
 
 		$form->addSubmit('send', 'Vstup');
 
-		// call method signInFormSucceeded() on success
 		$form->onSuccess[] = $this->signInFormSucceeded;
 		return $form;
 	}

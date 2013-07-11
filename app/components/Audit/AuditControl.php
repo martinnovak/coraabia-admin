@@ -29,7 +29,7 @@ class AuditControl extends Framework\Application\UI\BaseControl
 	
 	public function createComponentBazaar($name)
 	{
-		$link = $this->getPresenter()->lazyLink('showViewTransaction');
+		$link = $this->presenter->lazyLink('showViewTransaction');
 		
 		//request
 		$request = $this->mapiRequestFactory->create('transactions', 'txs');
@@ -91,7 +91,7 @@ class AuditControl extends Framework\Application\UI\BaseControl
 		$template = $this->template;
 		$template->setFile(__DIR__ . '/transaction.latte');
 		
-		$id = $this->getPresenter()->getParameter('id');
+		$id = $this->presenter->getParameter('id');
 		$transactions = array_filter($this->mapiRequestFactory->create('transactions', 'txs')->load(), function ($item) use ($id) {
 			return $item->txId == $id;
 		});

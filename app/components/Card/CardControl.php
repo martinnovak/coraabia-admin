@@ -49,7 +49,7 @@ class CardControl extends Framework\Application\UI\BaseControl
 	
 	public function createComponentSpoiler($name)
 	{
-		$editLink = $this->getPresenter()->lazyLink('showUpdateCard');
+		$editLink = $this->presenter->lazyLink('showUpdateCard');
 		$removeLink = $this->lazyLink('deleteCard');
 		$baseUri = $this->template->baseUri;
 		
@@ -159,6 +159,6 @@ class CardControl extends Framework\Application\UI\BaseControl
 	
 	public function handledeleteCard()
 	{
-		
+		$this->presenter->flashMessage('Karta byla smazána.', 'success');
 	}
 }

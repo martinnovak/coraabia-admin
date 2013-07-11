@@ -27,7 +27,7 @@ class DeckControl extends Framework\Application\UI\BaseControl
 	public function createComponentDecklist($name)
 	{
 		$exportLink = $this->lazyLink('exportBotDeck');
-		$coraabia = $this->getPresenter()->context->getService($this->locales->server);
+		$coraabia = $this->presenter->context->getService($this->locales->server);
 		
 		$grido = new Grido\Grid($this, $name);
 		$grido->setModel($coraabia->decks)
