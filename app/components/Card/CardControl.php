@@ -49,7 +49,8 @@ class CardControl extends Framework\Application\UI\BaseControl
 	
 	public function createComponentSpoiler($name)
 	{
-		$self = $this;
+		$editLink = $this->getPresenter()->lazyLink('showUpdateCard');
+		$removeLink = $this->lazyLink('deleteCard');
 		$baseUri = $this->template->baseUri;
 		
 		$grido = new Grido\Grid($this, $name);
@@ -137,14 +138,14 @@ class CardControl extends Framework\Application\UI\BaseControl
 				
 			$grido->addAction('edit', 'Změnit')
 					->setIcon('edit')
-					->setCustomHref(function ($item) use ($self) {
-						return $self->getPresenter()->lazyLink('showUpdateCard', array('id' => $item->card_id));
+					->setCustomHref(function ($item) use ($editLink) {
+						return $editLink->setParameter('id', $item->card_id);
 					});
 					
 			$grido->addAction('remove', 'Smazat')
 					->setIcon('remove')
-					->setCustomHref(function ($item) use ($self) {
-						return $self->getPresenter()->lazyLink('deleteCard', array('id' => $item->card_id));
+					->setCustomHref(function ($item) use ($removeLink) {
+						return $removeLink->setParameter('id', $item->card_id);
 					})
 					->setConfirm(function ($item) {
 						return "Opravdu chcete smazat kartu '$item->translated_name'?";
@@ -152,5 +153,12 @@ class CardControl extends Framework\Application\UI\BaseControl
 		}
 		
 		return $grido;
+	}
+	
+	
+	
+	public function handledeleteCard()
+	{
+		
 	}
 }

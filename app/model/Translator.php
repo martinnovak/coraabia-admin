@@ -83,7 +83,7 @@ class Translator extends Nette\Object implements Nette\Localization\ITranslator
 		if (isset($this->translations[$lang][$message])) {
 			$message = $this->translations[$lang][$message];
 		} else {
-			dlog("Missing translation for '$message' in language '$lang'.");
+			//dlog("Missing translation for '$message' in language '$lang'.");
 		}
         return $message;
     }

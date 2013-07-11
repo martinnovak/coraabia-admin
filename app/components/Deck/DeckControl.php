@@ -26,8 +26,7 @@ class DeckControl extends Framework\Application\UI\BaseControl
 	
 	public function createComponentDecklist($name)
 	{
-		$self = $this;
-		$baseUri = $this->template->baseUri;
+		$exportLink = $this->lazyLink('exportBotDeck');
 		$coraabia = $this->getPresenter()->context->getService($this->locales->server);
 		
 		$grido = new Grido\Grid($this, $name);
@@ -41,18 +40,31 @@ class DeckControl extends Framework\Application\UI\BaseControl
 		$grido->addColumn('deck_id', 'ID')
 				->setSortable();
 		
+		$grido->addColumn('user_id', 'UID')
+				->setSortable();
+		
+		$grido->addColumn('username', 'Uživatel')
+				->setSortable();
+		
 		$grido->addColumn('name', 'Jméno')
 				->setSortable();
 		
 		$grido->addAction('export', 'Export')
 				->setIcon('share-alt')
-				->setCustomHref(function ($item) use ($self) {
-					return $self->getPresenter()->lazyLink('exportBotDeck', array('id' => $item->deck_id));
+				->setCustomHref(function ($item) use ($exportLink) {
+					return $exportLink->setParameter('id', $item->deck_id);
 				})
 				->setDisable(function ($item) {
 					return !preg_match('/^b0t[1-9][0-9]*$/i', $item->username);
 				});
 		
 		return $grido;
+	}
+	
+	
+	
+	public function handleexportBotDeck()
+	{
+		
 	}
 }

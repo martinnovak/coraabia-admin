@@ -29,7 +29,7 @@ class AuditControl extends Framework\Application\UI\BaseControl
 	
 	public function createComponentBazaar($name)
 	{
-		$self = $this;
+		$link = $this->getPresenter()->lazyLink('showViewTransaction');
 		
 		//request
 		$request = $this->mapiRequestFactory->create('transactions', 'txs');
@@ -77,8 +77,8 @@ class AuditControl extends Framework\Application\UI\BaseControl
 		
 		$grido->addAction('show', 'Podrobnosti')
 				->setIcon('list')
-				->setCustomHref(function ($item) use ($self) {
-					return $self->getPresenter()->lazyLink('showViewTransaction', array('id' => $item->txId));
+				->setCustomHref(function ($item) use ($link) {
+					return $link->setParameter('id', $item->txId);
 				});
 		
 		return $grido;
