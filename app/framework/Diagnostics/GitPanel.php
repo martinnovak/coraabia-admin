@@ -44,14 +44,17 @@ class GitPanel extends Panel
 	
 	protected function getCurrentBranchName()
 	{
+		$branch = 'not versioned';
+
 		$head = realpath(dirname($this->appDir) . '/.git/HEAD');
 		if (is_readable($head)) {
-			$branch = file_get_contents($head);
-			$branch = explode('/', $branch);
-			$branch = trim(end($branch));
-			return $branch;
-		} else {
-			return 'not versioned';
+			$head = file_get_contents($head);
+			if (strpos($head, 'ref:') === 0) {
+				$branch = explode('/', $head);
+				$branch = trim(end($branch));
+			}
 		}
+		
+		return $branch;
 	}
 }
