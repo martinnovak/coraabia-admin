@@ -2,7 +2,8 @@
 
 namespace Framework\Application\UI;
 
-use Nette;
+use Nette,
+	Grido;
 
 
 
@@ -21,9 +22,30 @@ abstract class SecuredPresenter extends BasePresenter
 		}
 		
 		if (NULL !== $this->signal) {
-			if (!$this->user->isAllowed($this->user->getAuthorizator()->buildResourceName($this->locales->server, $this->signal[1]))) {
-				throw new Nette\Application\ForbiddenRequestException;
+			$checkSignal = TRUE;
+			
+			if ($this->signal[1] === 'page' || $this->signal[1] === 'sort') { // Grido page & sort
+				$component = $this->signal[0] === '' ? $this : $this->getComponent($this->signal[0], FALSE);
+				if ($component !== NULL && $component instanceof Grido\Grid) {
+					$checkSignal = FALSE;
+				}
+			} else if ($this->signal[1] === 'submit') { // Grido filter
+				$component = $this->signal[0] === '' ? $this : $this->getComponent($this->signal[0], FALSE);
+				if ($component !== NULL && $component instanceof Nette\Forms\Form) {
+					foreach ($component->onSuccess as $callback) {
+						if ($callback instanceof Nette\Callback && $callback->native[0] instanceof Grido\Grid) {
+							$checkSignal = FALSE;
+							break;
+						}
+					}
+				}
 			}
+		} else {
+			$checkSignal = FALSE;
+		}
+		
+		if ($checkSignal && !$this->user->isAllowed($this->user->getAuthorizator()->buildResourceName($this->locales->server, $this->signal[1]))) {
+			throw new Nette\Application\ForbiddenRequestException;
 		}
 		
 		if (!$this->user->isAllowed($this->user->getAuthorizator()->buildResourceName($this->locales->server, $this->getParameter('action')))) {
