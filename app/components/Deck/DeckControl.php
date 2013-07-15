@@ -4,6 +4,7 @@ namespace App;
 
 use Nette,
 	Framework,
+	Model,
 	Grido;
 
 
@@ -13,12 +14,20 @@ class DeckControl extends Framework\Application\UI\BaseControl
 	/** @var \Model\Game @inject */
 	public $game;
 	
+	/** @var \Model\CoraabiaFactory @inject */
+	public $coraabiaFactory;
+	
 	
 	
 	public function renderList()
 	{
+		$self = $this;
 		$template = $this->template;
 		$template->setFile(__DIR__ . '/list.latte');
+		$template->hookManager->listen('sidebar', function (\Framework\Hooks\TemplateHook $hook) use ($self) {
+			$tmpl = $self->createTemplate()->setFile(__DIR__ . '/listSidebar.latte');
+			$hook->addTemplate($tmpl);
+		});
 		$template->render();
 	}
 	
@@ -27,10 +36,9 @@ class DeckControl extends Framework\Application\UI\BaseControl
 	public function createComponentDecklist($name)
 	{
 		$exportLink = $this->lazyLink('exportBotDeck');
-		$coraabia = $this->presenter->context->getService($this->locales->server);
 		
 		$grido = new Grido\Grid($this, $name);
-		$grido->setModel($coraabia->decks)
+		$grido->setModel($this->coraabiaFactory->access()->decks)
 				->setDefaultPerPage(1000)
 				->setPerPageList(array(100, 200, 500, 1000))
 				->setTranslator($this->translator)
@@ -65,6 +73,12 @@ class DeckControl extends Framework\Application\UI\BaseControl
 	
 	public function handleexportBotDeck()
 	{
+		$deck = Model\Deck::from($this->coraabiaFactory->access()->decks->where('d.deck_id = %i', $this->getParameter('id'))->fetch()->toArray());
+		$deck->instances = array_map(function ($item) {
+			return \Model\Instance::from($item->toArray());
+		}, $this->coraabiaFactory->access()->deckInstances->where('di.deck_id = %i', $this->getParameter('id'))->fetchAll());
 		
+		$gameDeck = \Model\BotGameDeck::fromDeck($deck);
+		//$this->game->gameDeck = $gameDeck;
 	}
 }

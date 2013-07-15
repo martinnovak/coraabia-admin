@@ -59,6 +59,9 @@ class Game extends Model
 	
 	
 	
+	/**
+	 * @return \DibiFluent
+	 */
 	public function getGamerooms()
 	{
 		$result = $this->connection
@@ -72,6 +75,9 @@ class Game extends Model
 	
 	
 	
+	/**
+	 * @return array
+	 */
 	public function getBazaarTransactionTypes()
 	{
 		return array(
@@ -98,5 +104,30 @@ class Game extends Model
 			'FORTUMO_UPDATE_PRICE',
 			'FORTUMO_REQUEST'
 		);
+	}
+	
+	
+	
+	/**
+	 * @param \Model\GameDeck $gameDeck
+	 * @return boolean
+	 * @throws Exception 
+	 */
+	public function setGameDeck(GameDeck $gameDeck)
+	{
+		try {
+			$this->connection->insert('deck', $gameDeck->toArray())->execute();
+			$id = $gameDeck->deck_id;
+			$this->connection->insert('deck_card', array_map(function ($item) use ($id) {
+				return array(
+					'deck_id' => $id,
+					'card_id' => $item->card_id
+				);
+			}, $gameDeck->cards))->execute();
+		} catch (Exception $e) {
+			throw $e;
+			return FALSE;
+		}
+		return TRUE;
 	}
 }

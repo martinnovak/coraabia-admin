@@ -30,16 +30,16 @@
 	
 	<div id="main" class="container-fluid">
 		<div class="row-fluid">
-			<div class="span2">
-				{#sidebar}{control sidebar}{/#}
-			</div>
-			<div class="span10">	
+			<div class="span10">
 				<div n:foreach="$flashes as $flash" class="alert alert-{$flash->type}">
 					<button type="button" class="close" data-dismiss="alert">&times;</button>
 					{$flash->message}
 				</div>
 		
 				{include #content}
+			</div>
+			<div class="span2">
+				{#sidebar}{control sidebar}{/#}
 			</div>
 		</div>
     </div>

@@ -8,17 +8,24 @@ dibi:
 		port: 5432
 		database: game
 		lazy: TRUE
-	coraabia:
+	dev:
 		driver: postgre
 		host: localhost
+		port: 5432
 		database: coraabia
 		lazy: TRUE
-	dev < coraabia:
-		port: 5432
-	stage < dev:
+	stage:
+		driver: postgre
+		host: localhost
 		port: 5438
-	beta < dev:
+		database: coraabia
+		lazy: TRUE
+	beta:
+		driver: postgre
+		host: localhost
 		port: 5433
+		database: coraabia
+		lazy: TRUE
 
 parameters:
 	bazaarUrls:

@@ -27,6 +27,7 @@ services:
 	stage: Model\Coraabia(@dibi.stage)
 	beta: Model\Coraabia(@dibi.beta)
 	locales: Model\Locales
+	- Model\CoraabiaFactory
 	- Model\Authenticator(@game, %applicationSecret%, %hashAlgorithm%)
 	- Coraabia\Mapi\MapiRequestFactory(..., %bazaarUrls%)
 	authorizator:
