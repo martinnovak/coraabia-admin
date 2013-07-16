@@ -7,12 +7,12 @@ use Nette;
 
 
 /**
- * @method \DibiConnection getConnection()
+ * @method \Nette\Database\Connection getConnection()
  * @method \Model\Locales getLocales()
  */
 abstract class Model extends Nette\Object
 {
-	/** @var \DibiConnection */
+	/** @var \Nette\Database\Connection */
 	private $connection;
 	
 	/** @var \Model\Locales */
@@ -21,10 +21,10 @@ abstract class Model extends Nette\Object
 	
 	
 	/**
-	 * @param \DibiConnection $connection
+	 * @param \Nette\Database\Connection $connection
 	 * @param \Model\Locales $locales 
 	 */
-	public function __construct(\DibiConnection $connection, Locales $locales)
+	public function __construct(Nette\Database\Connection $connection, Locales $locales)
 	{
 		$this->connection = $connection;
 		$this->locales = $locales;

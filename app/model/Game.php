@@ -5,72 +5,47 @@ namespace Model;
 use Nette;
 
 
+
 class Game extends Model
 {
+	
 	/**
-	 * @return \DibiFluent
+	 * @return \Nette\Database\Table\Selection
 	 */
 	public function getCards()
 	{
-		$result = $this->connection
-				->select('c.*, t.value AS translated_name')
-				->from('card c')
-				->leftJoin('translation t')
-				->on('t.key = %s || CAST(c.card_id AS TEXT)', 'card.')
-				->where('t.lang = %s', $this->locales->lang);
-		return $this->locales->server == 'dev' ? $result : $result->and('c.ready = %b', TRUE);
+		$result = $this->connection->selectionFactory->table('card');
+		return $this->locales->server == 'dev' ? $result : $result->where('c.ready', TRUE);
 	}
 	
 	
 	
 	/**
-	 * @return \DibiFluent
+	 * @return \Nette\Database\Table\Selection
 	 */
 	public function getUserdata()
 	{
-		return $this->connection
-				->select('*')
-				->from('userdata');
+		return $this->connection->selectionFactory->table('userdata');
 	}
 	
 	
 	
 	/**
-	 * @return \DibiFluent
+	 * @return \Nette\Database\Table\Selection
 	 */
 	public function getTranslations()
 	{
-		return $this->connection
-				->select('*')
-				->from('translation');
+		return $this->connection->selectionFactory->table('translation');
 	}
 	
 	
 	
 	/**
-	 * @return \DibiFluent
+	 * @return \Nette\Database\Table\Selection
 	 */
 	public function getPermissions()
 	{
-		return $this->connection
-				->select('role_id, resource, server')
-				->from('permission');
-	}
-	
-	
-	
-	/**
-	 * @return \DibiFluent
-	 */
-	public function getGamerooms()
-	{
-		$result = $this->connection
-				->select('g.*, t.value AS translated_name')
-				->from('gameroom g')
-				->leftJoin('translation t')
-				->on('t.key = %s || CAST(g.gameroom_id AS TEXT)', 'gameroom.')
-				->where('t.lang = %s', $this->locales->lang);
-		return $this->locales->server == 'dev' ? $result : $result->and('g.ready = %b', TRUE);
+		return $this->connection->selectionFactory->table('permission')->select('role_id, resource, server');
 	}
 	
 	
@@ -109,7 +84,8 @@ class Game extends Model
 	
 	
 	/**
-	 * @param \Model\GameDeck $gameDeck
+	 * @todo TODO
+	 * @param GameDeck $gameDeck
 	 * @return boolean
 	 * @throws Exception 
 	 */

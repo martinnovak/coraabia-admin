@@ -21,7 +21,7 @@ class CardControl extends Framework\Application\UI\BaseControl
 		$template->setFile(__DIR__ . '/timeLine.latte');
 		
 		$start = $finish = $dates = array();
-		foreach ($this->game->cards->orderBy('translated_name')->asc()->fetchAll() as $card) {
+		foreach ($this->game->cards->fetchAll() as $card) {
 			$from = $card->valid_from ? $card->valid_from->setTime(0, 0, 0) : 0;
 			$to = $card->valid_to ? $card->valid_to->setTime(0, 0, 0) : 0;
 			$start[strtotime((string)$from, $this->locales->timestamp)][] = $card;
@@ -49,6 +49,7 @@ class CardControl extends Framework\Application\UI\BaseControl
 	
 	public function createComponentSpoiler($name)
 	{
+		$self = $this;
 		$editLink = $this->presenter->lazyLink('showUpdateCard');
 		$removeLink = $this->lazyLink('deleteCard');
 		$baseUri = $this->template->baseUri;
@@ -59,15 +60,15 @@ class CardControl extends Framework\Application\UI\BaseControl
 				->setPerPageList(array(100, 200, 500, 1000))
 				->setTranslator($this->translator)
 				->setPrimaryKey('card_id')
-				->setDefaultSort(array('type' => 'ASC', 'fraction' => 'ASC', 'rarity' => 'ASC', 'translated_name' => 'ASC'));
+				->setDefaultSort(array('type' => 'ASC', 'fraction' => 'ASC', 'rarity' => 'ASC'));
 		
 		$grido->addColumn('card_id', 'ID')
 				->setSortable();
 		
 		$grido->addColumn('translated_name', 'Jméno')
 				->setSortable()
-				->setCustomRender(function ($item) {
-					return '<span class="' . strtolower($item->fraction) . '">' . trim($item->translated_name) . '</span>';
+				->setCustomRender(function ($item) use ($self) {
+					return '<span class="' . strtolower($item->fraction) . '">' . trim($self->translator->translate('card.' . $item->card_id)) . '</span>';
 				});
 				
 		$grido->addColumn('points', 'B')
@@ -147,8 +148,8 @@ class CardControl extends Framework\Application\UI\BaseControl
 					->setCustomHref(function ($item) use ($removeLink) {
 						return $removeLink->setParameter('id', $item->card_id);
 					})
-					->setConfirm(function ($item) {
-						return "Opravdu chcete smazat kartu '$item->translated_name'?";
+					->setConfirm(function ($item) use ($self) {
+						return "Opravdu chcete smazat kartu '" . $self->translator->translate('card.' . $item->card_id) . "'?";
 					});
 		}
 		

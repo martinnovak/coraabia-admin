@@ -1,31 +1,20 @@
 includes:
 	- passwords.neon
 
-dibi:
-	game:
-		driver: postgre
-		host: localhost
-		port: 5432
-		database: game
-		lazy: TRUE
-	dev:
-		driver: postgre
-		host: localhost
-		port: 5432
-		database: coraabia
-		lazy: TRUE
-	stage:
-		driver: postgre
-		host: localhost
-		port: 5438
-		database: coraabia
-		lazy: TRUE
-	beta:
-		driver: postgre
-		host: localhost
-		port: 5433
-		database: coraabia
-		lazy: TRUE
+nette:
+	database:
+		game:
+			dsn: 'pgsql:host=localhost port=5432 dbname=game'
+			lazy: TRUE
+		dev:
+			dsn: 'pgsql:host=localhost port=5432 dbname=coraabia'
+			lazy: TRUE
+		stage:
+			dsn: 'pgsql:host=localhost port=5438 dbname=coraabia'
+			lazy: TRUE
+		beta:
+			dsn: 'pgsql:host=localhost port=5433 dbname=coraabia'
+			lazy: TRUE
 
 parameters:
 	bazaarUrls:

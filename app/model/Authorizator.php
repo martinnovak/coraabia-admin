@@ -42,7 +42,7 @@ class Authorizator extends Nette\Security\Permission
 		$cache = new Nette\Caching\Cache($this->storage, str_replace('\\', '.', get_class()));
 		if (NULL === ($permissions = $cache->load('permissions'))) {
 			$permissions = array();
-			foreach ($this->game->permissions->where('action = %s', self::ACCESS_STRING)->fetchAll() as $row) {
+			foreach ($this->game->permissions->where('action', self::ACCESS_STRING)->fetchAll() as $row) {
 				$permissions[] = $row->toArray();
 			}
 			$cache->save('permissions', $permissions);
