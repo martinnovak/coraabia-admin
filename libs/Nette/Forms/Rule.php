@@ -14,7 +14,6 @@ namespace Nette\Forms;
 use Nette;
 
 
-
 /**
  * Single validation rule or condition represented as value object.
  *
@@ -27,9 +26,6 @@ final class Rule extends Nette\Object
 
 	/** type */
 	const VALIDATOR = 2;
-
-	/** type */
-	const FILTER = 3;
 
 	/** @var IControl */
 	public $control;

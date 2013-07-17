@@ -18,7 +18,6 @@ use Nette,
 	Nette\Latte\PhpWriter;
 
 
-
 /**
  * Basic macros for Latte.
  *
@@ -56,6 +55,7 @@ class CoreMacros extends MacroSet
 		$me->addMacro('else', array($me, 'macroElse'));
 		$me->addMacro('ifset', 'if (isset(%node.args)):', 'endif');
 		$me->addMacro('elseifset', 'elseif (isset(%node.args)):');
+		$me->addMacro('ifcontent', array($me, 'macroIfContent'), array($me, 'macroEndIfContent'));
 
 		$me->addMacro('foreach', '', array($me, 'macroEndForeach'));
 		$me->addMacro('for', 'for (%node.args):', 'endfor');
@@ -88,7 +88,6 @@ class CoreMacros extends MacroSet
 	}
 
 
-
 	/**
 	 * Finishes template parsing.
 	 * @return array(prolog, epilog)
@@ -100,9 +99,7 @@ class CoreMacros extends MacroSet
 	}
 
 
-
 	/********************* macros ****************d*g**/
-
 
 
 	/**
@@ -118,7 +115,6 @@ class CoreMacros extends MacroSet
 		}
 		return $writer->write('if (%node.args):');
 	}
-
 
 
 	/**
@@ -140,7 +136,6 @@ class CoreMacros extends MacroSet
 	}
 
 
-
 	/**
 	 * {else}
 	 */
@@ -157,6 +152,35 @@ class CoreMacros extends MacroSet
 		return 'else:';
 	}
 
+
+	/**
+	 * n:ifcontent
+	 */
+	public function macroIfContent(MacroNode $node, PhpWriter $writer)
+	{
+		if (!$node->htmlNode) {
+			throw new CompileException("Unknown macro {{$node->name}}, use n:{$node->name} attribute.");
+		} elseif ($node->prefix !== MacroNode::PREFIX_NONE) {
+			throw new CompileException("Unknown attribute n:{$node->prefix}-{$node->name}, use n:{$node->name} attribute.");
+		}
+
+		return $writer->write('ob_start()');
+	}
+
+
+	/**
+	 * n:ifcontent
+	 */
+	public function macroEndIfContent(MacroNode $node, PhpWriter $writer)
+	{
+		preg_match('#(^.*?>)(.*)(<.*\z)#s', $node->content, $parts);
+		$node->content = $parts[1]
+			. '<?php ob_start() ?>'
+			. $parts[2]
+			. '<?php $_ifcontent = ob_get_length(); ob_end_flush() ?>'
+			. $parts[3];
+		return '$_ifcontent ? ob_end_flush() : ob_end_clean()';
+	}
 
 
 	/**
@@ -176,7 +200,6 @@ class CoreMacros extends MacroSet
 	}
 
 
-
 	/**
 	 * {include "file" [,] [params]}
 	 */
@@ -193,17 +216,14 @@ class CoreMacros extends MacroSet
 	}
 
 
-
 	/**
 	 * {use class MacroSet}
 	 */
 	public function macroUse(MacroNode $node, PhpWriter $writer)
 	{
-		Nette\Callback::create($node->tokenizer->fetchWord(), 'install')
-			->invoke($this->getCompiler())
+		Nette\Utils\Callback::invoke(array($node->tokenizer->fetchWord(), 'install'), $this->getCompiler())
 			->initialize();
 	}
-
 
 
 	/**
@@ -220,7 +240,6 @@ class CoreMacros extends MacroSet
 	}
 
 
-
 	/**
 	 * {/capture}
 	 */
@@ -228,7 +247,6 @@ class CoreMacros extends MacroSet
 	{
 		return $node->data->variable . $writer->write(" = %modify(ob_get_clean())");
 	}
-
 
 
 	/**
@@ -247,7 +265,6 @@ class CoreMacros extends MacroSet
 	}
 
 
-
 	/**
 	 * {breakIf ...}
 	 * {continueIf ...}
@@ -262,7 +279,6 @@ class CoreMacros extends MacroSet
 	}
 
 
-
 	/**
 	 * n:class="..."
 	 */
@@ -272,7 +288,6 @@ class CoreMacros extends MacroSet
 	}
 
 
-
 	/**
 	 * n:attr="..."
 	 */
@@ -280,7 +295,6 @@ class CoreMacros extends MacroSet
 	{
 		return $writer->write('echo Nette\Utils\Html::el(NULL, %node.array)->attributes()');
 	}
-
 
 
 	/**
@@ -294,7 +308,6 @@ class CoreMacros extends MacroSet
 	}
 
 
-
 	/**
 	 * {dump ...}
 	 */
@@ -304,7 +317,6 @@ class CoreMacros extends MacroSet
 		return 'Nette\Diagnostics\Debugger::barDump(' . ($node->args ? "array(" . $writer->write('%var', $args) . " => $args)" : 'get_defined_vars()')
 			. ', "Template " . str_replace(dirname(dirname($template->getFile())), "\xE2\x80\xA6", $template->getFile()))';
 	}
-
 
 
 	/**
@@ -317,7 +329,6 @@ class CoreMacros extends MacroSet
 	}
 
 
-
 	/**
 	 * {var ...}
 	 * {default ...}
@@ -327,36 +338,37 @@ class CoreMacros extends MacroSet
 		if ($node->name === 'assign') {
 			trigger_error('Macro {assign} is deprecated; use {var} instead.', E_USER_DEPRECATED);
 		}
-		$out = '';
+
 		$var = TRUE;
-		$tokenizer = $writer->preprocess();
-		while ($token = $tokenizer->fetchToken()) {
-			if ($var && ($token['type'] === Latte\MacroTokenizer::T_SYMBOL || $token['type'] === Latte\MacroTokenizer::T_VARIABLE)) {
+		$tokens = $writer->preprocess();
+		$res = new Latte\MacroTokens;
+		while ($tokens->nextToken()) {
+			if ($var && $tokens->isCurrent(Latte\MacroTokens::T_SYMBOL, Latte\MacroTokens::T_VARIABLE)) {
 				if ($node->name === 'default') {
-					$out .= "'" . ltrim($token['value'], "$") . "'";
+					$res->append("'" . ltrim($tokens->currentValue(), '$') . "'");
 				} else {
-					$out .= '$' . ltrim($token['value'], "$");
+					$res->append('$' . ltrim($tokens->currentValue(), '$'));
 				}
 				$var = NULL;
 
-			} elseif (($token['value'] === '=' || $token['value'] === '=>') && $token['depth'] === 0) {
-				$out .= $node->name === 'default' ? '=>' : '=';
+			} elseif ($tokens->isCurrent('=', '=>') && $tokens->depth === 0) {
+				$res->append($node->name === 'default' ? '=>' : '=');
 				$var = FALSE;
 
-			} elseif ($token['value'] === ',' && $token['depth'] === 0) {
-				$out .= $node->name === 'default' ? ',' : ';';
+			} elseif ($tokens->isCurrent(',') && $tokens->depth === 0) {
+				$res->append($node->name === 'default' ? ',' : ';');
 				$var = TRUE;
 
-			} elseif ($var === NULL && $node->name === 'default' && $token['type'] !== Latte\MacroTokenizer::T_WHITESPACE) {
-				throw new CompileException("Unexpected '$token[value]' in {default $node->args}");
+			} elseif ($var === NULL && $node->name === 'default' && !$tokens->isCurrent(Latte\MacroTokens::T_WHITESPACE)) {
+				throw new CompileException("Unexpected '" . $tokens->currentValue() . "' in {default $node->args}");
 
 			} else {
-				$out .= $writer->canQuote($tokenizer) ? "'$token[value]'" : $token['value'];
+				$res->append($tokens->currentToken());
 			}
 		}
+		$out = $writer->quoteFilter($res)->joinAll();
 		return $node->name === 'default' ? "extract(array($out), EXTR_SKIP)" : $out;
 	}
-
 
 
 	/**
@@ -369,9 +381,7 @@ class CoreMacros extends MacroSet
 	}
 
 
-
 	/********************* run-time helpers ****************d*g**/
-
 
 
 	/**
@@ -403,7 +413,6 @@ class CoreMacros extends MacroSet
 		$tpl->setParameters($params); // interface?
 		return $tpl;
 	}
-
 
 
 	/**

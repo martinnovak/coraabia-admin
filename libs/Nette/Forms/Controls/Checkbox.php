@@ -14,7 +14,6 @@ namespace Nette\Forms\Controls;
 use Nette;
 
 
-
 /**
  * Check box control. Allows the user to select a true or false condition.
  *
@@ -24,48 +23,37 @@ class Checkbox extends BaseControl
 {
 
 	/**
-	 * @param  string  label
-	 */
-	public function __construct($label = NULL)
-	{
-		parent::__construct($label);
-		$this->control->type = 'checkbox';
-		$this->value = FALSE;
-	}
-
-
-
-	/**
 	 * Sets control's value.
 	 * @param  bool
-	 * @return Checkbox  provides a fluent interface
+	 * @return self
 	 */
 	public function setValue($value)
 	{
-		$this->value = is_scalar($value) ? (bool) $value : FALSE;
+		if (!is_scalar($value) && $value !== NULL) {
+			throw new Nette\InvalidArgumentException('Value must be scalar or NULL, ' . gettype($value) . ' given.');
+		}
+		$this->value = (bool) $value;
 		return $this;
 	}
 
+
+	/**
+	 * Is control filled?
+	 * @return bool
+	 */
+	public function isFilled()
+	{
+		return $this->getValue() !== FALSE; // back compatibility
+	}
 
 
 	/**
 	 * Generates control's HTML element.
 	 * @return Nette\Utils\Html
 	 */
-	public function getControl($caption = NULL)
+	public function getControl()
 	{
-		return parent::getLabel($caption)->insert(0, parent::getControl()->checked($this->value));
-	}
-
-
-
-	/**
-	 * Bypasses label generation.
-	 * @return void
-	 */
-	public function getLabel($caption = NULL)
-	{
-		return NULL;
+		return parent::getControl()->type('checkbox')->checked($this->value);
 	}
 
 }

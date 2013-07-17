@@ -12,8 +12,7 @@
 namespace Nette\Forms\Controls;
 
 use Nette,
-	Nette\Http;
-
+	Nette\Http\FileUpload;
 
 
 /**
@@ -26,13 +25,14 @@ class UploadControl extends BaseControl
 
 	/**
 	 * @param  string  label
+	 * @param  bool  allows to upload multiple files
 	 */
-	public function __construct($label = NULL)
+	public function __construct($label = NULL, $multiple = FALSE)
 	{
 		parent::__construct($label);
 		$this->control->type = 'file';
+		$this->control->multiple = (bool) $multiple;
 	}
-
 
 
 	/**
@@ -53,26 +53,36 @@ class UploadControl extends BaseControl
 	}
 
 
+	/**
+	 * Loads HTTP data.
+	 * @return void
+	 */
+	public function loadHttpData()
+	{
+		$this->value = $this->getHttpData(Nette\Forms\Form::DATA_FILE);
+		if ($this->value === NULL) {
+			$this->value = new FileUpload(NULL);
+		}
+	}
+
 
 	/**
-	 * Sets control's value.
-	 * @param  array|Nette\Http\FileUpload
-	 * @return Nette\Http\FileUpload  provides a fluent interface
+	 * Returns HTML name of control.
+	 * @return string
+	 */
+	public function getHtmlName()
+	{
+		return parent::getHtmlName() . ($this->control->multiple ? '[]' : '');
+	}
+
+
+	/**
+	 * @return self
 	 */
 	public function setValue($value)
 	{
-		if (is_array($value)) {
-			$this->value = new Http\FileUpload($value);
-
-		} elseif ($value instanceof Http\FileUpload) {
-			$this->value = $value;
-
-		} else {
-			$this->value = new Http\FileUpload(NULL);
-		}
 		return $this;
 	}
-
 
 
 	/**
@@ -81,57 +91,7 @@ class UploadControl extends BaseControl
 	 */
 	public function isFilled()
 	{
-		return $this->value instanceof Http\FileUpload && $this->value->isOK();
-	}
-
-
-
-	/**
-	 * FileSize validator: is file size in limit?
-	 * @param  UploadControl
-	 * @param  int  file size limit
-	 * @return bool
-	 */
-	public static function validateFileSize(UploadControl $control, $limit)
-	{
-		$file = $control->getValue();
-		return $file instanceof Http\FileUpload && $file->getSize() <= $limit && $file->getError() !== UPLOAD_ERR_INI_SIZE;
-	}
-
-
-
-	/**
-	 * MimeType validator: has file specified mime type?
-	 * @param  UploadControl
-	 * @param  array|string  mime type
-	 * @return bool
-	 */
-	public static function validateMimeType(UploadControl $control, $mimeType)
-	{
-		$file = $control->getValue();
-		if ($file instanceof Http\FileUpload) {
-			$type = strtolower($file->getContentType());
-			$mimeTypes = is_array($mimeType) ? $mimeType : explode(',', $mimeType);
-			if (in_array($type, $mimeTypes, TRUE)) {
-				return TRUE;
-			}
-			if (in_array(preg_replace('#/.*#', '/*', $type), $mimeTypes, TRUE)) {
-				return TRUE;
-			}
-		}
-		return FALSE;
-	}
-
-
-
-	/**
-	 * Image validator: is file image?
-	 * @return bool
-	 */
-	public static function validateImage(UploadControl $control)
-	{
-		$file = $control->getValue();
-		return $file instanceof Http\FileUpload && $file->isImage();
+		return $this->value instanceof FileUpload ? $this->value->isOk() : (bool) $this->value; // ignore NULL object
 	}
 
 }

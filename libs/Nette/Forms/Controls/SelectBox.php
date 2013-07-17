@@ -14,7 +14,6 @@ namespace Nette\Forms\Controls;
 use Nette;
 
 
-
 /**
  * Select box control that allows single item selection.
  *
@@ -34,11 +33,10 @@ class SelectBox extends BaseControl
 	private $items = array();
 
 	/** @var array */
-	protected $allowed = array();
+	protected $flattenItems = array();
 
 	/** @var mixed */
 	private $prompt = FALSE;
-
 
 
 	/**
@@ -49,14 +47,43 @@ class SelectBox extends BaseControl
 	public function __construct($label = NULL, array $items = NULL, $size = NULL)
 	{
 		parent::__construct($label);
-		$this->control->setName('select');
 		$this->control->size = $size > 1 ? (int) $size : NULL;
 		if ($items !== NULL) {
 			$this->setItems($items);
 		}
-		$this->addRule($this->validateSelectBoxValid, Nette\Forms\Rules::$defaultMessages[self::VALID]);
 	}
 
+
+	/**
+	 * Loads HTTP data.
+	 * @return void
+	 */
+	public function loadHttpData()
+	{
+		$this->value = $this->getHttpData();
+		if ($this->value !== NULL) {
+			if (is_array($this->disabled) && isset($this->disabled[$this->value])) {
+				$this->value = NULL;
+			} else {
+				$this->value = key(array($this->value => NULL));
+			}
+		}
+	}
+
+
+	/**
+	 * Sets selected items (by keys).
+	 * @param  string
+	 * @return self
+	 */
+	public function setValue($value)
+	{
+		if ($value !== NULL && !isset($this->flattenItems[(string) $value])) {
+			throw new Nette\InvalidArgumentException("Value '$value' is out of range of current items.");
+		}
+		$this->value = $value === NULL ? NULL : key(array((string) $value => NULL));
+		return $this;
+	}
 
 
 	/**
@@ -65,10 +92,8 @@ class SelectBox extends BaseControl
 	 */
 	public function getValue()
 	{
-		$value = $this->getRawValue();
-		return isset($this->allowed[$value]) ? $value : NULL;
+		return isset($this->flattenItems[$this->value]) ? $this->value : NULL;
 	}
-
 
 
 	/**
@@ -77,42 +102,36 @@ class SelectBox extends BaseControl
 	 */
 	public function getRawValue()
 	{
-		if (is_scalar($this->value)) {
-			$foo = array($this->value => NULL);
-			return key($foo);
-		}
+		return $this->value;
 	}
 
 
-
 	/**
-	 * Has been any item selected?
+	 * Is any item selected?
 	 * @return bool
 	 */
 	public function isFilled()
 	{
 		$value = $this->getValue();
-		return is_array($value) ? count($value) > 0 : $value !== NULL;
+		return $value !== NULL && $value !== array();
 	}
-
 
 
 	/**
 	 * Sets first prompt item in select box.
 	 * @param  string
-	 * @return SelectBox  provides a fluent interface
+	 * @return self
 	 */
 	public function setPrompt($prompt)
 	{
 		if ($prompt === TRUE) { // back compatibility
 			trigger_error(__METHOD__ . '(TRUE) is deprecated; argument must be string.', E_USER_DEPRECATED);
 			$prompt = reset($this->items);
-			unset($this->allowed[key($this->items)], $this->items[key($this->items)]);
+			unset($this->flattenItems[key($this->items)], $this->items[key($this->items)]);
 		}
 		$this->prompt = $prompt;
 		return $this;
 	}
-
 
 
 	/**
@@ -125,43 +144,41 @@ class SelectBox extends BaseControl
 	}
 
 
-
 	/**
 	 * Sets items from which to choose.
 	 * @param  array
 	 * @param  bool
-	 * @return SelectBox  provides a fluent interface
+	 * @return self
 	 */
 	public function setItems(array $items, $useKeys = TRUE)
 	{
-		$allowed = array();
-		foreach ($items as $k => $v) {
-			foreach ((is_array($v) ? $v : array($k => $v)) as $key => $value) {
+		$flattenItems = array();
+		foreach ($items as $key => $value) {
+			$group = is_array($value);
+			foreach ($group ? $value : array($key => $value) as $gkey => $gvalue) {
 				if (!$useKeys) {
-					if (is_array($v)) {
-						unset($v[$key]);
-						$v[$value] = $value;
+					if ($group) {
+						unset($value[$gkey]);
+						$value[(string) $gvalue] = $gvalue;
 					}
-					$key = $value;
+					$gkey = (string) $gvalue;
 				}
 
-				if (isset($allowed[$key])) {
-					throw new Nette\InvalidArgumentException("Items contain duplication for key '$key'.");
+				if (isset($flattenItems[$gkey])) {
+					throw new Nette\InvalidArgumentException("Items contain duplication for key '$gkey'.");
 				}
-
-				$allowed[$key] = $value;
+				$flattenItems[$gkey] = $gvalue;
 			}
 			if (!$useKeys) {
-				unset($items[$k]);
-				$items[is_array($v) ? $k : $v] = $v;
+				unset($items[$key]);
+				$items[$group ? $key : (string) $value] = $value;
 			}
 		}
 
 		$this->items = $items;
-		$this->allowed = $allowed;
+		$this->flattenItems = $flattenItems;
 		return $this;
 	}
-
 
 
 	/**
@@ -174,7 +191,6 @@ class SelectBox extends BaseControl
 	}
 
 
-
 	/**
 	 * Returns selected value.
 	 * @return string
@@ -182,9 +198,30 @@ class SelectBox extends BaseControl
 	public function getSelectedItem()
 	{
 		$value = $this->getValue();
-		return $value === NULL ? NULL : $this->allowed[$value];
+		return $value === NULL ? NULL : $this->flattenItems[$value];
 	}
 
+
+	/**
+	 * Disables or enables control or items.
+	 * @param  bool|array
+	 * @return self
+	 */
+	public function setDisabled($value = TRUE)
+	{
+		if (!is_array($value)) {
+			return parent::setDisabled($value);
+		}
+
+		parent::setDisabled(FALSE);
+		$this->disabled = array_fill_keys($value, TRUE);
+		if (is_array($this->value)) {
+			$this->value = array_diff($this->value, $value);
+		} elseif (isset($this->disabled[$this->value])) {
+			$this->value = NULL;
+		}
+		return $this;
+	}
 
 
 	/**
@@ -193,50 +230,46 @@ class SelectBox extends BaseControl
 	 */
 	public function getControl()
 	{
-		$selected = $this->getValue();
-		$selected = is_array($selected) ? array_flip($selected) : array($selected => TRUE);
-		$control = parent::getControl();
+		$selected = array_flip((array) $this->value);
+		$select = parent::getControl()->setName('select');
 		$option = Nette\Utils\Html::el('option');
+		$items = $this->getItems();
 
 		if ($this->prompt !== FALSE) {
-			$control->add($this->prompt instanceof Nette\Utils\Html
-				? $this->prompt->value('')
-				: (string) $option->value('')->setText($this->translate((string) $this->prompt))
-			);
+			$items = array('' => $this->prompt) + $items;
 		}
 
-		foreach ($this->items as $key => $value) {
-			if (!is_array($value)) {
-				$value = array($key => $value);
-				$dest = $control;
+		foreach ($items as $group => $subitems) {
+			if (!is_array($subitems)) {
+				$subitems = array($group => $subitems);
+				$dest = $select;
 			} else {
-				$dest = $control->create('optgroup')->label($this->translate($key));
+				$dest = $select->create('optgroup')->label($this->translate($group));
 			}
 
-			foreach ($value as $key2 => $value2) {
-				if ($value2 instanceof Nette\Utils\Html) {
-					$dest->add((string) $value2->selected(isset($selected[$key2])));
-
-				} else {
-					$value2 = $this->translate((string) $value2);
-					$dest->add((string) $option->value($key2)
-						->selected(isset($selected[$key2]))
-						->setText($value2));
-				}
+			foreach ($subitems as $value => $caption) {
+				$option = $caption instanceof Nette\Utils\Html ? clone $caption
+					: $option->setText($this->translate((string) $caption));
+				$dest->add((string) $option->value($value)
+					->selected(isset($selected[$value]))
+					->disabled(is_array($this->disabled) ? isset($this->disabled[$value]) : FALSE)
+				);
 			}
 		}
-		return $control;
+		return $select;
 	}
 
 
-
 	/**
-	 * Checks if a valid option was selected.
-	 * @return bool
+	 * Performs the server side validation.
+	 * @return void
 	 */
-	public static function validateSelectBoxValid(SelectBox $control)
+	public function validate()
 	{
-		return $control->prompt !== FALSE || $control->getValue() !== NULL;
+		parent::validate();
+		if (!$this->isDisabled() && $this->prompt === FALSE && $this->getValue() === NULL) {
+			$this->addError(Nette\Forms\Validator::$messages[self::VALID]);
+		}
 	}
 
 }

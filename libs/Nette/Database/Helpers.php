@@ -14,7 +14,6 @@ namespace Nette\Database;
 use Nette;
 
 
-
 /**
  * Database helpers.
  *
@@ -30,14 +29,13 @@ class Helpers
 		'^_' => IReflection::FIELD_TEXT, // PostgreSQL arrays
 		'BYTEA|BLOB|BIN' => IReflection::FIELD_BINARY,
 		'TEXT|CHAR|POINT|INTERVAL' => IReflection::FIELD_TEXT,
-		'YEAR|BYTE|COUNTER|SERIAL|INT|LONG|SHORT' => IReflection::FIELD_INTEGER,
+		'YEAR|BYTE|COUNTER|SERIAL|INT|LONG|SHORT|^TINY$' => IReflection::FIELD_INTEGER,
 		'CURRENCY|REAL|MONEY|FLOAT|DOUBLE|DECIMAL|NUMERIC|NUMBER' => IReflection::FIELD_FLOAT,
 		'^TIME$' => IReflection::FIELD_TIME,
 		'TIME' => IReflection::FIELD_DATETIME, // DATETIME, TIMESTAMP
 		'DATE' => IReflection::FIELD_DATE,
 		'BOOL' => IReflection::FIELD_BOOL,
 	);
-
 
 
 	/**
@@ -75,7 +73,6 @@ class Helpers
 			echo "</tbody>\n</table>\n";
 		}
 	}
-
 
 
 	/**
@@ -144,7 +141,6 @@ class Helpers
 	}
 
 
-
 	/**
 	 * Common column type detection.
 	 * @return array
@@ -161,7 +157,6 @@ class Helpers
 		}
 		return $types;
 	}
-
 
 
 	/**
@@ -183,7 +178,6 @@ class Helpers
 		}
 		return $cache[$type];
 	}
-
 
 
 	/**
@@ -217,7 +211,6 @@ class Helpers
 		fclose($handle);
 		return $count;
 	}
-
 
 
 	public static function createDebugPanel($connection, $explain = TRUE, $name = NULL)

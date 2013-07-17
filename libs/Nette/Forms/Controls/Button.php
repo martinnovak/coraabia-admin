@@ -14,7 +14,6 @@ namespace Nette\Forms\Controls;
 use Nette;
 
 
-
 /**
  * Push button control with no default behavior.
  *
@@ -24,14 +23,13 @@ class Button extends BaseControl
 {
 
 	/**
-	 * @param  string  caption
+	 * Is button pressed?
+	 * @return bool
 	 */
-	public function __construct($caption = NULL)
+	public function isFilled()
 	{
-		parent::__construct($caption);
-		$this->control->type = 'button';
+		return (bool) $this->getValue();
 	}
-
 
 
 	/**
@@ -44,7 +42,6 @@ class Button extends BaseControl
 	}
 
 
-
 	/**
 	 * Generates control's HTML element.
 	 * @param  string
@@ -52,9 +49,14 @@ class Button extends BaseControl
 	 */
 	public function getControl($caption = NULL)
 	{
-		$control = parent::getControl();
-		$control->value = $this->translate($caption === NULL ? $this->caption : $caption);
-		return $control;
+		$this->setOption('rendered', TRUE);
+		$el = clone $this->control;
+		return $el->addAttributes(array(
+			'type' => 'button',
+			'name' => $this->getHtmlName(),
+			'disabled' => $this->isDisabled(),
+			'value' => $this->translate($caption === NULL ? $this->caption : $caption),
+		));
 	}
 
 }

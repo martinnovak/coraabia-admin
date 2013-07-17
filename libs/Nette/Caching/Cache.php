@@ -11,8 +11,8 @@
 
 namespace Nette\Caching;
 
-use Nette;
-
+use Nette,
+	Nette\Utils\Callback;
 
 
 /**
@@ -53,13 +53,11 @@ class Cache extends Nette\Object implements \ArrayAccess
 	private $data;
 
 
-
 	public function __construct(IStorage $storage, $namespace = NULL)
 	{
 		$this->storage = $storage;
 		$this->namespace = $namespace . self::NAMESPACE_SEPARATOR;
 	}
-
 
 
 	/**
@@ -72,7 +70,6 @@ class Cache extends Nette\Object implements \ArrayAccess
 	}
 
 
-
 	/**
 	 * Returns cache namespace.
 	 * @return string
@@ -81,7 +78,6 @@ class Cache extends Nette\Object implements \ArrayAccess
 	{
 		return (string) substr($this->namespace, 0, -1);
 	}
-
 
 
 	/**
@@ -96,7 +92,6 @@ class Cache extends Nette\Object implements \ArrayAccess
 	}
 
 
-
 	/**
 	 * Reads the specified item from the cache or generate it.
 	 * @param  mixed key
@@ -107,11 +102,10 @@ class Cache extends Nette\Object implements \ArrayAccess
 	{
 		$data = $this->storage->read($this->generateKey($key));
 		if ($data === NULL && $fallback) {
-			return $this->save($key, new Nette\Callback($fallback));
+			return $this->save($key, Callback::closure($fallback));
 		}
 		return $data;
 	}
-
 
 
 	/**
@@ -138,7 +132,7 @@ class Cache extends Nette\Object implements \ArrayAccess
 
 		if ($data instanceof Nette\Callback || $data instanceof \Closure) {
 			$this->storage->lock($key);
-			$data = Nette\Callback::create($data)->invokeArgs(array(& $dependencies));
+			$data = call_user_func_array($data, array(& $dependencies));
 		}
 
 		if ($data === NULL) {
@@ -148,7 +142,6 @@ class Cache extends Nette\Object implements \ArrayAccess
 			return $data;
 		}
 	}
-
 
 
 	private function completeDependencies($dp, $data)
@@ -165,10 +158,7 @@ class Cache extends Nette\Object implements \ArrayAccess
 
 		// convert FILES into CALLBACKS
 		if (isset($dp[self::FILES])) {
-			//clearstatcache();
-			foreach (array_unique((array) $dp[self::FILES]) as $item) {
-				$dp[self::CALLBACKS][] = array(array(__CLASS__, 'checkFile'), $item, @filemtime($item)); // @ - stat may fail
-			}
+			$dp[self::CALLBACKS][] = array(array(__CLASS__, 'checkFiles'), $dp[self::FILES], time());
 			unset($dp[self::FILES]);
 		}
 
@@ -192,7 +182,6 @@ class Cache extends Nette\Object implements \ArrayAccess
 	}
 
 
-
 	/**
 	 * Removes item from the cache.
 	 * @param  mixed  key
@@ -202,7 +191,6 @@ class Cache extends Nette\Object implements \ArrayAccess
 	{
 		$this->save($key, NULL);
 	}
-
 
 
 	/**
@@ -220,7 +208,6 @@ class Cache extends Nette\Object implements \ArrayAccess
 	}
 
 
-
 	/**
 	 * Caches results of function/method calls.
 	 * @param  mixed
@@ -230,10 +217,9 @@ class Cache extends Nette\Object implements \ArrayAccess
 	{
 		$key = func_get_args();
 		return $this->load($key, function() use ($function, $key) {
-			return Nette\Callback::create($function)->invokeArgs(array_slice($key, 1));
+			return Callback::invokeArgs($function, array_slice($key, 1));
 		});
 	}
-
 
 
 	/**
@@ -249,12 +235,11 @@ class Cache extends Nette\Object implements \ArrayAccess
 			$key = array($function, func_get_args());
 			$data = $cache->load($key);
 			if ($data === NULL) {
-				$data = $cache->save($key, Nette\Callback::create($function)->invokeArgs($key[1]), $dependencies);
+				$data = $cache->save($key, Callback::invokeArgs($function, $key[1]), $dependencies);
 			}
 			return $data;
 		};
 	}
-
 
 
 	/**
@@ -272,7 +257,6 @@ class Cache extends Nette\Object implements \ArrayAccess
 	}
 
 
-
 	/**
 	 * Generates internal cache key.
 	 *
@@ -285,9 +269,7 @@ class Cache extends Nette\Object implements \ArrayAccess
 	}
 
 
-
 	/********************* interface ArrayAccess ****************d*g**/
-
 
 
 	/**
@@ -301,7 +283,6 @@ class Cache extends Nette\Object implements \ArrayAccess
 	{
 		$this->save($key, $data);
 	}
-
 
 
 	/**
@@ -321,7 +302,6 @@ class Cache extends Nette\Object implements \ArrayAccess
 	}
 
 
-
 	/**
 	 * Exists item in cache? (\ArrayAccess implementation).
 	 * @param  mixed key
@@ -333,7 +313,6 @@ class Cache extends Nette\Object implements \ArrayAccess
 		$this->release();
 		return $this->offsetGet($key) !== NULL;
 	}
-
 
 
 	/**
@@ -348,7 +327,6 @@ class Cache extends Nette\Object implements \ArrayAccess
 	}
 
 
-
 	/**
 	 * Discards the internal cache used by ArrayAccess.
 	 * @return void
@@ -359,9 +337,7 @@ class Cache extends Nette\Object implements \ArrayAccess
 	}
 
 
-
 	/********************* dependency checkers ****************d*g**/
-
 
 
 	/**
@@ -380,7 +356,6 @@ class Cache extends Nette\Object implements \ArrayAccess
 	}
 
 
-
 	/**
 	 * Checks CONSTS dependency.
 	 * @param  string
@@ -393,18 +368,21 @@ class Cache extends Nette\Object implements \ArrayAccess
 	}
 
 
-
 	/**
 	 * Checks FILES dependency.
 	 * @param  string
 	 * @param  int
 	 * @return bool
 	 */
-	private static function checkFile($file, $time)
+	private static function checkFiles($files, $time)
 	{
-		return @filemtime($file) == $time; // @ - stat may fail
+		foreach ((array) $files as $file) {
+			if (@filemtime($file) > $time) { // @ - stat may fail
+				return FALSE;
+			}
+		}
+		return TRUE;
 	}
-
 
 
 	/**

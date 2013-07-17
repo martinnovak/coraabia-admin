@@ -14,7 +14,6 @@ namespace Nette\Forms\Controls;
 use Nette;
 
 
-
 /**
  * Select box control that allows multiple item selection.
  *
@@ -23,6 +22,46 @@ use Nette;
 class MultiSelectBox extends SelectBox
 {
 
+	/**
+	 * Loads HTTP data.
+	 * @return void
+	 */
+	public function loadHttpData()
+	{
+		$this->value = array_keys(array_flip($this->getHttpData()));
+		if (is_array($this->disabled)) {
+			$this->value = array_diff($this->value, array_keys($this->disabled));
+		}
+	}
+
+
+	/**
+	 * Sets selected items (by keys).
+	 * @param  array
+	 * @return self
+	 */
+	public function setValue($values)
+	{
+		if (is_scalar($values) || $values === NULL) {
+			$values = (array) $values;
+		} elseif (!is_array($values)) {
+			throw new Nette\InvalidArgumentException('Value must be array or NULL, ' . gettype($values) . ' given.');
+		}
+		$flip = array();
+		foreach ($values as $value) {
+			if (!is_scalar($value) && !method_exists($value, '__toString')) {
+				throw new Nette\InvalidArgumentException('Values must be scalar, ' . gettype($value) . ' given.');
+			}
+			$flip[(string) $value] = TRUE;
+		}
+		$values = array_keys($flip);
+		if ($diff = array_diff($values, array_keys($this->flattenItems))) {
+			throw new Nette\InvalidArgumentException("Values '" . implode("', '", $diff) . "' are out of range of current items.");
+		}
+		$this->value = $values;
+		return $this;
+	}
+
 
 	/**
 	 * Returns selected keys.
@@ -30,9 +69,8 @@ class MultiSelectBox extends SelectBox
 	 */
 	public function getValue()
 	{
-		return array_values(array_intersect($this->getRawValue(), array_keys($this->allowed)));
+		return array_values(array_intersect($this->value, array_keys($this->flattenItems)));
 	}
-
 
 
 	/**
@@ -41,15 +79,8 @@ class MultiSelectBox extends SelectBox
 	 */
 	public function getRawValue()
 	{
-		$res = array();
-		foreach (is_array($this->value) ? $this->value : array($this->value) as $val) {
-			if (is_scalar($val)) {
-				$res[$val] = NULL;
-			}
-		}
-		return array_keys($res);
+		return $this->value;
 	}
-
 
 
 	/**
@@ -58,11 +89,8 @@ class MultiSelectBox extends SelectBox
 	 */
 	public function getSelectedItem()
 	{
-		return $this->areKeysUsed()
-			? array_intersect_key($this->allowed, array_flip($this->getValue()))
-			: $this->getValue();
+		return array_intersect_key($this->flattenItems, array_flip($this->value));
 	}
-
 
 
 	/**
@@ -75,7 +103,6 @@ class MultiSelectBox extends SelectBox
 	}
 
 
-
 	/**
 	 * Generates control's HTML element.
 	 * @return Nette\Utils\Html
@@ -83,23 +110,6 @@ class MultiSelectBox extends SelectBox
 	public function getControl()
 	{
 		return parent::getControl()->multiple(TRUE);
-	}
-
-
-
-	/**
-	 * Count/length validator.
-	 * @param  MultiSelectBox
-	 * @param  array  min and max length pair
-	 * @return bool
-	 */
-	public static function validateLength(MultiSelectBox $control, $range)
-	{
-		if (!is_array($range)) {
-			$range = array($range, $range);
-		}
-		$count = count($control->getSelectedItem());
-		return ($range[0] === NULL || $count >= $range[0]) && ($range[1] === NULL || $count <= $range[1]);
 	}
 
 }

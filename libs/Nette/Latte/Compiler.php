@@ -15,7 +15,6 @@ use Nette,
 	Nette\Utils\Strings;
 
 
-
 /**
  * Latte compiler.
  *
@@ -24,7 +23,7 @@ use Nette,
 class Compiler extends Nette\Object
 {
 	/** @var string default content type */
-	public $defaultContentType = self::CONTENT_XHTML;
+	public $defaultContentType = self::CONTENT_HTML;
 
 	/** @var Token[] */
 	private $tokens;
@@ -81,11 +80,10 @@ class Compiler extends Nette\Object
 	}
 
 
-
 	/**
 	 * Adds new macro.
 	 * @param  string
-	 * @return Compiler  provides a fluent interface
+	 * @return self
 	 */
 	public function addMacro($name, IMacro $macro)
 	{
@@ -93,7 +91,6 @@ class Compiler extends Nette\Object
 		$this->macroHandlers->attach($macro);
 		return $this;
 	}
-
 
 
 	/**
@@ -149,9 +146,8 @@ class Compiler extends Nette\Object
 	}
 
 
-
 	/**
-	 * @return Compiler  provides a fluent interface
+	 * @return self
 	 */
 	public function setContentType($type)
 	{
@@ -159,7 +155,6 @@ class Compiler extends Nette\Object
 		$this->context = NULL;
 		return $this;
 	}
-
 
 
 	/**
@@ -171,16 +166,14 @@ class Compiler extends Nette\Object
 	}
 
 
-
 	/**
-	 * @return Compiler  provides a fluent interface
+	 * @return self
 	 */
 	public function setContext($context, $sub = NULL)
 	{
 		$this->context = array($context, $sub);
 		return $this;
 	}
-
 
 
 	/**
@@ -192,7 +185,6 @@ class Compiler extends Nette\Object
 	}
 
 
-
 	/**
 	 * @return string
 	 */
@@ -202,7 +194,6 @@ class Compiler extends Nette\Object
 	}
 
 
-
 	/**
 	 * @return MacroNode|NULL
 	 */
@@ -210,7 +201,6 @@ class Compiler extends Nette\Object
 	{
 		return $this->macroNode;
 	}
-
 
 
 	/**
@@ -223,12 +213,10 @@ class Compiler extends Nette\Object
 	}
 
 
-
 	public function expandTokens($s)
 	{
 		return strtr($s, $this->attrCodes);
 	}
-
 
 
 	private function processText(Token $token)
@@ -240,7 +228,6 @@ class Compiler extends Nette\Object
 		}
 		$this->output .= $token->text;
 	}
-
 
 
 	private function processMacroTag(Token $token)
@@ -257,7 +244,6 @@ class Compiler extends Nette\Object
 			}
 		}
 	}
-
 
 
 	private function processHtmlTagBegin(Token $token)
@@ -293,7 +279,6 @@ class Compiler extends Nette\Object
 	}
 
 
-
 	private function processHtmlTagEnd(Token $token)
 	{
 		if ($token->text === '-->') {
@@ -306,7 +291,10 @@ class Compiler extends Nette\Object
 		$isEmpty = !$htmlNode->closing && (Strings::contains($token->text, '/') || $htmlNode->isEmpty);
 
 		if ($isEmpty && in_array($this->contentType, array(self::CONTENT_HTML, self::CONTENT_XHTML))) { // auto-correct
-			$token->text = preg_replace('#^.*>#', $this->contentType === self::CONTENT_XHTML ? ' />' : '>', $token->text);
+			$token->text = preg_replace('#^.*>#', $htmlNode->isEmpty
+				? ($this->contentType === self::CONTENT_XHTML ? ' />' : '>')
+				: "></$htmlNode->name>",
+			$token->text);
 		}
 
 		if (empty($htmlNode->macroAttrs)) {
@@ -334,7 +322,6 @@ class Compiler extends Nette\Object
 			}
 		}
 	}
-
 
 
 	private function processHtmlAttribute(Token $token)
@@ -365,7 +352,6 @@ class Compiler extends Nette\Object
 	}
 
 
-
 	private function processComment(Token $token)
 	{
 		$isLeftmost = trim(substr($this->output, strrpos("\n$this->output", "\n"))) === '';
@@ -375,9 +361,7 @@ class Compiler extends Nette\Object
 	}
 
 
-
 	/********************* macros ****************d*g**/
-
 
 
 	/**
@@ -400,7 +384,6 @@ class Compiler extends Nette\Object
 		}
 		return $node;
 	}
-
 
 
 	/**
@@ -441,7 +424,6 @@ class Compiler extends Nette\Object
 	}
 
 
-
 	private function writeCode($code, & $output, $isRightmost, $isLeftmost = NULL)
 	{
 		if ($isRightmost) {
@@ -455,7 +437,6 @@ class Compiler extends Nette\Object
 		}
 		$output .= $code;
 	}
-
 
 
 	/**
@@ -534,7 +515,6 @@ class Compiler extends Nette\Object
 			$this->output .= "\n";
 		}
 	}
-
 
 
 	/**

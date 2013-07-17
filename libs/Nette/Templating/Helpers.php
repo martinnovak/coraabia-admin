@@ -17,7 +17,6 @@ use Nette,
 	Nette\Utils\Html;
 
 
-
 /**
  * Template helpers.
  *
@@ -41,7 +40,6 @@ final class Helpers
 		'replacere' => 'Nette\Utils\Strings::replace',
 		'url' => 'rawurlencode',
 		'striptags' => 'strip_tags',
-		'nl2br' => 'nl2br',
 		'substr' => 'Nette\Utils\Strings::substring',
 		'repeat' => 'str_repeat',
 		'implode' => 'implode',
@@ -52,7 +50,6 @@ final class Helpers
 	public static $dateFormat = '%x';
 
 
-
 	/**
 	 * Try to load the requested helper.
 	 * @param  string  helper name
@@ -61,12 +58,11 @@ final class Helpers
 	public static function loader($helper)
 	{
 		if (method_exists(__CLASS__, $helper)) {
-			return new Nette\Callback(__CLASS__, $helper);
+			return array(__CLASS__, $helper);
 		} elseif (isset(self::$helpers[$helper])) {
 			return self::$helpers[$helper];
 		}
 	}
-
 
 
 	/**
@@ -84,7 +80,6 @@ final class Helpers
 	}
 
 
-
 	/**
 	 * Escapes string for use inside HTML comments.
 	 * @param  string  UTF-8 encoding
@@ -92,10 +87,8 @@ final class Helpers
 	 */
 	public static function escapeHtmlComment($s)
 	{
-		// -- has special meaning in different browsers
-		return str_replace('--', '--><!-- ', $s); // HTML tags have no meaning inside comments
+		return ' ' . str_replace('-', '- ', $s); // dash is very problematic character in comments
 	}
-
 
 
 	/**
@@ -112,7 +105,6 @@ final class Helpers
 	}
 
 
-
 	/**
 	 * Escapes string for use inside CSS template.
 	 * @param  string UTF-8 encoding
@@ -123,7 +115,6 @@ final class Helpers
 		// http://www.w3.org/TR/2006/WD-CSS21-20060411/syndata.html#q6
 		return addcslashes($s, "\x00..\x1F!\"#$%&'()*+,./:;<=>?@[\\]^`{|}~");
 	}
-
 
 
 	/**
@@ -140,7 +131,6 @@ final class Helpers
 	}
 
 
-
 	/**
 	 * Escapes string for use inside iCal template.
 	 * @param  mixed  UTF-8 encoding
@@ -151,7 +141,6 @@ final class Helpers
 		// http://www.ietf.org/rfc/rfc5545.txt
 		return addcslashes(preg_replace('#[\x00-\x08\x0B\x0C-\x1F]+#', '', $s), "\";\\,:\n");
 	}
-
 
 
 	/**
@@ -168,7 +157,6 @@ final class Helpers
 				return trim(preg_replace('#[ \t\r\n]+#', " ", $m[0]));
 			});
 	}
-
 
 
 	/**
@@ -189,7 +177,6 @@ final class Helpers
 		}
 		return $s;
 	}
-
 
 
 	/**
@@ -215,7 +202,6 @@ final class Helpers
 	}
 
 
-
 	/**
 	 * Date/time modification.
 	 * @param  string|int|DateTime
@@ -229,7 +215,6 @@ final class Helpers
 			? NULL
 			: Nette\DateTime::from($time)->modify($delta . $unit);
 	}
-
 
 
 	/**
@@ -252,7 +237,6 @@ final class Helpers
 	}
 
 
-
 	/**
 	 * Returns array of string length.
 	 * @param  mixed
@@ -262,7 +246,6 @@ final class Helpers
 	{
 		return is_string($var) ? Strings::length($var) : count($var);
 	}
-
 
 
 	/**
@@ -276,7 +259,6 @@ final class Helpers
 	{
 		return str_replace($search, $replacement, $subject);
 	}
-
 
 
 	/**
@@ -294,7 +276,6 @@ final class Helpers
 	}
 
 
-
 	/**
 	 * /dev/null.
 	 * @param  mixed
@@ -306,9 +287,17 @@ final class Helpers
 	}
 
 
+	/**
+	 * @param  string
+	 * @return string
+	 */
+	public static function nl2br($value)
+	{
+		return nl2br($value, Html::$xhtml);
+	}
+
 
 	/********************* Template tools ****************d*g**/
-
 
 
 	/**

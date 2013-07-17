@@ -18,7 +18,6 @@ use Nette,
 	Nette\PhpGenerator\Helpers as PhpHelpers;
 
 
-
 /**
  * Basic container builder.
  *
@@ -50,7 +49,6 @@ class ContainerBuilder extends Nette\Object
 	/*private in 5.4*/public $current;
 
 
-
 	/**
 	 * Adds new service definition.
 	 * @param  string
@@ -68,7 +66,6 @@ class ContainerBuilder extends Nette\Object
 	}
 
 
-
 	/**
 	 * Removes the specified service definition.
 	 * @param  string
@@ -78,7 +75,6 @@ class ContainerBuilder extends Nette\Object
 	{
 		unset($this->definitions[$name]);
 	}
-
 
 
 	/**
@@ -95,7 +91,6 @@ class ContainerBuilder extends Nette\Object
 	}
 
 
-
 	/**
 	 * Gets all service definitions.
 	 * @return array
@@ -104,7 +99,6 @@ class ContainerBuilder extends Nette\Object
 	{
 		return $this->definitions;
 	}
-
 
 
 	/**
@@ -118,9 +112,7 @@ class ContainerBuilder extends Nette\Object
 	}
 
 
-
 	/********************* class resolving ****************d*g**/
-
 
 
 	/**
@@ -148,7 +140,6 @@ class ContainerBuilder extends Nette\Object
 	}
 
 
-
 	/**
 	 * Gets the service objects of the specified tag.
 	 * @param  string
@@ -164,7 +155,6 @@ class ContainerBuilder extends Nette\Object
 		}
 		return $found;
 	}
-
 
 
 	/**
@@ -188,7 +178,6 @@ class ContainerBuilder extends Nette\Object
 		$this->addDependency($rm->getFileName());
 		return Helpers::autowireArguments($rm, $arguments, $this);
 	}
-
 
 
 	/**
@@ -305,7 +294,6 @@ class ContainerBuilder extends Nette\Object
 	}
 
 
-
 	private function resolveClass($name, $recursive = array())
 	{
 		if (isset($recursive[$name])) {
@@ -333,14 +321,13 @@ class ContainerBuilder extends Nette\Object
 					}
 				}
 			}
-			$factory = new Nette\Callback($factory);
-			if (!$factory->isCallable()) {
-				throw new ServiceCreationException("Factory '$factory' is not callable.");
+			if (!is_callable($factory)) {
+				throw new ServiceCreationException("Factory '" . Nette\Utils\Callback::toString($factory) . "' is not callable.");
 			}
 			try {
-				$reflection = $factory->toReflection();
+				$reflection = Nette\Utils\Callback::toReflection($factory);
 			} catch (\ReflectionException $e) {
-				throw new ServiceCreationException("Missing factory '$factory'.");
+				throw new ServiceCreationException("Missing factory '" . Nette\Utils\Callback::toString($factory) . "'.");
 			}
 			$def->class = preg_replace('#[|\s].*#', '', $reflection->getAnnotation('return'));
 			if ($def->class && !class_exists($def->class) && $def->class[0] !== '\\' && $reflection instanceof \ReflectionMethod) {
@@ -365,17 +352,15 @@ class ContainerBuilder extends Nette\Object
 	}
 
 
-
 	/**
 	 * Adds a file to the list of dependencies.
-	 * @return ContainerBuilder  provides a fluent interface
+	 * @return self
 	 */
 	public function addDependency($file)
 	{
 		$this->dependencies[$file] = TRUE;
 		return $this;
 	}
-
 
 
 	/**
@@ -389,9 +374,7 @@ class ContainerBuilder extends Nette\Object
 	}
 
 
-
 	/********************* code generator ****************d*g**/
-
 
 
 	/**
@@ -444,7 +427,6 @@ class ContainerBuilder extends Nette\Object
 
 		return $this->generatedClasses;
 	}
-
 
 
 	/**
@@ -523,7 +505,6 @@ class ContainerBuilder extends Nette\Object
 	}
 
 
-
 	/**
 	 * Converts parameters from ServiceDefinition to PhpGenerator.
 	 * @return Nette\PhpGenerator\Parameter[]
@@ -544,7 +525,6 @@ class ContainerBuilder extends Nette\Object
 		}
 		return $res;
 	}
-
 
 
 	/**
@@ -594,7 +574,7 @@ class ContainerBuilder extends Nette\Object
 			return $this->formatPhp("$entity[1](?*)", array($arguments));
 
 		} elseif (Strings::contains($entity[1], '$')) { // property setter
-			Validators::assert($arguments, 'list:1', "setup arguments for '" . Nette\Callback::create($entity) . "'");
+			Validators::assert($arguments, 'list:1', "setup arguments for '" . Nette\Utils\Callback::toString($entity) . "'");
 			if ($this->getServiceName($entity[0])) {
 				return $this->formatPhp('?->? = ?', array($entity[0], substr($entity[1], 1), $arguments[0]));
 			} else {
@@ -616,7 +596,6 @@ class ContainerBuilder extends Nette\Object
 			return $this->formatPhp("$entity[0]::$entity[1](?*)", array($arguments));
 		}
 	}
-
 
 
 	/**
@@ -647,7 +626,6 @@ class ContainerBuilder extends Nette\Object
 	}
 
 
-
 	/**
 	 * Expands %placeholders% in strings.
 	 * @return mixed
@@ -658,7 +636,6 @@ class ContainerBuilder extends Nette\Object
 	}
 
 
-
 	/**
 	 * @return Nette\PhpGenerator\PhpLiteral
 	 */
@@ -666,7 +643,6 @@ class ContainerBuilder extends Nette\Object
 	{
 		return new Nette\PhpGenerator\PhpLiteral($phpCode);
 	}
-
 
 
 	/** @internal */
@@ -689,7 +665,6 @@ class ContainerBuilder extends Nette\Object
 		}
 		return $entity; // Class, @service, [Class, member], [@service, member], [, globalFunc]
 	}
-
 
 
 	/**
@@ -720,7 +695,6 @@ class ContainerBuilder extends Nette\Object
 		}
 		return $service;
 	}
-
 
 
 	/** @deprecated */

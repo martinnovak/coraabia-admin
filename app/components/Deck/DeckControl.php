@@ -35,6 +35,7 @@ class DeckControl extends Framework\Application\UI\BaseControl
 	
 	public function createComponentDecklist($name)
 	{
+		$self = $this;
 		$exportLink = $this->lazyLink('exportBotDeck');
 		
 		$grido = new Grido\Grid($this, $name);
@@ -62,8 +63,8 @@ class DeckControl extends Framework\Application\UI\BaseControl
 				->setCustomHref(function ($item) use ($exportLink) {
 					return $exportLink->setParameter('id', $item->deck_id);
 				})
-				->setDisable(function ($item) {
-					return !preg_match('/^b0t[1-9][0-9]*$/i', $item->username);
+				->setDisable(function ($item) use ($self) {
+					return !preg_match('/^b0t[1-9][0-9]*$/i', $item->username) || $self->locales->server != 'stage';
 				});
 		
 		return $grido;
@@ -71,14 +72,14 @@ class DeckControl extends Framework\Application\UI\BaseControl
 	
 	
 	
-	public function handleexportBotDeck()
+	public function handleExportBotDeck()
 	{
-		$deck = Model\Deck::from($this->coraabiaFactory->access()->decks->where('d.deck_id = %i', $this->getParameter('id'))->fetch()->toArray());
+		/*$deck = Model\Deck::from($this->coraabiaFactory->access()->decks->where('d.deck_id = %i', $this->getParameter('id'))->fetch()->toArray());
 		$deck->instances = array_map(function ($item) {
 			return \Model\Instance::from($item->toArray());
 		}, $this->coraabiaFactory->access()->deckInstances->where('di.deck_id = %i', $this->getParameter('id'))->fetchAll());
 		
-		$gameDeck = \Model\BotGameDeck::fromDeck($deck);
+		$gameDeck = \Model\BotGameDeck::fromDeck($deck);*/
 		//$this->game->gameDeck = $gameDeck;
 	}
 }

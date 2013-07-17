@@ -24,7 +24,7 @@ services:
 	stage: Model\Coraabia(@nette.database.stage)
 	beta: Model\Coraabia(@nette.database.beta)
 	locales: Model\Locales
-	- Model\CoraabiaFactory([ dev: @dev, stage: @stage, beta: @beta ])
+	- Model\CoraabiaFactory
 	- Model\Authenticator(@game, %applicationSecret%, %hashAlgorithm%)
 	- Coraabia\Mapi\MapiRequestFactory(..., %bazaarUrls%)
 	authorizator:

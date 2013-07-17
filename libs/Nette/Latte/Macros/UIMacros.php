@@ -19,7 +19,6 @@ use Nette,
 	Nette\Utils\Strings;
 
 
-
 /**
  * Macros for Nette\Application\UI.
  *
@@ -38,7 +37,6 @@ class UIMacros extends MacroSet
 
 	/** @var bool */
 	private $extends;
-
 
 
 	public static function install(Latte\Compiler $compiler)
@@ -69,7 +67,6 @@ class UIMacros extends MacroSet
 	}
 
 
-
 	/**
 	 * Initializes before template parsing.
 	 * @return void
@@ -79,7 +76,6 @@ class UIMacros extends MacroSet
 		$this->namedBlocks = array();
 		$this->extends = NULL;
 	}
-
 
 
 	/**
@@ -135,9 +131,7 @@ if (!empty($_control->snippetMode)) {
 	}
 
 
-
 	/********************* macros ****************d*g**/
-
 
 
 	/**
@@ -175,7 +169,6 @@ if (!empty($_control->snippetMode)) {
 	}
 
 
-
 	/**
 	 * {includeblock "file"}
 	 */
@@ -184,7 +177,6 @@ if (!empty($_control->snippetMode)) {
 		return $writer->write('Nette\Latte\Macros\CoreMacros::includeTemplate(%node.word, %node.array? + get_defined_vars(), $_l->templates[%var])->render()',
 			$this->getCompiler()->getTemplateId());
 	}
-
 
 
 	/**
@@ -210,7 +202,6 @@ if (!empty($_control->snippetMode)) {
 		}
 		return;
 	}
-
 
 
 	/**
@@ -300,7 +291,6 @@ if (!empty($_control->snippetMode)) {
 	}
 
 
-
 	/**
 	 * {/block}
 	 * {/snippet}
@@ -332,7 +322,6 @@ if (!empty($_control->snippetMode)) {
 	}
 
 
-
 	/**
 	 * {ifset #block}
 	 */
@@ -349,7 +338,6 @@ if (!empty($_control->snippetMode)) {
 	}
 
 
-
 	/**
 	 * {control name[:method] [params]}
 	 */
@@ -358,13 +346,12 @@ if (!empty($_control->snippetMode)) {
 		if ($node->name === 'widget') {
 			trigger_error('Macro {widget} is deprecated; use {control} instead.', E_USER_DEPRECATED);
 		}
-		$pair = $node->tokenizer->fetchWord();
-		if ($pair === FALSE) {
+		$words = $node->tokenizer->fetchWords();
+		if (!$words) {
 			throw new CompileException("Missing control name in {control}");
 		}
-		$pair = explode(':', $pair, 2);
-		$name = $writer->formatWord($pair[0]);
-		$method = isset($pair[1]) ? ucfirst($pair[1]) : '';
+		$name = $writer->formatWord($words[0]);
+		$method = isset($words[1]) ? ucfirst($words[1]) : '';
 		$method = Strings::match($method, '#^\w*\z#') ? "render$method" : "{\"render$method\"}";
 		$param = $writer->formatArray();
 		if (!Strings::contains($node->args, '=>')) {
@@ -375,7 +362,6 @@ if (!empty($_control->snippetMode)) {
 			. 'if ($_ctrl instanceof Nette\Application\UI\IRenderable) $_ctrl->validateControl(); '
 			. ($node->modifiers === '' ? "\$_ctrl->$method($param)" : $writer->write("ob_start(); \$_ctrl->$method($param); echo %modify(ob_get_clean())"));
 	}
-
 
 
 	/**
@@ -389,7 +375,6 @@ if (!empty($_control->snippetMode)) {
 	}
 
 
-
 	/**
 	 * {ifCurrent destination [,] [params]}
 	 */
@@ -398,7 +383,6 @@ if (!empty($_control->snippetMode)) {
 		return $writer->write(($node->args ? 'try { $_presenter->link(%node.word, %node.array?); } catch (Nette\Application\UI\InvalidLinkException $e) {}' : '')
 			. '; if ($_presenter->getLastCreatedRequestFlag("current")):');
 	}
-
 
 
 	/**
@@ -435,7 +419,6 @@ if (!empty($_control->snippetMode)) {
 	}
 
 
-
 	/**
 	 * {status ...}
 	 */
@@ -447,9 +430,7 @@ if (!empty($_control->snippetMode)) {
 	}
 
 
-
 	/********************* run-time writers ****************d*g**/
-
 
 
 	/**
@@ -466,7 +447,6 @@ if (!empty($_control->snippetMode)) {
 	}
 
 
-
 	/**
 	 * Calls parent block.
 	 * @return void
@@ -478,7 +458,6 @@ if (!empty($_control->snippetMode)) {
 		}
 		$block($context, $params);
 	}
-
 
 
 	public static function renderSnippets(Nette\Application\UI\Control $control, \stdClass $local, array $params)

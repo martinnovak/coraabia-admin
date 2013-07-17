@@ -14,7 +14,6 @@ namespace Nette\Diagnostics;
 use Nette;
 
 
-
 /**
  * Debugger: displays and logs errors.
  *
@@ -117,10 +116,10 @@ final class Debugger
 	public static $email;
 
 	/** @deprecated */
-	public static $mailer;
+	public static $mailer = array('Nette\Diagnostics\Logger', 'defaultMailer');
 
 	/** @deprecated */
-	public static $emailSnooze;
+	public static $emailSnooze = 172800;
 
 	/** {@link Debugger::log()} and {@link Debugger::fireLog()} */
 	const DEBUG = 'debug',
@@ -135,8 +134,6 @@ final class Debugger
 	public static $bar;
 
 
-
-
 	/**
 	 * Static class - cannot be instantiated.
 	 */
@@ -144,7 +141,6 @@ final class Debugger
 	{
 		throw new Nette\StaticClassException;
 	}
-
 
 
 	/**
@@ -217,12 +213,14 @@ final class Debugger
 			register_shutdown_function(array(__CLASS__, '_shutdownHandler'));
 			set_exception_handler(array(__CLASS__, '_exceptionHandler'));
 			set_error_handler(array(__CLASS__, '_errorHandler'));
-			class_exists('Nette\Diagnostics\Helpers');
-			class_exists('Nette\Utils\Html');
+
+			foreach (array('Nette\Diagnostics\Bar', 'Nette\Diagnostics\BlueScreen', 'Nette\Diagnostics\DefaultBarPanel', 'Nette\Diagnostics\Dumper', 'Nette\Diagnostics\FireLogger',
+				'Nette\Diagnostics\Helpers', 'Nette\Diagnostics\Logger', 'Nette\FatalErrorException', 'Nette\Utils\Html', 'Nette\Utils\Strings') as $class) {
+				class_exists($class);
+			}
 			self::$enabled = TRUE;
 		}
 	}
-
 
 
 	/**
@@ -260,7 +258,6 @@ final class Debugger
 	}
 
 
-
 	/**
 	 * @return Bar
 	 */
@@ -277,7 +274,6 @@ final class Debugger
 	}
 
 
-
 	/**
 	 * @return void
 	 */
@@ -285,7 +281,6 @@ final class Debugger
 	{
 		self::$logger = $logger;
 	}
-
 
 
 	/**
@@ -298,11 +293,10 @@ final class Debugger
 			self::$logger->directory = & self::$logDirectory;
 			self::$logger->email = & self::$email;
 			self::$logger->mailer = & self::$mailer;
-			Logger::$emailSnooze = & self::$emailSnooze;
+			self::$logger->emailSnooze = & self::$emailSnooze;
 		}
 		return self::$logger;
 	}
-
 
 
 	/**
@@ -317,7 +311,6 @@ final class Debugger
 	}
 
 
-
 	/**
 	 * Is Debug enabled?
 	 * @return bool
@@ -326,7 +319,6 @@ final class Debugger
 	{
 		return self::$enabled;
 	}
-
 
 
 	/**
@@ -393,7 +385,6 @@ final class Debugger
 	}
 
 
-
 	/**
 	 * Shutdown handler to catch fatal errors and execute of the planned activities.
 	 * @return void
@@ -414,7 +405,6 @@ final class Debugger
 			self::getBar()->render();
 		}
 	}
-
 
 
 	/**
@@ -481,7 +471,6 @@ final class Debugger
 	}
 
 
-
 	/**
 	 * Handler to catch warnings and notices.
 	 * @param  int    level of the error raised
@@ -537,7 +526,6 @@ final class Debugger
 	}
 
 
-
 	/** @deprecated */
 	public static function toStringException(\Exception $exception)
 	{
@@ -549,7 +537,6 @@ final class Debugger
 	}
 
 
-
 	/** @deprecated */
 	public static function tryError()
 	{
@@ -559,7 +546,6 @@ final class Debugger
 		}
 		self::$lastError = NULL;
 	}
-
 
 
 	/** @deprecated */
@@ -575,9 +561,7 @@ final class Debugger
 	}
 
 
-
 	/********************* useful tools ****************d*g**/
-
 
 
 	/**
@@ -608,7 +592,6 @@ final class Debugger
 	}
 
 
-
 	/**
 	 * Starts/stops stopwatch.
 	 * @param  string  name
@@ -622,7 +605,6 @@ final class Debugger
 		$time[$name] = $now;
 		return $delta;
 	}
-
 
 
 	/**
@@ -644,7 +626,6 @@ final class Debugger
 	}
 
 
-
 	/**
 	 * Sends message to FireLogger console.
 	 * @param  mixed   message to log
@@ -658,14 +639,12 @@ final class Debugger
 	}
 
 
-
 	private static function isHtmlMode()
 	{
 		return empty($_SERVER['HTTP_X_REQUESTED_WITH'])
 			&& PHP_SAPI !== 'cli'
 			&& !preg_match('#^Content-Type: (?!text/html)#im', implode("\n", headers_list()));
 	}
-
 
 
 	public static function addPanel(IBarPanel $panel, $id = NULL)

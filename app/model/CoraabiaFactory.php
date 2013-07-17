@@ -8,8 +8,8 @@ use Nette;
 
 class CoraabiaFactory extends Nette\Object
 {
-	/** @var array */
-	private $dbs;
+	/** @var \Nette\DI\Container */
+	private $context;
 	
 	/** @var \Model\Locales */
 	private $locales;
@@ -17,12 +17,12 @@ class CoraabiaFactory extends Nette\Object
 	
 	
 	/**
-	 * @param array $dbs
+	 * @param \Nette\DI\Container $context
 	 * @param \Model\Locales $locales 
 	 */
-	public function __construct(array $dbs, Locales $locales)
+	public function __construct(Nette\DI\Container $context, Locales $locales)
 	{
-		$this->dbs = $dbs;
+		$this->context = $context;
 		$this->locales = $locales;
 	}
 	
@@ -33,6 +33,6 @@ class CoraabiaFactory extends Nette\Object
 	 */
 	public function access()
 	{
-		return $this->dbs[$this->locales->server];
+		return $this->context->getService($this->locales->server);
 	}
 }
