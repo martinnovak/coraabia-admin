@@ -64,7 +64,7 @@ class DeckControl extends Framework\Application\UI\BaseControl
 					return $exportLink->setParameter('id', $item->deck_id);
 				})
 				->setDisable(function ($item) use ($self) {
-					return !preg_match('/^b0t[1-9][0-9]*$/i', $item->username) || $self->locales->server != 'stage';
+					return !(preg_match('/^b0t[1-9][0-9]*$/i', $item->username) && $self->locales->server == 'stage');
 				});
 		
 		return $grido;
@@ -72,14 +72,62 @@ class DeckControl extends Framework\Application\UI\BaseControl
 	
 	
 	
+	protected function exportBotDeck($deck)
+	{
+		if ($deck) {
+			$coraabia = $this->coraabiaFactory->access();
+			
+			$cards = $coraabia->deckInstances->select('instance.card_id')
+					->where('deck_id = ?', $deck->deck_id)
+					->fetchAll();
+			$connections = $coraabia->deckConnections->select('connection_id')
+					->where('deck_id = ?', $deck->deck_id)
+					->fetchAll();
+			
+			try {
+				$this->game->createBotDeck($deck->toArray(), $cards, $connections);
+				$this->presenter->flashMessage("Balík '{$deck->deck_id}' byl exportován na dev.", 'success');
+			} catch (\Exception $e) {
+				$this->presenter->flashMessage($e->getMessage(), 'error');
+			}
+
+		} else {
+			$this->presenter->flashMessage("Balík není bot balík a nelze ho exportovat.", 'error');
+		}
+	}
+	
+	
+	
 	public function handleExportBotDeck()
 	{
-		/*$deck = Model\Deck::from($this->coraabiaFactory->access()->decks->where('d.deck_id = %i', $this->getParameter('id'))->fetch()->toArray());
-		$deck->instances = array_map(function ($item) {
-			return \Model\Instance::from($item->toArray());
-		}, $this->coraabiaFactory->access()->deckInstances->where('di.deck_id = %i', $this->getParameter('id'))->fetchAll());
+		$coraabia = $this->coraabiaFactory->access();
 		
-		$gameDeck = \Model\BotGameDeck::fromDeck($deck);*/
-		//$this->game->gameDeck = $gameDeck;
+		$deckId = (int)$this->getParameter('id');
+		$deck = $coraabia->decks->where('deck.deck_id = ?', $deckId)
+				->where('user.username ~ ?', '^b0t[1-9][0-9]*$')
+				->fetch();
+		
+		$this->exportBotDeck($deck);
+	}
+	
+	
+	
+	public function handleExportBotDecks()
+	{
+		$coraabia = $this->coraabiaFactory->access();
+		
+		$decks = $coraabia->decks->where('user.username ~ ?', '^b0t[1-9][0-9]*$')
+				->fetchAll();
+		
+		if ($decks) {
+			
+			$this->game->deleteBotDecks();
+			
+			foreach ($decks as $deck) {
+				$this->exportBotDeck($deck);
+			}
+		}
+		
+		$this->redirect('this');
 	}
 }

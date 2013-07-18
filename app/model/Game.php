@@ -83,27 +83,37 @@ class Game extends Model
 	
 	
 	
-	/**
-	 * @todo TODO
-	 * @param GameDeck $gameDeck
-	 * @return boolean
-	 * @throws Exception 
-	 */
-	public function setGameDeck(GameDeck $gameDeck)
+	public function createBotDeck(array $deck, array $cards, array $connections)
 	{
-		try {
-			$this->connection->insert('deck', $gameDeck->toArray())->execute();
-			$id = $gameDeck->deck_id;
-			$this->connection->insert('deck_card', array_map(function ($item) use ($id) {
-				return array(
-					'deck_id' => $id,
-					'card_id' => $item->card_id
-				);
-			}, $gameDeck->cards))->execute();
-		} catch (Exception $e) {
-			throw $e;
-			return FALSE;
+		$deckId = 'DECK_' . $deck['deck_id'];
+		
+		$gameDeck = array(
+			'deck_id' => $deckId,
+			'start_tr' => '',
+			'start_ch' => '',
+			'type' => 'BOT_' . substr($deck['username'], 3)
+		);
+		$this->connection->query('INSERT INTO deck', $gameDeck);
+		
+		$cards = array_values(array_map(function ($item) use ($deckId) {
+			return array('deck_id' => $deckId, 'card_id' => $item->card_id);
+		}, $cards));
+		if (count($cards)) {
+			$this->connection->selectionFactory->table('deck_card')->insert($cards);
 		}
-		return TRUE;
+		
+		$connections = array_values(array_map(function ($item) use ($deckId) {
+			return array('connection_id' => $item->connection_id, 'deck_id' => $deckId);
+		}, $connections));
+		if (count($connections)) {
+			$this->connection->selectionFactory->table('deck_connection')->insert($connections);
+		}
+	}
+	
+	
+	
+	public function deleteBotDecks()
+	{
+		$this->connection->table('deck')->where('type ~ ?', '^BOT_[1-9][0-9]*$')->delete();
 	}
 }
