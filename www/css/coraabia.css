@@ -21,3 +21,7 @@
 .outlaw {
 	color: #db2929 !important;
 }
+
+.sidebar {
+	min-height: 200px;
+}
