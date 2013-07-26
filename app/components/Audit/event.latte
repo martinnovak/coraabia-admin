@@ -1,0 +1,30 @@
+<h3>{_'Událost'} {$event['audit_event_id']}</h3>
+<div class="row-fluid">
+	<dl class="span6">
+		<dt>{_'UID'}</dt>
+		<dd>{$event['user_id']}</dd>
+		<dt>{_'Typ'}</dt>
+		<dd>{$event['type']}</dd>
+		<dt>{_'Čas'}</dt>
+		<dd>{$event['timestamp']}</dd>
+		<dt>{_'Search 1'}</dt>
+		<dd>{$event['search1']}</dd>
+		<dt>{_'Search 2'}</dt>
+		<dd>{$event['search2']}</dd>
+	</dl>
+	<dl class="span6" n:inner-foreach="$event['data'] as $key => $value">
+		<dt>{$key}</dt>
+		<dd>
+			{if is_array($value)}
+			<ul n:inner-foreach="$value as $val">
+				<li>{$val}</li>
+			</ul>
+			{elseif is_object($value)}
+			{var $tmp = json_encode($value)}
+			{$tmp}
+			{else}
+			{$value}
+			{/if}
+		</dd>
+	</dl>
+</div>

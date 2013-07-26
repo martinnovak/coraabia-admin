@@ -15,6 +15,15 @@ nette:
 		beta:
 			dsn: 'pgsql:host=localhost port=5433 dbname=coraabia'
 			lazy: TRUE
+		adev:
+			dsn: 'pgsql:host=localhost port=5432 dbname=audit'
+			lazy: TRUE
+		astage:
+			dsn: 'pgsql:host=localhost port=5438 dbname=audit'
+			lazy: TRUE
+		abeta:
+			dsn: 'pgsql:host=localhost port=5433 dbname=audit'
+			lazy: TRUE
 
 parameters:
 	bazaarUrls:

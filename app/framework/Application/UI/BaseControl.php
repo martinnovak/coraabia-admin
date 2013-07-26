@@ -17,6 +17,9 @@ abstract class BaseControl extends Nette\Application\UI\Control
 	/** @var \Framework\Hooks\HookManager @inject */
 	public $hookManager;
 	
+	/** @var \Framework\Application\FormFactory @inject */
+	public $formFactory;
+	
 	/** @var \Model\Locales @inject */
 	public $locales;
 	

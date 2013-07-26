@@ -22,7 +22,7 @@
 {var $columnCount = $control->hasOperations() ? $columnCount + 1 : $columnCount}
 {var $showActionsColumn = $control->filterRenderType == Grido\Components\Filters\Filter::RENDER_INNER || $control->hasActions()}
 
-{if $control->filterRenderType == Grido\Components\Filters\Filter::RENDER_OUTER}
+{if $control->filterRenderType == Grido\Components\Filters\Filter::RENDER_OUTER && $control->hasFilters()}
     <div n:block="outerFilter" class="grido filter outer">
         <div class="items">
             {if $control->hasFilters()}
@@ -65,7 +65,7 @@
                 {_'Actions'}
             </th>
         </tr>
-        <tr n:if="$control->filterRenderType == Grido\Components\Filters\Filter::RENDER_INNER" class="filter inner">
+        <tr n:if="$control->filterRenderType == Grido\Components\Filters\Filter::RENDER_INNER && $control->hasFilters()" class="filter inner">
             {foreach $control[Grido\Components\Columns\Column::ID]->getComponents() as $column}
                 {if $column->hasFilter()}
                     {!$control->getFilter($column->getName())->getWrapperPrototype()->startTag()}

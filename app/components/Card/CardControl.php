@@ -13,12 +13,21 @@ class CardControl extends Framework\Application\UI\BaseControl
 	/** @var \Model\Game @inject */
 	public $game;
 	
+	/** @var \Framework\Grido\GridoFactory @inject */
+	public $gridoFactory;
+	
 	
 	
 	public function renderTimeLine()
 	{
+		$self = $this;
 		$template = $this->template;
 		$template->setFile(__DIR__ . '/timeLine.latte');
+		$this->hookManager->listen('scripts', function (\Framework\Hooks\TemplateHook $hook) use ($self) {
+			$tmpl = $self->createTemplate('\Nette\Templating\FileTemplate')
+					->setFile(__DIR__ . '/timeLineScripts.latte');
+			$hook->addTemplate($tmpl);
+		});
 		
 		$start = $finish = $dates = array();
 		foreach ($this->game->cards->fetchAll() as $card) {
@@ -50,52 +59,48 @@ class CardControl extends Framework\Application\UI\BaseControl
 	public function createComponentSpoiler($name)
 	{
 		$self = $this;
-		$editLink = $this->presenter->lazyLink('showUpdateCard');
+		$editLink = $this->presenter->lazyLink('updateCard');
 		$removeLink = $this->lazyLink('deleteCard');
 		$baseUri = $this->template->baseUri;
 		
-		$grido = new Grido\Grid($this, $name);
+		$grido = $this->gridoFactory->create($this, $name);
 		$grido->setModel($this->game->cards)
-				->setDefaultPerPage(1000)
-				->setPerPageList(array(100, 200, 500, 1000))
-				->setTranslator($this->translator)
 				->setPrimaryKey('card_id')
 				->setDefaultSort(array('type' => 'ASC', 'fraction' => 'ASC', 'rarity' => 'ASC'));
 		
-		$grido->addColumn('card_id', 'ID')
+		$grido->addColumnNumber('card_id', 'ID')
 				->setSortable();
 		
 		$grido->addColumn('translated_name', 'Jméno')
-				->setSortable()
 				->setCustomRender(function ($item) use ($self) {
 					return '<span class="' . strtolower($item->fraction) . '">' . trim($self->translator->translate('card.' . $item->card_id)) . '</span>';
 				});
 				
-		$grido->addColumn('points', 'B')
+		$grido->addColumnNumber('points', 'B')
 				->setSortable();
 
-		$grido->addColumn('danger', 'N')
+		$grido->addColumnNumber('danger', 'N')
 				->setSortable()
 				->setCustomRender(function ($item) {
-					return $item->type == 'CHARACTER' ? $item->danger : '';
+					return $item->type == \Coraabia\CardTypeEnum::CHARACTER ? $item->danger : '';
 				});
 		
-		$grido->addColumn('intellect', 'I')
+		$grido->addColumnNumber('intellect', 'I')
 				->setSortable()
 				->setCustomRender(function ($item) {
-					return $item->type == 'CHARACTER' ? $item->intellect : '';
+					return $item->type == \Coraabia\CardTypeEnum::CHARACTER ? $item->intellect : '';
 				});
 		
-		$grido->addColumn('vitality', 'V')
+		$grido->addColumnNumber('vitality', 'V')
 				->setSortable()
 				->setCustomRender(function ($item) {
-					return $item->type == 'CHARACTER' ? $item->vitality : '';
+					return $item->type == \Coraabia\CardTypeEnum::CHARACTER ? $item->vitality : '';
 				});
 		
-		$grido->addColumn('karma', 'K')
+		$grido->addColumnNumber('karma', 'K')
 				->setSortable()
 				->setCustomRender(function ($item) {
-					return $item->type == 'CHARACTER' ? $item->karma : '';
+					return $item->type == \Coraabia\CardTypeEnum::CHARACTER ? $item->karma : '';
 				});
 		
 		$grido->addColumn('rarity', 'R')
@@ -106,13 +111,21 @@ class CardControl extends Framework\Application\UI\BaseControl
 		
 		$grido->addColumn('type', 'T')
 				->setSortable()
-				->setCustomRender(function ($item) use ($baseUri) {
-					$result = \Nette\Utils\Html::el('img')->src("$baseUri/images/abilities/" .
-							($item->type == 'CHARACTER' ? 'card' : 'trick') .
-							".png");
+				->setCustomRender(function ($item) use ($self, $baseUri) {
+					$result = \Nette\Utils\Html::el('img')->src("$baseUri/images/abilities/"
+							. ($item->type == \Coraabia\CardTypeEnum::CHARACTER ? 'card' : 'trick')
+							. ".png");
 					switch ($item->type) {
-						case 'TRICK_WIN': $result .= ' &#9898;'; break;
-						case 'TRICK_NOW': $result .= ' &#9723;'; break;
+						case \Coraabia\CardTypeEnum::TRICK_WIN:
+							$result .= ' <span title="'
+								. $self->translator->translate('Body')
+								. '">&#9898;</span>';
+							break;
+						case \Coraabia\CardTypeEnum::TRICK_NOW:
+							$result .= ' <span title="'
+								. $self->translator->translate('Skóre')
+								. '">&#9723;</span>';
+							break;
 					}
 					return $result;
 				});
@@ -131,7 +144,7 @@ class CardControl extends Framework\Application\UI\BaseControl
 					return ucfirst(strtolower($item->subtype));
 				});
 		
-		if ($this->locales->server == 'dev') {
+		if ($this->locales->server == \Coraabia\ServerEnum::DEV) {
 			$grido->addColumn('ready', '')
 					->setCustomRender(function ($item) {
 						return $item->ready ? '<i class="icon-ok"></i>' : '';

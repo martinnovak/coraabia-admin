@@ -17,6 +17,9 @@ class DeckControl extends Framework\Application\UI\BaseControl
 	/** @var \Model\CoraabiaFactory @inject */
 	public $coraabiaFactory;
 	
+	/** @var \Framework\Grido\GridoFactory @inject */
+	public $gridoFactory;
+	
 	
 	
 	public function renderList()
@@ -38,11 +41,8 @@ class DeckControl extends Framework\Application\UI\BaseControl
 		$self = $this;
 		$exportLink = $this->lazyLink('exportBotDeck');
 		
-		$grido = new Grido\Grid($this, $name);
+		$grido = $this->gridoFactory->create($this, $name);
 		$grido->setModel($this->coraabiaFactory->access()->decks)
-				->setDefaultPerPage(1000)
-				->setPerPageList(array(100, 200, 500, 1000))
-				->setTranslator($this->translator)
 				->setPrimaryKey('deck_id')
 				->setDefaultSort(array('name' => 'ASC'));
 		
@@ -50,10 +50,21 @@ class DeckControl extends Framework\Application\UI\BaseControl
 				->setSortable();
 		
 		$grido->addColumn('user_id', 'UID')
-				->setSortable();
+				->setColumn(function ($item) {
+					return $item->user_id;
+				});
 		
 		$grido->addColumn('username', 'Uživatel')
-				->setSortable();
+				->setSortable()
+				->setColumn('user.username')
+				->setCustomRender(function ($item) {
+					return $item->user->username;
+				})
+				->setFilterText()
+						->setColumn('user.username')
+						->setSuggestion(function ($item) {
+							return $item->user->username;
+						});
 		
 		$grido->addColumn('name', 'Jméno')
 				->setSortable();
@@ -64,7 +75,7 @@ class DeckControl extends Framework\Application\UI\BaseControl
 					return $exportLink->setParameter('id', $item->deck_id);
 				})
 				->setDisable(function ($item) use ($self) {
-					return !(preg_match('/^b0t[1-9][0-9]*$/i', $item->username) && $self->locales->server == 'stage');
+					return !(preg_match('/^b0t[1-9][0-9]*$/i', $item->username) && $self->locales->server == \Coraabia\ServerEnum::STAGE);
 				});
 		
 		return $grido;

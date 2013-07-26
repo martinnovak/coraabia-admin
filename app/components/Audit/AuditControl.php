@@ -11,11 +11,17 @@ use Nette,
 
 class AuditControl extends Framework\Application\UI\BaseControl
 {
-	/** @var \Coraabia\Mapi\MapiRequestFactory @inject */
+	/** @var \Framework\Mapi\MapiRequestFactory @inject */
 	public $mapiRequestFactory;
 	
 	/** @var \Model\Game @inject */
 	public $game;
+	
+	/** @var \Framework\Grido\GridoFactory @inject */
+	public $gridoFactory;
+	
+	/** @var \Model\AuditFactory @inject */
+	public $auditFactory;
 		
 	
 	
@@ -40,15 +46,11 @@ class AuditControl extends Framework\Application\UI\BaseControl
 		$types = array_combine($tmp, $tmp);
 		
 		//grido
-		$grido = new Grido\Grid($this, $name);
-		$grido->setModel(new \Coraabia\Mapi\MapiDataSource($request))
-				->setDefaultPerPage(1000)
-				->setPerPageList(array(100, 200, 500, 1000))
-				->setTranslator($this->translator)
+		$grido = $this->gridoFactory->create($this, $name);
+		$grido->setModel(new Framework\Mapi\MapiDataSource($request))
 				->setPrimaryKey('txId')
-				->setDefaultSort(array('txId' => 'ASC'))
-				->setFilterRenderType(Filter::RENDER_OUTER)
-				->setPropertyAccessor(new \Coraabia\Mapi\MapiPropertyAccessor);
+				->setDefaultSort(array('txId' => 'DESC'))
+				->setPropertyAccessor(new \Framework\Mapi\MapiPropertyAccessor);
 		
 		$grido->addColumn('txId', 'ID')
 				->setSortable();
@@ -97,6 +99,88 @@ class AuditControl extends Framework\Application\UI\BaseControl
 		});
 		$transaction = array_pop($transactions);
 		$template->transaction = $transaction;
+		
+		$template->render();
+	}
+	
+	
+	
+	public function renderAudit()
+	{
+		$template = $this->template;
+		$template->setFile(__DIR__ . '/audit.latte');
+		$template->render();
+	}
+	
+	
+	
+	public function createComponentAudit($name)
+	{
+		$link = $this->presenter->lazyLink('showViewAudit');
+		
+		//types
+		$tmp = $this->game->auditEventTypes;
+		array_unshift($tmp, '');
+		$types = array_combine($tmp, $tmp);
+		
+		//grido
+		$grido = $this->gridoFactory->create($this, $name);
+		$grido->setModel($this->auditFactory->access()->audits)
+				->setPrimaryKey('audit_event_id')
+				->setDefaultSort(array('audit_event_id' => 'DESC'));
+		
+		$grido->addColumn('audit_event_id', 'ID')
+				->setSortable();
+		
+		$grido->addColumn('user_id', 'UID')
+				->setSortable()
+				->setFilter(Filter::TYPE_NUMBER);
+		
+		$grido->addColumn('type', 'Typ')
+				->setSortable()
+				->setFilter(Filter::TYPE_SELECT, $types);
+
+		$grido->addColumn('timestamp', 'Čas')
+				->setSortable()
+				->setCustomRender(function ($item) {
+					return date('d.m.Y H:i:s', strtotime($item->timestamp));
+				});
+		
+		$grido->addColumn('search1', 'Search 1')
+				->setSortable()
+				->setFilter();
+		
+		$grido->addColumn('search2', 'Search 2')
+				->setSortable()
+				->setFilter();
+		
+		$grido->addColumn('data', 'Data')
+				->setTruncate(80)
+				->setFilter();
+		
+		//$grido->addFilterCustom('test', new \Framework\Grido\Components\CheckGroup);
+		
+		$grido->addAction('show', 'Podrobnosti')
+				->setIcon('list')
+				->setCustomHref(function ($item) use ($link) {
+					return $link->setParameter('id', $item->audit_event_id);
+				});
+		
+		return $grido;
+	}
+	
+	
+	
+	public function renderShowAudit()
+	{
+		$template = $this->template;
+		$template->setFile(__DIR__ . '/event.latte');
+		
+		$id = $this->presenter->getParameter('id');
+		$event = $this->auditFactory->access()->audits->where('audit_event_id = ?', $id)->fetch()->toArray();
+		$event['data'] = json_decode($event['data']);
+		
+		$template->event = $event;
 		
 		$template->render();
 	}

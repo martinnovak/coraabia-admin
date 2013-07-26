@@ -1,6 +1,6 @@
 <?php
 
-namespace Coraabia\Mapi;
+namespace Framework\Mapi;
 
 use Nette;
 
@@ -8,10 +8,10 @@ use Nette;
 
 class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSource
 {
-	/** @var \Coraabia\Mapi\MapiRequest */
+	/** @var \Framework\Mapi\MapiRequest */
 	private $request;
 	
-	/** @var \Coraabia\Mapi\MapiResult */
+	/** @var \Framework\Mapi\MapiResult */
 	private $data;
 	
 	/** @var boolean */
@@ -23,7 +23,7 @@ class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSou
 	
 	
 	/**
-	 * @param \Coraabia\Mapi\MapiRequest $request 
+	 * @param \Framework\Mapi\MapiRequest $request 
 	 */
 	public function __construct(MapiRequest $request)
 	{

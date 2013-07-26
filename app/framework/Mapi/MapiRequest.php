@@ -1,6 +1,6 @@
 <?php
 
-namespace Coraabia\Mapi;
+namespace Framework\Mapi;
 
 use Nette;
 

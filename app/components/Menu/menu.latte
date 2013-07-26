@@ -1,7 +1,7 @@
 <div class="navbar navbar-static-top navbar-inverse">
 	<div class="navbar-inner">
 		<a class="brand" href="{plink User:showProfile, server => dev}">{_'Coraabia Admin'}</a>
-		<ul class="nav">
+		<ul class="nav" n:if="$user->isLoggedIn()">
 			<li class="dropdown">
 				<a href="#" class="dropdown-toggle" data-toggle="dropdown">{_'Karty'}<b class="caret"></b></a>
 				<ul class="dropdown-menu">
@@ -13,7 +13,14 @@
 			<li class="dropdown">
 				<a href="#" class="dropdown-toggle" data-toggle="dropdown">{_'Audit'}<b class="caret"></b></a>
 				<ul class="dropdown-menu">
+					<li><a href="{plink Audit:showAudit}">{_'Audit'}</a></li>
 					<li><a href="{plink Audit:bazaarAudit}">{_'Bazaar'}</a></li>
+				</ul>
+			</li>
+			<li class="dropdown">
+				<a href="#" class="dropdown-toggle" data-toggle="dropdown">{_'Ostatní'}<b class="caret"></b></a>
+				<ul class="dropdown-menu">
+					<li><a href="{plink Text:showStaticList}">{_'Herní texty'}</a></li>
 				</ul>
 			</li>
 		</ul>
@@ -34,8 +41,10 @@
 					<li><a href="{plink this, lang => en}">{_'EN'}</a></li>
 				</ul>
 			</li>
+			{if $user->isLoggedIn()}
 			<li class="divider-vertical"></li>
 			<li><a href="{plink Sign:out}">{_'Odhlásit'}</a></li>
+			{/if}
 		</ul>
 	</div>
 </div>

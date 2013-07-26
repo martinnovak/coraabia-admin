@@ -21,9 +21,10 @@ class SignPresenter extends Framework\Application\UI\BasePresenter
 	 * Sign-in form factory.
 	 * @return \Nette\Application\UI\Form
 	 */
-	protected function createComponentSignInForm()
+	protected function createComponentSignInForm($name)
 	{
-		$form = new Nette\Application\UI\Form;
+		$form = $this->formFactory->create($this, $name);
+		
 		$form->addText('username', 'Login:')
 			->setRequired('Zadejte přihlašovací jméno.');
 

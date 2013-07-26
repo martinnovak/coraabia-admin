@@ -1,6 +1,6 @@
 <?php
 
-namespace Coraabia\Mapi;
+namespace Framework\Mapi;
 
 use Nette,
 	Model;
@@ -32,7 +32,7 @@ class MapiRequestFactory extends Nette\Object
 	/**
 	 * @param string $id
 	 * @param string $retColumn
-	 * @return \Coraabia\Mapi\MapiRequest 
+	 * @return \Framework\Mapi\MapiRequest 
 	 */
 	public function create($id, $retColumn)
 	{

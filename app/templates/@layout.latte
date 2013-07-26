@@ -32,7 +32,7 @@
 			<div class="span10">
 				<div n:foreach="$flashes as $flash" class="alert alert-{$flash->type}">
 					<button type="button" class="close" data-dismiss="alert">&times;</button>
-					{$flash->message}
+					{_$flash->message}
 				</div>
 				
 				{include #content}
@@ -59,7 +59,6 @@
 			$.nette.init();
 		});
 	</script>
-	<script type="text/javascript" src="{$basePath}/js/libs/code-highlight.js"></script>
 	{hook scripts}
 	{/#}
 </body>

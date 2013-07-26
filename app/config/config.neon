@@ -23,10 +23,16 @@ services:
 	dev: Model\Coraabia(@nette.database.dev)
 	stage: Model\Coraabia(@nette.database.stage)
 	beta: Model\Coraabia(@nette.database.beta)
+	adev: Model\Coraabia(@nette.database.adev)
+	astage: Model\Coraabia(@nette.database.astage)
+	abeta: Model\Coraabia(@nette.database.abeta)
 	locales: Model\Locales
 	- Model\CoraabiaFactory
+	- Model\AuditFactory
 	- Model\Authenticator(@game, %applicationSecret%, %hashAlgorithm%)
-	- Coraabia\Mapi\MapiRequestFactory(..., %bazaarUrls%)
+	- Framework\Mapi\MapiRequestFactory(..., %bazaarUrls%)
+	- Framework\Grido\GridoFactory
+	- Framework\Application\FormFactory
 	authorizator:
 		class: Model\Authorizator(@game)
 		setup: [ setupPermissions ]

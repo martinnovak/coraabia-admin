@@ -1,6 +1,6 @@
 <?php
 
-namespace Coraabia\Mapi;
+namespace Framework\Mapi;
 
 use Nette;
 
@@ -40,7 +40,7 @@ class MapiObject implements \ArrayAccess {
 			$obj = new static($obj);
 		} else if (is_array($obj)) {
 			$obj = array_map(function ($item) {
-				return \Coraabia\Mapi\MapiObject::access($item);
+				return \Framework\Mapi\MapiObject::access($item);
 			}, $obj);
 		}
 		return $obj;

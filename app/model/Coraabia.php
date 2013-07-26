@@ -35,4 +35,11 @@ class Coraabia extends Model
 	{
 		return $this->connection->selectionFactory->table('deck_connection');
 	}
+	
+	
+	
+	public function getAudits()
+	{
+		return $this->connection->selectionFactory->table('audit_event');
+	}
 }

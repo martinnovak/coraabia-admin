@@ -17,6 +17,9 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	/** @var \Framework\Hooks\HookManager @inject */
 	public $hookManager;
 	
+	/** @var \Framework\Application\FormFactory @inject */
+	public $formFactory;
+	
 	/** @var \Model\Locales @inject */
 	public $locales;
 	
