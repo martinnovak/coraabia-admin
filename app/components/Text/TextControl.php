@@ -9,6 +9,9 @@ use Nette,
 
 
 
+/**
+ * @method setKey(string) 
+ */
 class TextControl extends Framework\Application\UI\BaseControl
 {
 	/** @var \Model\Game @inject */
@@ -16,6 +19,9 @@ class TextControl extends Framework\Application\UI\BaseControl
 		
 	/** @var \Framework\Grido\GridoFactory @inject */
 	public $gridoFactory;
+	
+	/** @var string */
+	private $key;
 	
 	
 	
@@ -35,7 +41,7 @@ class TextControl extends Framework\Application\UI\BaseControl
 		$grido = $this->gridoFactory->create($this, $name);
 		$grido->setModel($this->game->staticTexts)
 				->setPrimaryKey('key')
-				->setDefaultSort(array('value' => 'ASC'));
+				->setDefaultSort(array('key' => 'ASC'));
 		
 		$grido->addColumn('key', 'Klíč')
 				->setSortable()
@@ -74,8 +80,7 @@ class TextControl extends Framework\Application\UI\BaseControl
 		
 		$form->addSubmit('submit', 'Změnit');
 		
-		$form->setDefaults($this->game->staticTexts->where('key = ?', $this->presenter->getParameter('id'))->fetch()->toArray());
-		
+		$form->setDefaults($this->game->staticTexts->where('key = ?', $this->key)->fetch()->toArray());		
 		$form->onSuccess[] = $this->textEditFormSuccess;
 		return $form;
 	}
@@ -87,9 +92,11 @@ class TextControl extends Framework\Application\UI\BaseControl
 	 */
 	public function textEditFormSuccess($form)
 	{
-		$values = $form->getValues();
-		\Nette\Diagnostics\Debugger::dump($values);
-		
-		$this->presenter->flashMessage('Text byl uložen.', 'success');
+		try {
+			$this->game->updateStaticText($this->key, $form->getValues()->value);
+			$this->presenter->flashMessage('Text byl uložen.', 'success');
+		} catch (\Exception $e) {
+			$this->presenter->flashMessage($e->getMessage(), 'error');
+		}
 	}
 }

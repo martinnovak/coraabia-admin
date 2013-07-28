@@ -35,6 +35,7 @@ class FormFactory extends Nette\Object
 		
 		$form->setRenderer(new Kdyby\BootstrapFormRenderer\BootstrapRenderer);
 		$form->setTranslator($this->translator);
+		$form->addProtection();
 		
 		return $form;
 	}

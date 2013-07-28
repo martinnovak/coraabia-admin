@@ -42,7 +42,6 @@ class AuditControl extends Framework\Application\UI\BaseControl
 		
 		//types
 		$tmp = $this->game->bazaarTransactionTypes;
-		array_unshift($tmp, '');
 		$types = array_combine($tmp, $tmp);
 		
 		//grido
@@ -64,8 +63,7 @@ class AuditControl extends Framework\Application\UI\BaseControl
 				->setFilter();
 				
 		$grido->addColumn('type', 'Typ')
-				->setSortable()
-				->setFilter(Filter::TYPE_SELECT, $types);
+				->setSortable();
 
 		$grido->addColumn('timestamp', 'Čas')
 				->setSortable()
@@ -76,6 +74,11 @@ class AuditControl extends Framework\Application\UI\BaseControl
 		$grido->addColumn('node', 'Data')
 				->setTruncate(80)
 				->setFilter();
+		
+		$grido->addFilterCustom('type', new \Framework\Forms\Controls\CheckList('Typ', $types))
+				->setCondition(Grido\Components\Filters\Filter::CONDITION_CALLBACK, function ($item) {
+					return array('type IN %i', $item);
+				});
 		
 		$grido->addAction('show', 'Podrobnosti')
 				->setIcon('list')
@@ -120,7 +123,6 @@ class AuditControl extends Framework\Application\UI\BaseControl
 		
 		//types
 		$tmp = $this->game->auditEventTypes;
-		array_unshift($tmp, '');
 		$types = array_combine($tmp, $tmp);
 		
 		//grido
@@ -137,8 +139,8 @@ class AuditControl extends Framework\Application\UI\BaseControl
 				->setFilter(Filter::TYPE_NUMBER);
 		
 		$grido->addColumn('type', 'Typ')
-				->setSortable()
-				->setFilter(Filter::TYPE_SELECT, $types);
+				->setSortable()/*
+				->setFilter(Filter::TYPE_SELECT, $types)*/;
 
 		$grido->addColumn('timestamp', 'Čas')
 				->setSortable()
@@ -158,7 +160,10 @@ class AuditControl extends Framework\Application\UI\BaseControl
 				->setTruncate(80)
 				->setFilter();
 		
-		//$grido->addFilterCustom('test', new \Framework\Grido\Components\CheckGroup);
+		$grido->addFilterCustom('type', new \Framework\Forms\Controls\CheckList('Typ', $types))
+				->setCondition(Grido\Components\Filters\Filter::CONDITION_CALLBACK, function ($item) {
+					return array('type IN %i', $item);
+				});
 		
 		$grido->addAction('show', 'Podrobnosti')
 				->setIcon('list')

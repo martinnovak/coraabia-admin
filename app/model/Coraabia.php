@@ -38,8 +38,35 @@ class Coraabia extends Model
 	
 	
 	
+	/**
+	 * @return \Nette\Database\Table\Selection
+	 */
 	public function getAudits()
 	{
 		return $this->connection->selectionFactory->table('audit_event');
+	}
+	
+	
+	
+	/**
+	 * @return \Nette\Database\Table\Selection
+	 */
+	public function getNews()
+	{
+		return $this->connection->selectionFactory->table('news');
+	}
+	
+	
+	
+	/**
+	 * @param int $id
+	 * @param boolean $valid 
+	 */
+	public function validateNews($id, $valid)
+	{
+		$this->connection->selectionFactory->table('news')
+				->where('news_id = ?', $id)
+				->fetch()
+				->update(array('valid' => (bool)$valid));
 	}
 }

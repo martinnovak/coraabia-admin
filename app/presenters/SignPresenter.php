@@ -35,7 +35,6 @@ class SignPresenter extends Framework\Application\UI\BasePresenter
 
 		$form->addSubmit('send', 'Vstup');
 
-		$form->addProtection('Vypršel časový limit, odešlete formulář znovu.');
 		$form->onSuccess[] = $this->signInFormSucceeded;
 		return $form;
 	}

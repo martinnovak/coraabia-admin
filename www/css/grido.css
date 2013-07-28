@@ -1,3 +1,12 @@
+/**
+ * This file is part of the Grido (http://grido.bugyik.cz)
+ *
+ * Copyright (c) 2011 Petr Bugyík (http://petr.bugyik.cz)
+ *
+ * For the full copyright and license information, please view
+ * the file license.md that was distributed with this source code.
+ */
+
 /******************** GRID ********************/
 
 .grido {
@@ -57,14 +66,14 @@
     padding:0 6px ;
     border:solid #CACACA;
     border-width: 0 1px 1px 0;
-    /*height: 20px;*/
+    height: 30px;
 }
 /*
 .grido td,
 .grido th.checker{border-width: 0 0 1px 0;}
 .grido .head th {border-width: 0}
 */
-/*.grido th.column {width: 8%}*/
+.grido th.column {width: 8%}
 
 .grido thead {font-size: 1.15em}
 .grido tfoot {font-size: 1.1em}
@@ -88,8 +97,9 @@
 }
 
 .grido.filter.outer .items {
-    width: 84%;
+    width: 90%;
     float: left;
+    min-height: 60px;
 }
 
 .grido.filter.outer .items span {
@@ -106,7 +116,7 @@
 
 .grido.filter.outer .buttons {
     float: right;
-    margin: 15px 7px 0 0;
+    margin: .9% .5% 0 0;
 }
 
 .grido input.date {background: url('../img/cal.jpg') #fff no-repeat right center}
@@ -118,12 +128,10 @@
 .grido th.actions {
     width: 15%;
     text-align: center;
-	padding-top: 3px;
-	padding-bottom: 3px;
 }
 
 .grido th.buttons,
-.grido td.actions {text-align: center;padding-top: 3px;padding-bottom: 3px;}
+.grido td.actions {text-align: center}
 
 .grido td.actions a {margin-right: 3px}
 .grido th.checker {width: 0.1%;text-align: center}
@@ -160,7 +168,7 @@
 }
 .grido input.text {text-indent: 3px}
 
-.grido tr.filter .buttons input {
+.grido .buttons input {
     width: auto;
     padding: 4px 10px 4px;
     height: auto;

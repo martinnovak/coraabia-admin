@@ -30,7 +30,7 @@ abstract class SecuredPresenter extends BasePresenter
 					$checkSignal = FALSE;
 				}
 			} else if ($this->signal[1] === 'submit') { // Grido filter
-				$component = $this->signal[0] === '' ? $this : $this->getComponent($this->signal[0], FALSE);
+				/*$component = $this->signal[0] === '' ? $this : $this->getComponent($this->signal[0], FALSE);
 				if ($component !== NULL && $component instanceof Nette\Forms\Form) {
 					if (is_array($component->onSuccess)) { //@TODO
 						foreach ($component->onSuccess as $callback) {
@@ -42,7 +42,8 @@ abstract class SecuredPresenter extends BasePresenter
 					} else {
 						$checkSignal = FALSE;
 					}
-				}
+				}*/
+				$checkSignal = FALSE; //@TODO
 			}
 		} else {
 			$checkSignal = FALSE;

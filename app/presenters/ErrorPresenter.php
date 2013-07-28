@@ -33,7 +33,8 @@ class ErrorPresenter extends Framework\Application\UI\BasePresenter
 
 		} else {
 			$this->setView('500'); // load template 500.latte
-			Debugger::log($exception, Debugger::ERROR); // and log exception
+			$exceptionFilename = (string)Debugger::log($exception, Debugger::ERROR); // and log exception
+			$this->template->exceptionFilename = substr($exceptionFilename, (int)strrpos($exceptionFilename, '/'));
 		}
 	}
 

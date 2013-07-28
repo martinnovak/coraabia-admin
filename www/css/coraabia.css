@@ -1,27 +1,15 @@
-.navbar {
-	margin-bottom: 1em;
-}
+.navbar { margin-bottom: 1em; }
 
-.guardian {
-	color: #459cd8 !important;
-}
+.sidebar { min-height: 200px; }
 
-.xenno {
-	color: #63d411 !important;
-}
+.guardian { color: #459cd8 !important; }
+.xenno { color: #63d411 !important; }
+.mercenary { color: #b2b2b1 !important; }
+.unliving { color: #b1980a !important; }
+.outlaw { color: #db2929 !important; }
 
-.mercenary {
-	color: #b2b2b1 !important;
-}
-
-.unliving {
-	color: #b1980a !important;
-}
-
-.outlaw {
-	color: #db2929 !important;
-}
-
-.sidebar {
-	min-height: 200px;
-}
+.grido td { height: auto; padding-top: 3px; padding-bottom: 3px; }
+.grido th.column { width: auto; }
+.grido th.actions { width: auto; min-width: 150px; }
+.grido.filter.outer .items { width: 86%; }
+.grido.filter.outer .items span { width: auto; }

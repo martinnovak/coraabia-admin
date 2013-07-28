@@ -26,7 +26,7 @@ services:
 	adev: Model\Coraabia(@nette.database.adev)
 	astage: Model\Coraabia(@nette.database.astage)
 	abeta: Model\Coraabia(@nette.database.abeta)
-	locales: Model\Locales
+	locales: Model\Locales(%staticUrls%)
 	- Model\CoraabiaFactory
 	- Model\AuditFactory
 	- Model\Authenticator(@game, %applicationSecret%, %hashAlgorithm%)

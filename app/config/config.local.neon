@@ -30,3 +30,7 @@ parameters:
 		dev: 'http://localhost:8081/bazaar'
 		stage: 'http://localhost:8088/bazaar'
 		beta: 'http://localhost:8082/bazaar'
+	staticUrls:
+		dev: 'http://dev.static.coraabia.cz'
+		stage: 'http://stage.static.coraabia.cz'
+		beta: 'http://static.coraabia.com'

@@ -144,34 +144,38 @@ class CardControl extends Framework\Application\UI\BaseControl
 					return ucfirst(strtolower($item->subtype));
 				});
 		
-		if ($this->locales->server == \Coraabia\ServerEnum::DEV) {
-			$grido->addColumn('ready', '')
-					->setCustomRender(function ($item) {
-						return $item->ready ? '<i class="icon-ok"></i>' : '';
-					});
-				
-			$grido->addAction('edit', 'Změnit')
-					->setIcon('edit')
-					->setCustomHref(function ($item) use ($editLink) {
-						return $editLink->setParameter('id', $item->card_id);
-					});
-					
-			$grido->addAction('remove', 'Smazat')
-					->setIcon('remove')
-					->setCustomHref(function ($item) use ($removeLink) {
-						return $removeLink->setParameter('id', $item->card_id);
-					})
-					->setConfirm(function ($item) use ($self) {
-						return "Opravdu chcete smazat kartu '" . $self->translator->translate('card.' . $item->card_id) . "'?";
-					});
-		}
+		$grido->addColumn('ready', '')
+				->setCustomRender(function ($item) {
+					return $item->ready ? '<i class="icon-ok"></i>' : '';
+				});
+
+		$grido->addAction('edit', 'Změnit')
+				->setIcon('edit')
+				->setCustomHref(function ($item) use ($editLink) {
+					return $editLink->setParameter('id', $item->card_id);
+				})
+				->setDisable(function ($item) use ($self) {
+					return $self->locales->server != \Coraabia\ServerEnum::DEV;
+				});
+
+		$grido->addAction('remove', 'Smazat')
+				->setIcon('remove')
+				->setCustomHref(function ($item) use ($removeLink) {
+					return $removeLink->setParameter('id', $item->card_id);
+				})
+				->setConfirm(function ($item) use ($self) {
+					return "Opravdu chcete smazat kartu '" . $self->translator->translate('card.' . $item->card_id) . "'?";
+				})
+				->setDisable(function ($item) use ($self) {
+					return $self->locales->server != \Coraabia\ServerEnum::DEV;
+				});
 		
 		return $grido;
 	}
 	
 	
 	
-	public function handledeleteCard()
+	public function handleDeleteCard()
 	{
 		$this->presenter->flashMessage('Karta byla smazána.', 'success');
 	}

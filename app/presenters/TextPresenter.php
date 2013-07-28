@@ -10,4 +10,7 @@ use Nette,
 class TextPresenter extends Framework\Application\UI\SecuredPresenter
 {
 
+	public function actionUpdateStatic($id) {
+		$this->getComponent('text')->key = $id;
+	}
 }

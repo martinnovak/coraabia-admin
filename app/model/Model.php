@@ -29,4 +29,14 @@ abstract class Model extends Nette\Object
 		$this->connection = $connection;
 		$this->locales = $locales;
 	}
+	
+	
+	
+	/**
+	 * @return \Nette\Database\SelectionFactory 
+	 */
+	public function getSelectionFactory()
+	{
+		return $this->connection->selectionFactory;
+	}
 }

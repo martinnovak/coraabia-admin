@@ -15,7 +15,7 @@ class Game extends Model
 	public function getCards()
 	{
 		$result = $this->connection->selectionFactory->table('card');
-		return $this->locales->server == \Coraabia\ServerEnum::DEV ? $result : $result->where('c.ready', TRUE);
+		return $this->locales->server == \Coraabia\ServerEnum::DEV ? $result : $result->where('card.ready', TRUE);
 	}
 	
 	
@@ -718,5 +718,20 @@ class Game extends Model
 		return $this->connection->selectionFactory->table('translation')
 				->where('key IN ?', $keys)
 				->where('lang = ?', $this->locales->lang);
+	}
+	
+	
+	
+	/**
+	 * @param string $key
+	 * @param string $value 
+	 */
+	public function updateStaticText($key, $value)
+	{
+		$this->connection->selectionFactory->table('translation')
+				->where('key = ?', $key)
+				->where('lang = ?', $this->locales->lang)
+				->fetch()
+				->update(array('value' => $value));
 	}
 }

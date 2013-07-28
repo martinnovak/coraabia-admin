@@ -20,6 +20,23 @@ class Locales extends Nette\FreezableObject
 	/** @var int */
 	private $timestamp;
 	
+	/** @var array */
+	private $staticUrls;
+	
+	
+	
+	public function __construct(array $staticUrls)
+	{
+		$this->staticUrls = $staticUrls;
+	}
+	
+	
+	
+	public function getStaticUrl()
+	{
+		return $this->staticUrls[$this->server];
+	}
+	
 	
 	
 	/**
