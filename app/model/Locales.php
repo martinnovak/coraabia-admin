@@ -34,7 +34,7 @@ class Locales extends Nette\FreezableObject
 	{
 		$this->staticUrls = $staticUrls;
 		$this->langs = $langs;
-		$self->timestamp = time();
+		$this->timestamp = time();
 	}
 	
 	
