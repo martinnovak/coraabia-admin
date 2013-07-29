@@ -53,7 +53,8 @@ class Coraabia extends Model
 	 */
 	public function getNews()
 	{
-		return $this->connection->selectionFactory->table('news');
+		return $this->connection->selectionFactory->table('news')
+				->select('*, CASE WHEN valid_from IS NOT NULL THEN valid_from ELSE created END AS order_by');
 	}
 	
 	

@@ -43,7 +43,7 @@ class NewsControl extends Framework\Application\UI\BaseControl
 		$grido = $this->gridoFactory->create($this, $name);
 		$grido->setModel($this->coraabiaFactory->access()->news)
 				->setPrimaryKey('news_id')
-				->setDefaultSort(array('news_id' => 'DESC'));
+				->setDefaultSort(array('order_by' => 'DESC'));
 		
 		$grido->addColumn('news_id', 'ID')
 				->setSortable();
@@ -68,6 +68,13 @@ class NewsControl extends Framework\Application\UI\BaseControl
 		$grido->addColumn('text_' . $this->locales->lang, 'Text')
 				->setSortable()
 				->setTruncate(220)
+				->setFilter();
+		
+		$grido->addColumnDate('order_by', 'Začátek')
+				->setSortable()
+				->setCustomRender(function ($item) {
+					return $item->order_by->format('d.m.Y<b\r />H:i:s');
+				})
 				->setFilter();
 		
 		if ($this->locales->server == \Coraabia\ServerEnum::DEV) {

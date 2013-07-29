@@ -4,7 +4,6 @@ namespace App;
 
 use Nette,
 	Framework,
-	Model,
 	Nette\Diagnostics\Debugger;
 
 
@@ -15,8 +14,7 @@ class ErrorPresenter extends Framework\Application\UI\BasePresenter
 {
 
 	/**
-	 * @param  Exception
-	 * @return void
+	 * @param  \Exception
 	 */
 	public function renderDefault($exception)
 	{
@@ -33,8 +31,7 @@ class ErrorPresenter extends Framework\Application\UI\BasePresenter
 
 		} else {
 			$this->setView('500'); // load template 500.latte
-			$exceptionFilename = (string)Debugger::log($exception, Debugger::ERROR); // and log exception
-			$this->template->exceptionFilename = substr($exceptionFilename, (int)strrpos($exceptionFilename, '/'));
+			Debugger::log($exception, Debugger::ERROR); // and log exception
 		}
 	}
 
