@@ -11,6 +11,6 @@ class NewsPresenter extends Framework\Application\UI\SecuredPresenter
 {
 
 	public function actionUpdateNews($id) {
-		$this->getComponent('news')->newsId = $id;
+		$this->getComponent('news')->newsId = (int)$id;
 	}
 }

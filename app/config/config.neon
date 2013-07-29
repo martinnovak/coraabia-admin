@@ -1,3 +1,7 @@
+parameters:
+	langs: [cs, en]
+	resourceDir: '%wwwDir%/images/resource'
+
 php:
 	date.timezone: Europe/Prague
 	# zlib.output_compression: yes
@@ -26,7 +30,7 @@ services:
 	adev: Model\Coraabia(@nette.database.adev)
 	astage: Model\Coraabia(@nette.database.astage)
 	abeta: Model\Coraabia(@nette.database.abeta)
-	locales: Model\Locales(%staticUrls%)
+	locales: Model\Locales(%staticUrls%, %langs%)
 	- Model\CoraabiaFactory
 	- Model\AuditFactory
 	- Model\Authenticator(@game, %applicationSecret%, %hashAlgorithm%)

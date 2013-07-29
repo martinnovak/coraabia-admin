@@ -8,6 +8,8 @@ use Nette;
 
 /**
  * Locales.
+ * @method int getTimestamp
+ * @method getLangs()
  */
 class Locales extends Nette\FreezableObject
 {
@@ -23,11 +25,16 @@ class Locales extends Nette\FreezableObject
 	/** @var array */
 	private $staticUrls;
 	
+	/** @var array */
+	private $langs;
 	
 	
-	public function __construct(array $staticUrls)
+	
+	public function __construct(array $staticUrls, array $langs)
 	{
 		$this->staticUrls = $staticUrls;
+		$this->langs = $langs;
+		$self->timestamp = time();
 	}
 	
 	
@@ -47,9 +54,8 @@ class Locales extends Nette\FreezableObject
 		$self = $this;
 		$application->onRequest[] = function ($application, $request) use ($self) {
 			$parameters = $request->getParameters();
-			$self->lang = $parameters['lang'];
+			$self->setLang($parameters['lang']);
 			$self->server = $parameters['server'];
-			$self->timestamp = time();
 			//$self->freeze();
 		};
 	}
@@ -87,6 +93,9 @@ class Locales extends Nette\FreezableObject
 	public function setLang($lang)
 	{
 		$this->updating();
+		if (!in_array($lang, $this->langs)) {
+			throw new Nette\InvalidArgumentException("Jazyk '$lang' není podporován.");
+		}
 		$this->lang = $lang;
 	}
 	
@@ -118,14 +127,11 @@ class Locales extends Nette\FreezableObject
 	
 	
 	/**
-	 * @return string
-	 * @throws Nette\InvalidStateException 
+	 * @param array $langs
 	 */
-	public function getTimestamp()
+	public function setLangs(array $langs)
 	{
-		if (!$this->timestamp) {
-			throw new Nette\InvalidStateException("Locales has not been initialized yet.");
-		}
-		return $this->timestamp;
+		$this->updating();
+		$this->langs = $langs;
 	}
 }

@@ -20,8 +20,9 @@
 				<li>{$val}</li>
 			</ul>
 			{elseif is_object($value)}
-			{var $tmp = json_encode($value)}
-			{$tmp}
+			<ul n:inner-foreach="$value as $key1 => $val">
+				<li>{$key1}: {$val}</li>
+			</ul>
 			{else}
 			{$value}
 			{/if}

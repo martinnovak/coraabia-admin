@@ -35,7 +35,7 @@ class FormFactory extends Nette\Object
 		
 		$form->setRenderer(new Kdyby\BootstrapFormRenderer\BootstrapRenderer);
 		$form->setTranslator($this->translator);
-		$form->addProtection();
+		$form->addProtection('Vypršel časový limit, odešlete formulář znovu.');
 		
 		return $form;
 	}

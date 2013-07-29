@@ -29,6 +29,11 @@ abstract class SecuredPresenter extends BasePresenter
 				if ($component !== NULL && $component instanceof Grido\Grid) {
 					$checkSignal = FALSE;
 				}
+			} else if ($this->signal[1] === 'suggest') { // Grido suggest
+				$component = $this->signal[0] === '' ? $this : $this->getComponent($this->signal[0], FALSE);
+				if ($component !== NULL && $component instanceof Grido\Components\Filters\Filter) {
+					$checkSignal = FALSE;
+				}
 			} else if ($this->signal[1] === 'submit') { // Grido filter
 				/*$component = $this->signal[0] === '' ? $this : $this->getComponent($this->signal[0], FALSE);
 				if ($component !== NULL && $component instanceof Nette\Forms\Form) {
@@ -49,12 +54,16 @@ abstract class SecuredPresenter extends BasePresenter
 			$checkSignal = FALSE;
 		}
 		
-		if ($checkSignal && !$this->user->isAllowed($this->user->getAuthorizator()->buildResourceName($this->locales->server, $this->signal[1]))) {
-			throw new Nette\Application\ForbiddenRequestException;
+		if ($checkSignal) {
+			$resource = $this->user->getAuthorizator()->buildResourceName($this->locales->server, $this->signal[1]);
+			if (!$this->user->isAllowed($resource)) {
+				throw new Nette\Application\ForbiddenRequestException("Zdroj '$resource' neexistuje.");
+			}
 		}
 		
-		if (!$this->user->isAllowed($this->user->getAuthorizator()->buildResourceName($this->locales->server, $this->getParameter('action')))) {
-			throw new Nette\Application\ForbiddenRequestException;
+		$resource = $this->user->getAuthorizator()->buildResourceName($this->locales->server, $this->getParameter('action'));
+		if (!$this->user->isAllowed($resource)) {
+			throw new Nette\Application\ForbiddenRequestException("Zdroj '$resource' neexistuje.");
 		}
 	}
 }

@@ -50,9 +50,16 @@ class DeckControl extends Framework\Application\UI\BaseControl
 				->setSortable();
 		
 		$grido->addColumn('user_id', 'UID')
-				->setColumn(function ($item) {
+				->setSortable()
+				->setColumn('deck.user_id')
+				->setCustomRender(function ($item) {
 					return $item->user_id;
-				});
+				})
+				->setFilterText()
+						->setColumn('deck.user_id')
+						->setSuggestion(function ($item) {
+							return $item->user_id;
+						});
 		
 		$grido->addColumn('username', 'Uživatel')
 				->setSortable()
