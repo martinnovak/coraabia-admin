@@ -45,11 +45,15 @@ class TextControl extends Framework\Application\UI\BaseControl
 		
 		$grido->addColumn('key', 'Klíč')
 				->setSortable()
-				->setFilter();
+				->setFilterText()
+						->setSuggestion(function ($item) { //no idea why it bugs out when you use ->setSuggestion(NULL)
+							return $item->key;
+						});
 		
 		$grido->addColumn('value', 'Hodnota')
 				->setSortable()
-				->setFilter();
+				->setFilterText()
+						->setSuggestion();
 		
 		$grido->addAction('edit', 'Změnit')
 				->setIcon('edit')

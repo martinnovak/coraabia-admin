@@ -13,6 +13,7 @@
 .grido th.actions { width: auto; min-width: 150px; }
 .grido.filter.outer .items { width: 86%; }
 .grido.filter.outer .items span { width: auto; }
+.grido input.date { background: #fff; }
 
 .form-image { float: right; }
 .form-horizontal { float: left; }

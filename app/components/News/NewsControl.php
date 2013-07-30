@@ -70,12 +70,14 @@ class NewsControl extends Framework\Application\UI\BaseControl
 		
 		$grido->addColumn('title_' . $this->locales->lang, 'Titulek')
 				->setSortable()
-				->setFilter();
+				->setFilterText()
+						->setSuggestion();
 		
 		$grido->addColumn('text_' . $this->locales->lang, 'Text')
 				->setSortable()
 				->setTruncate(220)
-				->setFilter();
+				->setFilterText()
+						->setSuggestion();
 		
 		$grido->addColumnDate('order_by', 'Začátek')
 				->setSortable()
@@ -89,6 +91,22 @@ class NewsControl extends Framework\Application\UI\BaseControl
 							|| $item->valid_to->getTimestamp() >= $self->locales->timestamp
 							? '<i class="icon-ok"></i>'
 							: '';
+				});
+				
+		$grido->addColumn('valid', 'Jazyky')
+				->setCustomRender(function ($item) use ($self) {
+					$valid = TRUE;
+					foreach ($self->locales->langs as $lang) {
+						if ($lang != $self->locales->lang) {
+							$title = 'title_' . $lang;
+							$text = 'text_' . $lang;
+							if ($item->$title == '' || $item->$text == '') { //intentionaly ==
+								$valid = FALSE;
+								break;
+							}
+						}
+					}
+					return $valid ? '' : '<i class="icon-warning-sign" title="' . strtoupper($lang) . '"></i>';
 				});
 		
 		$grido->addFilterDate('order_by', 'Začátek');
@@ -158,16 +176,20 @@ class NewsControl extends Framework\Application\UI\BaseControl
 	{
 		$form = $this->formFactory->create($this, $name);
 		
-		$form->addText('title_' . $this->locales->lang, 'Titulek')
+		$titleElement = $form->addText('title_' . $this->locales->lang, 'Titulek')
 				->setRequired()
 				->addRule(Nette\Forms\Form::FILLED, 'Vyplňte titulek novinky.');
 		
-		$form->addTextArea('text_' . $this->locales->lang, 'Text')
+		$textElement = $form->addTextArea('text_' . $this->locales->lang, 'Text')
 				->setAttribute('rows', 15);
 		
-		$form->addText('valid_from', 'Od');
+		$form->addText('valid_from', 'Od')
+				->getControlPrototype()
+				->addAttributes(array('class' => 'datepicker'));
 		
-		$form->addText('valid_to', 'Do');
+		$form->addText('valid_to', 'Do')
+				->getControlPrototype()
+				->addAttributes(array('class' => 'datepicker'));
 		
 		$form->addUpload('image_name', 'Obrázek');
 		
@@ -176,6 +198,27 @@ class NewsControl extends Framework\Application\UI\BaseControl
 		if ($this->newsId !== NULL) {
 			$defaults = $this->coraabiaFactory->access()->news->where('news_id = ?', $this->newsId)->fetch()->toArray();
 			$form->setDefaults($defaults);
+			
+			$valid = TRUE;
+			foreach ($this->locales->langs as $lang) {
+				if ($lang != $this->locales->lang) {
+					$title = 'title_' . $lang;
+					$text = 'text_' . $lang;
+					if ($defaults[$title] == '' || $defaults[$text] == '') {
+						$valid = FALSE;
+						break;
+					}
+				}
+			}
+			if (!$valid) {
+				$warningElement = Nette\Utils\Html::el('i')->addAttributes(array(
+					'class' => 'icon-warning-sign',
+					'title' => strtoupper($lang)
+				));
+				$titleElement->setOption('description', $warningElement);
+				$textElement->setOption('description', $warningElement);
+			}
+			
 		}
 		
 		$form->onSuccess[] = $this->newsFormSuccess;
