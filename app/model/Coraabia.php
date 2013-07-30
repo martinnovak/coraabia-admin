@@ -68,12 +68,12 @@ class Coraabia extends Model
 			$values['valid_to'] = NULL;
 		}
 		
-		if ($newsId !== NULL) {
+		if ($newsId !== NULL) { //update
 			$this->connection->selectionFactory->table('news')
 					->where('news_id = ?', $newsId)
 					->fetch()
 					->update($values);
-		} else {
+		} else { //insert
 			foreach ($this->locales->langs as $lang) {
 				if (!isset($values['title_' . $lang])) {
 					$values['title_' . $lang] = '';

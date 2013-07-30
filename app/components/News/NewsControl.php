@@ -98,7 +98,7 @@ class NewsControl extends Framework\Application\UI\BaseControl
 							: '';
 				});
 				
-		$grido->addColumn('valid', 'Jazyky')
+		$grido->addColumn('valid', 'Překlady')
 				->setCustomRender(function ($item) use ($self) {
 					foreach ($self->locales->langs as $lang) {
 						if ($lang != $self->locales->lang) {
@@ -290,6 +290,12 @@ class NewsControl extends Framework\Application\UI\BaseControl
 				}
 			}
 			
+			if ($values->valid_from != '') { //intentionaly !=
+				$values->valid_from = date('Y-m-d H:i:s', strtotime($values->valid_from));
+			}
+			if ($values->valid_to != '') { //intentionaly !=
+				$values->valid_to = date('Y-m-d H:i:s', strtotime($values->valid_to));
+			}
 			$row = $this->coraabiaFactory->access()->updateNews($this->newsId, (array)$values);
 			$this->presenter->flashMessage('Novinka byla uložena.', 'success');
 		} catch (\Exception $e) {
