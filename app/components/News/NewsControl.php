@@ -100,18 +100,17 @@ class NewsControl extends Framework\Application\UI\BaseControl
 				
 		$grido->addColumn('valid', 'Jazyky')
 				->setCustomRender(function ($item) use ($self) {
-					$valid = TRUE;
 					foreach ($self->locales->langs as $lang) {
 						if ($lang != $self->locales->lang) {
 							$title = 'title_' . $lang;
 							$text = 'text_' . $lang;
 							if ($item->$title == '' || $item->$text == '') { //intentionaly ==
-								$valid = FALSE;
+								return '<i class="icon-warning-sign"></i>&nbsp;' . strtoupper($lang);
 								break;
 							}
 						}
 					}
-					return $valid ? '' : '<i class="icon-warning-sign" title="' . strtoupper($lang) . '"></i>';
+					return '';
 				});
 		
 		$grido->addFilterDate('order_by', 'Začátek');
@@ -207,30 +206,44 @@ class NewsControl extends Framework\Application\UI\BaseControl
 			$defaults = $this->coraabiaFactory->access()->news->where('news_id = ?', $this->newsId)->fetch()->toArray();
 			$form->setDefaults($defaults);
 			
-			$valid = TRUE;
+			//set language warnings
+			$titleWarning = Nette\Utils\Html::el('');
+			$textWarning = Nette\Utils\Html::el('');
 			foreach ($this->locales->langs as $lang) {
 				if ($lang != $this->locales->lang) {
 					$title = 'title_' . $lang;
 					$text = 'text_' . $lang;
-					if ($defaults[$title] == '' || $defaults[$text] == '') {
-						$valid = FALSE;
-						break;
+					if ($defaults[$title] == '') {
+						$titleWarning->add($this->getWarningElement($lang));
+					}
+					if ($defaults[$text] == '') {
+						$textWarning->add($this->getWarningElement($lang));
 					}
 				}
 			}
-			if (!$valid) {
-				$warningElement = Nette\Utils\Html::el('i')->addAttributes(array(
-					'class' => 'icon-warning-sign',
-					'title' => strtoupper($lang)
-				));
-				$titleElement->setOption('description', $warningElement);
-				$textElement->setOption('description', $warningElement);
+			if (count($titleWarning)) {
+				$titleElement->setOption('description', $titleWarning);
 			}
-			
+			if (count($textWarning)) {
+				$textElement->setOption('description', $textWarning);
+			}
 		}
 		
 		$form->onSuccess[] = $this->newsFormSuccess;
 		return $form;
+	}
+	
+	
+	
+	/**
+	 * @param string $lang 
+	 */
+	protected function getWarningElement($lang)
+	{
+		$warningElement = Nette\Utils\Html::el('div');
+		$warningElement->add(Nette\Utils\Html::el('i')->addAttributes(array('class' => 'icon-warning-sign')));
+		$warningElement->add('&nbsp;' . strtoupper($lang));
+		return $warningElement;
 	}
 	
 	
