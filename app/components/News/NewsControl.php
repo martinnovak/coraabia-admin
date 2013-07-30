@@ -15,6 +15,11 @@ use Nette,
  */
 class NewsControl extends Framework\Application\UI\BaseControl
 {
+	const IMAGE_MAXSIZE = 1048576;
+	const IMAGE_MAXWIDTH = 614;
+	const IMAGE_MAXHEIGHT = 406;
+	
+	
 	/** @var \Model\CoraabiaFactory @inject */
 	public $coraabiaFactory;
 		
@@ -159,6 +164,8 @@ class NewsControl extends Framework\Application\UI\BaseControl
 		$template->setFile(__DIR__ . '/edit.latte');
 		
 		$template->newsImage = $this->coraabiaFactory->access()->news->select('image_name')->where('news_id = ?', $this->newsId)->fetch();
+		$template->thumbWidth = self::IMAGE_MAXWIDTH / 2;
+		$template->thumbHeight = self::IMAGE_MAXHEIGHT / 2;
 		
 		$this->hookManager->listen('sidebar', function (\Framework\Hooks\TemplateHook $hook) use ($self) {
 			$tmpl = $self->createTemplate();
@@ -191,7 +198,8 @@ class NewsControl extends Framework\Application\UI\BaseControl
 				->getControlPrototype()
 				->addAttributes(array('class' => 'datepicker'));
 		
-		$form->addUpload('image_name', 'Obrázek');
+		$form->addUpload('image_name', 'Obrázek')
+				->addRule(Nette\Forms\Form::MAX_FILE_SIZE, 'Maximální velikost obrázku je ' . self::IMAGE_MAXSIZE . ' bytů.', self::IMAGE_MAXSIZE);
 		
 		$form->addSubmit('submit', 'Uložit');
 		
@@ -239,7 +247,19 @@ class NewsControl extends Framework\Application\UI\BaseControl
 				if ($values->image_name->isImage()) {
 					$filename = 'news/' . \Nette\Utils\Strings::random() . '-' . $values->image_name->getSanitizedName();
 					$params = $this->presenter->context->getParameters();
-					$imgPath = $params['resourceDir'] . '/' . $filename;
+					$imgPath = realpath($params['resourceDir'] . '/' . $filename);
+					
+					//check image size & dimensions
+					$size = $values->image_name->getSize();
+					if ($size > self::IMAGE_MAXSIZE) {
+						throw new Nette\InvalidArgumentException("Maximální velikost obrázku je " . self::IMAGE_MAXSIZE . " bytů, nahraný obrázek má velikost $size bytů.");
+					}
+					$image = Nette\Image::fromFile($values->image_name->getTemporaryFile());
+					if ($image->width > self::IMAGE_MAXWIDTH || $image->height > self::IMAGE_MAXHEIGHT) {
+						throw new Nette\InvalidArgumentException("Maximální rozměry obrázku musí být " . self::IMAGE_MAXWIDTH . "×" . self::IMAGE_MAXHEIGHT . ", nahraný obrázek má rozměry {$image->width}×{$image->height}.");
+					}
+					
+					//move image to final destination
 					$values->image_name->move($imgPath);
 					$values->image_name = $filename;
 					
@@ -247,7 +267,7 @@ class NewsControl extends Framework\Application\UI\BaseControl
 					$uploader = realpath($params['appDir'] . "/../bin/{$this->locales->server}-image-uploader.sh $filename 2>&1");
 					@exec($uploader);
 				} else {
-					throw new Nette\InvalidArgumentException('Nahraný soubor musí být obrázek typu GIF, PNG nebo JPEG.');
+					throw new Nette\UnknownImageFileException('Nahraný soubor musí být obrázek typu GIF, PNG nebo JPEG.');
 				}
 			} else {
 				if ($values->image_name->getName() == '') { //intentionaly ==
