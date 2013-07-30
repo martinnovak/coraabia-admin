@@ -242,7 +242,7 @@ class NewsControl extends Framework\Application\UI\BaseControl
 	{
 		$warningElement = Nette\Utils\Html::el('div');
 		$warningElement->add(Nette\Utils\Html::el('i')->addAttributes(array('class' => 'icon-warning-sign')));
-		$warningElement->add('&nbsp;' . strtoupper($lang));
+		$warningElement->add('&nbsp;' . $this->translator->translate('Chybí překlad pro jazyk') . ' ' . strtoupper($lang));
 		return $warningElement;
 	}
 	
