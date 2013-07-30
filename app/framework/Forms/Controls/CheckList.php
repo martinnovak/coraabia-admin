@@ -60,11 +60,11 @@ class CheckList extends Nette\Forms\Controls\BaseControl
 	public function setValue($value)
 	{
 		if ($value !== NULL && !is_array($value)) {
-			throw new Nette\InvalidArgumentException("Value must be array or NULL, '$value' given.");
+			throw new Nette\InvalidArgumentException("Hodnota musí být array nebo NULL, poskytnuto '$value'.");
 		}
 		$current = is_array($this->value) ? $this->value : array();
 		if ($value !== NULL && array_diff_key(array_flip($current), $this->items) != array()) {
-			throw new Nette\InvalidArgumentException("Value '$value' is out of range of current items.");
+			throw new Nette\InvalidArgumentException("Hodnota '" . serialize($value) . "' není v rozsahu prvků.");
 		}
 		$this->value = $value === NULL ? NULL : array_values($value);
 		return $this;

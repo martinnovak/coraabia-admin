@@ -41,6 +41,9 @@ class Locales extends Nette\FreezableObject
 	
 	public function getStaticUrl()
 	{
+		if (!array_key_exists($this->server, $this->staticUrls)) {
+			throw new Nette\OutOfRangeException("Statická URL pro server '{$this->server}' neexistuje.");
+		}
 		return $this->staticUrls[$this->server];
 	}
 	
@@ -80,7 +83,7 @@ class Locales extends Nette\FreezableObject
 	public function getServer()
 	{
 		if (!$this->server) {
-			throw new Nette\InvalidStateException("Locales has not been initialized yet.");
+			throw new Nette\InvalidStateException("Locales nebyly inicializovány.");
 		}
 		return $this->server;
 	}
@@ -108,7 +111,7 @@ class Locales extends Nette\FreezableObject
 	public function getLang()
 	{
 		if (!$this->lang) {
-			throw new Nette\InvalidStateException("Locales has not been initialized yet.");
+			throw new Nette\InvalidStateException("Locales nebyly inicializovány.");
 		}
 		return $this->lang;
 	}

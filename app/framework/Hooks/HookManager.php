@@ -35,7 +35,7 @@ class HookManager extends Nette\Object
 					call_user_func($listener, $hook);
 				} else {
 					is_callable($listener, TRUE, $textual);
-					throw new Nette\InvalidStateException("Callback '$textual' is not callable.");
+					throw new Nette\InvalidStateException("Callback '$textual' nelze volat.");
 				}
 				if ($hook->isPropagationStopped()) {
 					return;

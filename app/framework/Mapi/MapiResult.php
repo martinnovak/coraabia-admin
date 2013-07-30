@@ -83,7 +83,7 @@ class MapiResult extends Nette\Object implements \Countable, \Iterator, \ArrayAc
 	 * @throws \Nette\InvalidStateException 
 	 */
 	public function offsetSet($offset, $value) {
-        throw new Nette\InvalidStateException("You cannot modify MapiResult.");
+        throw new Nette\NotSupportedException("MapiResult nelze modifikovat.");
     }
 	
 	
@@ -103,7 +103,7 @@ class MapiResult extends Nette\Object implements \Countable, \Iterator, \ArrayAc
 	 * @throws \Nette\InvalidStateException 
 	 */
     public function offsetUnset($offset) {
-        throw new Nette\InvalidStateException("You cannot modify MapiResult.");
+        throw new Nette\NotSupportedException("MapiResult nelze modifikovat.");
     }
 	
 	

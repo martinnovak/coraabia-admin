@@ -20,10 +20,10 @@ class MapiObject implements \ArrayAccess {
 	public function __construct($obj)
 	{
 		if (!is_object($obj)) {
-			throw new Nette\InvalidArgumentException("Argument must be an object.");
+			throw new Nette\InvalidArgumentException("Argument musí být objekt.");
 		}
 		if ($obj instanceof MapiObject) {
-			throw new Nette\InvalidArgumentException("Cannot double wrap MapiObject.");
+			throw new Nette\InvalidArgumentException("MapiObject nelze zabalit do sebe.");
 		}
 		$this->obj = $obj;
 	}
@@ -66,7 +66,7 @@ class MapiObject implements \ArrayAccess {
 	public function __get($name)
 	{
 		if (!property_exists($this->obj, $name)) {
-			throw new Nette\InvalidArgumentException("This MapiObject does not contain property '$name'.");
+			throw new Nette\InvalidArgumentException("MapiObject neobsahuje sloupec '$name'.");
 		}
 		return self::access($this->obj->$name);
 	}
@@ -112,7 +112,7 @@ class MapiObject implements \ArrayAccess {
 	 */
 	public function offsetSet($offset, $value) {
         if (is_null($offset)) {
-			throw new Nette\InvalidArgumentException("Offset cannot be NULL.");
+			throw new Nette\InvalidArgumentException("Offset nemůže být NULL.");
 		}
 		$this->obj->$offset = $value;
     }
@@ -145,7 +145,7 @@ class MapiObject implements \ArrayAccess {
 	 */
     public function offsetGet($offset) {
 		if (!property_exists($this->obj, $offset)) {
-			throw new Nette\InvalidArgumentException("This MapiObject does not contain property '$offset'.");
+			throw new Nette\InvalidArgumentException("MapiObject neobsahuje sloupec '$offset'.");
 		}
 		return self::access($this->obj->$offset);
     }

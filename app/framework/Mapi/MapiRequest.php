@@ -67,12 +67,12 @@ class MapiRequest extends Nette\Object
 			if (!isset($result->message)) {
 				$result->message = '';
 			}
-			throw new \LogicException("Request failed with status '$result->status' and message '$result->message'.");
+			throw new \LogicException("Požadavek selhal se statusem '$result->status' a zprávou '$result->message'.");
 			return $result;
 		}
 		
 		if (!isset($result->{$this->retColumn})) {
-			throw new \LogicException("Result doesn't contain column '$this->retColumn'.");
+			throw new \LogicException("Výsledek neobsahuje sloupec '$this->retColumn'.");
 			return $result;
 		}
 		
@@ -94,7 +94,7 @@ class MapiRequest extends Nette\Object
 		} else {
 			$date = strtotime((string)$date);
 			if ($date === FALSE) {
-				throw new Nette\InvalidArgumentException("Cannot format date '$date'.");
+				throw new Nette\InvalidArgumentException("Datum '$date' nelze naformátovat.");
 			}
 			return date('Y-m-d\TH:i:s', $date);
 		}
