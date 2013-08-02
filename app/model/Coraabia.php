@@ -59,30 +59,21 @@ class Coraabia extends Model
 	
 	
 	
+	/**
+	 * @param int|NULL $newsId
+	 * @param array $values
+	 * @return \Nette\Database\Table\ActiveRow|NULL
+	 */
 	public function updateNews($newsId, array $values)
 	{
-		if (isset($values['valid_from']) && $values['valid_from'] == '') { //intentionaly ==
-			$values['valid_from'] = NULL;
-		}
-		if (isset($values['valid_to']) && $values['valid_to'] == '') { //intentionaly ==
-			$values['valid_to'] = NULL;
-		}
-		
 		if ($newsId !== NULL) { //update
 			$this->connection->selectionFactory->table('news')
 					->where('news_id = ?', $newsId)
 					->fetch()
 					->update($values);
 		} else { //insert
-			foreach ($this->locales->langs as $lang) {
-				if (!isset($values['title_' . $lang])) {
-					$values['title_' . $lang] = '';
-				}
-				if (!isset($values['text_' . $lang])) {
-					$values['text_' . $lang] = '';
-				}
-			}
-			return $this->connection->selectionFactory->table('news')->insert($values);
+			return $this->connection->selectionFactory->table('news')
+					->insert($values);
 		}
 	}
 }

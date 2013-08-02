@@ -33,8 +33,8 @@ class CardControl extends Framework\Application\UI\BaseControl
 		foreach ($this->game->cards->fetchAll() as $card) {
 			$from = $card->valid_from ? $card->valid_from->setTime(0, 0, 0) : 0;
 			$to = $card->valid_to ? $card->valid_to->setTime(0, 0, 0) : 0;
-			$start[strtotime((string)$from, $this->locales->timestamp)][] = $card;
-			$finish[strtotime((string)$to, $this->locales->timestamp)][] = $card;
+			$start[strtotime((string)$from)][] = $card;
+			$finish[strtotime((string)$to)][] = $card;
 		}
 		$keys = array_unique(array_keys($start) + array_keys($finish));
 		rsort($keys);

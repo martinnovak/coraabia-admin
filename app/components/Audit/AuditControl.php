@@ -5,7 +5,8 @@ namespace App;
 use Nette,
 	Framework,
 	Grido,
-	Grido\Components\Filters\Filter;
+	Grido\Components\Filters\Filter,
+	Nextras;
 
 
 
@@ -49,7 +50,7 @@ class AuditControl extends Framework\Application\UI\BaseControl
 		$grido->setModel(new Framework\Mapi\MapiDataSource($request))
 				->setPrimaryKey('txId')
 				->setDefaultSort(array('txId' => 'DESC'))
-				->setPropertyAccessor(new \Framework\Mapi\MapiPropertyAccessor);
+				->setPropertyAccessor(new Framework\Mapi\MapiPropertyAccessor);
 		
 		$grido->addColumn('txId', 'ID')
 				->setSortable();
@@ -75,8 +76,8 @@ class AuditControl extends Framework\Application\UI\BaseControl
 				->setTruncate(80)
 				->setFilter();
 		
-		$grido->addFilterCustom('type', new \Framework\Forms\Controls\CheckList('Typ', $types))
-				->setCondition(Grido\Components\Filters\Filter::CONDITION_CALLBACK, function ($item) {
+		$grido->addFilterCustom('type', new Framework\Forms\Controls\MultiOptionList('Typ', $types))
+				->setCondition(Filter::CONDITION_CALLBACK, function ($item) {
 					return array('type IN %i', $item);
 				});
 		
@@ -139,8 +140,7 @@ class AuditControl extends Framework\Application\UI\BaseControl
 				->setFilter(Filter::TYPE_NUMBER);
 		
 		$grido->addColumn('type', 'Typ')
-				->setSortable()/*
-				->setFilter(Filter::TYPE_SELECT, $types)*/;
+				->setSortable();
 
 		$grido->addColumn('timestamp', 'Čas')
 				->setSortable()
@@ -160,8 +160,8 @@ class AuditControl extends Framework\Application\UI\BaseControl
 				->setTruncate(80)
 				->setFilter();
 		
-		$grido->addFilterCustom('type', new \Framework\Forms\Controls\CheckList('Typ', $types))
-				->setCondition(Grido\Components\Filters\Filter::CONDITION_CALLBACK, function ($item) {
+		$grido->addFilterCustom('type', new Framework\Forms\Controls\MultiOptionList('Typ', $types))
+				->setCondition(Filter::CONDITION_CALLBACK, function ($item) {
 					return array('type IN %i', $item);
 				});
 		

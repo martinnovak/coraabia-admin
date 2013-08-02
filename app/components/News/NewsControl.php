@@ -12,12 +12,16 @@ use Nette,
 /**
  * @method setNewsId(int)
  * @method int getNewsId()
+ * @method setRowNumber(int)
+ * @method int getRowNumber()
  */
 class NewsControl extends Framework\Application\UI\BaseControl
 {
 	const IMAGE_MAXSIZE = 1048576;
 	const IMAGE_MAXWIDTH = 614;
 	const IMAGE_MAXHEIGHT = 406;
+	const DATE_FORMAT = '(19|20)\d\d-(((0[13578]|1[02])-(0[1-9]|[12]\d|3[01]))|((0[469]|11)-(0[1-9]|[12]\d|30))|(02-(0[1-9]|1\d|2\d))) ([01]\d|2[0-3]):[0-5]\d:[0-5]\d';
+	const VISIBLE_NEWS = 20;
 	
 	
 	/** @var \Model\CoraabiaFactory @inject */
@@ -28,6 +32,9 @@ class NewsControl extends Framework\Application\UI\BaseControl
 	
 	/** @var int */
 	private $newsId;
+		
+	/** @var int */
+	private $rowNumber = 0;
 	
 	
 	
@@ -92,25 +99,24 @@ class NewsControl extends Framework\Application\UI\BaseControl
 				
 		$grido->addColumn('active', 'Aktivní')
 				->setCustomRender(function ($item) use ($self) {
-					return !$item->valid_to
-							|| $item->valid_to->getTimestamp() >= $self->locales->timestamp
+					return ($item->valid_from === NULL || $item->valid_from->getTimestamp() <= $self->locales->timestamp)
+							&& ($item->valid_to === NULL || $item->valid_to->getTimestamp() >= $self->locales->timestamp)
+							&& $self->rowNumber++ < $self::VISIBLE_NEWS
 							? '<i class="icon-ok"></i>'
 							: '';
 				});
 				
 		$grido->addColumn('valid', 'Překlady')
 				->setCustomRender(function ($item) use ($self) {
+					$result = '';
 					foreach ($self->locales->langs as $lang) {
-						if ($lang != $self->locales->lang) {
-							$title = 'title_' . $lang;
-							$text = 'text_' . $lang;
-							if ($item->$title == '' || $item->$text == '') { //intentionaly ==
-								return '<i class="icon-warning-sign"></i>&nbsp;' . strtoupper($lang);
-								break;
-							}
+						$title = 'title_' . $lang;
+						$text = 'text_' . $lang;
+						if ($item->$title == '' || $item->$text == '') { //intentionaly ==
+							$result .= '<div class="blink"><i class="icon-warning-sign"></i>&nbsp;' . strtoupper($lang) . '</div>';
 						}
 					}
-					return '';
+					return $result;
 				});
 		
 		$grido->addFilterDate('order_by', 'Začátek');
@@ -160,16 +166,12 @@ class NewsControl extends Framework\Application\UI\BaseControl
 	{
 		$self = $this;
 		$template = $this->template;
-		$template->setFile(__DIR__ . '/edit.latte');
-		
-		$template->newsImage = $this->coraabiaFactory->access()->news->select('image_name')->where('news_id = ?', $this->newsId)->fetch();
-		$template->thumbWidth = self::IMAGE_MAXWIDTH / 2;
-		$template->thumbHeight = self::IMAGE_MAXHEIGHT / 2;
+		$template->setFile(__DIR__ . '/newsForm.latte');
 		
 		$this->hookManager->listen('sidebar', function (\Framework\Hooks\TemplateHook $hook) use ($self) {
 			$tmpl = $self->createTemplate();
 			$tmpl->setFile(__DIR__ . '/editSidebar.latte');
-			$tmpl->newsId = $self->newsId;
+			$tmpl->news = $self->coraabiaFactory->access()->news->where('news_id = ?', $self->newsId)->fetch();
 			$hook->addTemplate($tmpl);
 		});
 		
@@ -178,55 +180,61 @@ class NewsControl extends Framework\Application\UI\BaseControl
 	
 	
 	
+	/**
+	 * @param string $name
+	 * @return \Nette\Application\UI\Form
+	 */
 	public function createComponentNewsForm($name)
 	{
 		$form = $this->formFactory->create($this, $name);
-		
-		$titleElement = $form->addText('title_' . $this->locales->lang, 'Titulek')
+
+		foreach ($this->locales->langs as $lang) {
+			
+			$form->addGroup(strtoupper($lang));
+			
+			$form->addText('title_' . $lang, 'Titulek')
 				->setRequired()
-				->addRule(Nette\Forms\Form::FILLED, 'Vyplňte titulek novinky.');
-		
-		$textElement = $form->addTextArea('text_' . $this->locales->lang, 'Text')
+				->addRule(Nette\Forms\Form::FILLED, 'Vyplňte titulek ' . strtoupper($lang) . ' novinky.');
+			
+			$form->addTextArea('text_' . $lang, 'Text')
 				->setAttribute('rows', 15);
+		}
+		
+		$form->addGroup('Platnost');
 		
 		$form->addText('valid_from', 'Od')
+				->setRequired()
+				->addRule(Nette\Forms\Form::PATTERN, 'Musí být ve formátu YYYY-MM-DD HH:MM:SS', self::DATE_FORMAT)//'(19|20)\d\d-(0[1-9]|1[012])-(0[1-9]|[12]\d|3[01]) ([01]\d|2[0-3]):[0-5]\d:[0-5]\d')
 				->getControlPrototype()
-				->addAttributes(array('class' => 'datepicker'));
+				->addAttributes(array('class' => 'datepicker', 'placeholder' => 'YYYY-MM-DD HH:MM:SS'));
 		
 		$form->addText('valid_to', 'Do')
+				->addRule(Nette\Forms\Form::PATTERN, 'Musí být ve formátu YYYY-MM-DD HH:MM:SS', '|(' . self::DATE_FORMAT . ')')//'|((19|20)\d\d-(0[1-9]|1[012])-(0[1-9]|[12]\d|3[01]) ([01]\d|2[0-3]):[0-5]\d:[0-5]\d)')
 				->getControlPrototype()
-				->addAttributes(array('class' => 'datepicker'));
+				->addAttributes(array('class' => 'datepicker', 'placeholder' => 'YYYY-MM-DD HH:MM:SS'));
+		
+		$form->addGroup('Obrázek');
 		
 		$form->addUpload('image_name', 'Obrázek')
 				->addRule(Nette\Forms\Form::MAX_FILE_SIZE, 'Maximální velikost obrázku je ' . self::IMAGE_MAXSIZE . ' bytů.', self::IMAGE_MAXSIZE);
 		
+		$form->setCurrentGroup();
 		$form->addSubmit('submit', 'Uložit');
 		
-		if ($this->newsId !== NULL) {
-			$defaults = $this->coraabiaFactory->access()->news->where('news_id = ?', $this->newsId)->fetch()->toArray();
+		if ($this->newsId != NULL) {
+			$defaults = $this->coraabiaFactory->access()->news
+					->where('news_id = ?', $this->newsId)
+					->fetch();
+			if ($defaults->valid_from == '') { //intentionaly ==
+				$defaults->update(array('valid_from' => $defaults->created));
+			}
 			$form->setDefaults($defaults);
 			
-			//set language warnings
-			$titleWarning = Nette\Utils\Html::el('');
-			$textWarning = Nette\Utils\Html::el('');
-			foreach ($this->locales->langs as $lang) {
-				if ($lang != $this->locales->lang) {
-					$title = 'title_' . $lang;
-					$text = 'text_' . $lang;
-					if ($defaults[$title] == '') {
-						$titleWarning->add($this->getWarningElement($lang));
-					}
-					if ($defaults[$text] == '') {
-						$textWarning->add($this->getWarningElement($lang));
-					}
-				}
+			if ($defaults->image_name != '') { //intentionaly !=
+				$this->setImage($form['image_name'], $defaults->image_name);
 			}
-			if (count($titleWarning)) {
-				$titleElement->setOption('description', $titleWarning);
-			}
-			if (count($textWarning)) {
-				$textElement->setOption('description', $textWarning);
-			}
+		} else {
+			$form->setDefaults(array('valid_from' => date('Y-m-d H:i:s')));
 		}
 		
 		$form->onSuccess[] = $this->newsFormSuccess;
@@ -236,31 +244,18 @@ class NewsControl extends Framework\Application\UI\BaseControl
 	
 	
 	/**
-	 * @param string $lang 
-	 */
-	protected function getWarningElement($lang)
-	{
-		$warningElement = Nette\Utils\Html::el('div');
-		$warningElement->add(Nette\Utils\Html::el('i')->addAttributes(array('class' => 'icon-warning-sign')));
-		$warningElement->add('&nbsp;' . $this->translator->translate('Chybí překlad pro jazyk') . ' ' . strtoupper($lang));
-		return $warningElement;
-	}
-	
-	
-	
-	/**
 	 * @param \Nette\Application\UI\Form $form 
 	 */
-	public function newsFormSuccess($form)
+	public function newsFormSuccess(Nette\Application\UI\Form $form)
 	{
 		$values = $form->getValues();
 		$row = NULL;
 		try {
 			if ($values->image_name->isOk()) {
 				if ($values->image_name->isImage()) {
-					$filename = 'news/' . \Nette\Utils\Strings::random() . '-' . $values->image_name->getSanitizedName();
+					$filename = 'news/' . date('Y-m-d-His-') . \Nette\Utils\Strings::random() . '-' . $values->image_name->getSanitizedName();
 					$params = $this->presenter->context->getParameters();
-					$imgPath = realpath($params['resourceDir'] . '/' . $filename);
+					$imgPath = $params['resourceDir'] . '/' . $filename;
 					
 					//check image size & dimensions
 					$size = $values->image_name->getSize();
@@ -277,8 +272,11 @@ class NewsControl extends Framework\Application\UI\BaseControl
 					$values->image_name = $filename;
 					
 					//upload to static
-					$uploader = realpath($params['appDir'] . "/../bin/{$this->locales->server}-image-uploader.sh $filename 2>&1");
+					$uploader = $params['appDir'] . "/../bin/{$this->locales->server}-image-uploader.sh $filename 2>&1";
 					@exec($uploader);
+					
+					//set image
+					$this->setImage($form['image_name'], $values->image_name);
 				} else {
 					throw new Nette\UnknownImageFileException('Nahraný soubor musí být obrázek typu GIF, PNG nebo JPEG.');
 				}
@@ -290,21 +288,35 @@ class NewsControl extends Framework\Application\UI\BaseControl
 				}
 			}
 			
-			if ($values->valid_from != '') { //intentionaly !=
-				$values->valid_from = date('Y-m-d H:i:s', strtotime($values->valid_from));
+			if (isset($values->valid_to) && $values->valid_to == '') { //intentionaly ==
+				unset($values->valid_to);
 			}
-			if ($values->valid_to != '') { //intentionaly !=
-				$values->valid_to = date('Y-m-d H:i:s', strtotime($values->valid_to));
-			}
+
 			$row = $this->coraabiaFactory->access()->updateNews($this->newsId, (array)$values);
 			$this->presenter->flashMessage('Novinka byla uložena.', 'success');
 		} catch (\Exception $e) {
-			$this->presenter->flashMessage($e->getMessage(), 'error');
+			$form->addError($e->getMessage());
 		}
 		
 		if ($row) {
 			$this->presenter->redirect('News:updateNews', array('id' => $row->news_id));
 		}
+	}
+	
+	
+	
+	/**
+	 * @param \Nette\Forms\Controls\BaseControl $control
+	 * @param string $filename 
+	 */
+	protected function setImage(Nette\Forms\Controls\BaseControl $control, $filename)
+	{
+		$control->setOption('description', Nette\Utils\Html::el('img')->addAttributes(array(
+			'src' => $this->locales->staticUrl . '/' . $filename,
+			'class' => 'img-polaroid',
+			'width' => self::IMAGE_MAXWIDTH / 2,
+			'height' => self::IMAGE_MAXHEIGHT / 2
+		)));
 	}
 	
 	
@@ -327,7 +339,7 @@ class NewsControl extends Framework\Application\UI\BaseControl
 	public function renderCreate()
 	{
 		$template = $this->template;
-		$template->setFile(__DIR__ . '/create.latte');
+		$template->setFile(__DIR__ . '/newsForm.latte');
 		$template->render();
 	}
 }

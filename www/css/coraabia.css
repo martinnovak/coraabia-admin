@@ -15,9 +15,29 @@
 .grido.filter.outer .items span { width: auto; }
 .grido input.date { background: #fff; }
 
-.form-image { float: right; }
-.form-horizontal { float: left; }
+.multioption label { display: inline-block; margin-right: 20px; }
 
-input, textarea, .uneditable-input {
-    width: 309px;
+input, textarea, .uneditable-input { width: 309px; }
+label.control-label.required { font-weight: bold; }
+
+
+
+@keyframes blink {
+	0% { opacity: 1; }
+	20% { opacity: 1; }
+    50% { opacity: 0; }
+	80% { opacity: 1; }
+	100% { opacity: 1; }
+}
+@-webkit-keyframes blink {
+	0% { opacity: 1; }
+    20% { opacity: 1; }
+    50% { opacity: 0; }
+	80% { opacity: 1; }
+	100% { opacity: 1; }
+}
+.blink {
+	-webkit-animation: blink 1.6s linear infinite;
+	-moz-animation: blink 1.6s linear infinite;
+	animation: blink 1.6s linear infinite;
 }

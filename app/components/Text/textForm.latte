@@ -1,0 +1,16 @@
+{form textForm}
+	{$form->render('errors')}
+	<div class="row-fluid">
+		<div class="span6">
+			{foreach $form->getGroups() as $group}
+				{if $iterator->isOdd()}{$form->render($group)}{/if}
+			{/foreach}
+		</div>
+		<div class="span6">
+			{foreach $form->getGroups() as $group}
+				{if $iterator->isEven()}{$form->render($group)}{/if}
+			{/foreach}
+		</div>
+	</div>
+	{$form->render('body')}
+{/form}

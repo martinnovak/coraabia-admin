@@ -20,6 +20,9 @@ class TextControl extends Framework\Application\UI\BaseControl
 	/** @var \Framework\Grido\GridoFactory @inject */
 	public $gridoFactory;
 	
+	/** @var \Nette\Caching\IStorage @inject */
+	public $storage;
+	
 	/** @var string */
 	private $key;
 	
@@ -36,6 +39,7 @@ class TextControl extends Framework\Application\UI\BaseControl
 	
 	public function createComponentTextlist($name)
 	{
+		$self = $this;
 		$editLink = $this->presenter->lazyLink('updateStatic');
 		
 		$grido = $this->gridoFactory->create($this, $name);
@@ -55,6 +59,17 @@ class TextControl extends Framework\Application\UI\BaseControl
 				->setFilterText()
 						->setSuggestion();
 		
+		$grido->addColumn('valid', 'Překlady')
+				->setCustomRender(function ($item) use ($self) {
+					$result = '';
+					foreach ($self->locales->langs as $lang) {
+						if ($self->translator->getTranslation($item->key, $lang) == '') { //intentionaly ==
+							$result .= '<div class="blink"><i class="icon-warning-sign"></i>&nbsp;' . strtoupper($lang) . '</div>';
+						}
+					}
+					return $result;
+				});
+		
 		$grido->addAction('edit', 'Změnit')
 				->setIcon('edit')
 				->setCustomHref(function ($item) use ($editLink) {
@@ -69,23 +84,37 @@ class TextControl extends Framework\Application\UI\BaseControl
 	public function renderEdit()
 	{
 		$template = $this->template;
-		$template->setFile(__DIR__ . '/edit.latte');
+		$template->setFile(__DIR__ . '/textForm.latte');
 		$template->render();
 	}
 	
 	
 	
-	public function createComponentTextEditForm($name)
+	/**
+	 * @param string $name
+	 * @return \Nette\Application\UI\Form
+	 */
+	public function createComponentTextForm($name)
 	{
 		$form = $this->formFactory->create($this, $name);
 		
-		$form->addTextArea('value', 'Text')
+		$defaults = array();
+		foreach ($this->locales->langs as $lang) {
+			
+			$form->addGroup(strtoupper($lang));
+			
+			$form->addTextArea('value_' . $lang, 'Text')
 				->setAttribute('rows', 15);
+			
+			$defaults['value_' . $lang] = $this->translator->getTranslation($this->key, $lang);
+		}
+		
+		$form->setCurrentGroup();
 		
 		$form->addSubmit('submit', 'Změnit');
 		
-		$form->setDefaults($this->game->staticTexts->where('key = ?', $this->key)->fetch()->toArray());		
-		$form->onSuccess[] = $this->textEditFormSuccess;
+		$form->setDefaults($defaults);		
+		$form->onSuccess[] = $this->textFormSuccess;
 		return $form;
 	}
 	
@@ -94,13 +123,19 @@ class TextControl extends Framework\Application\UI\BaseControl
 	/**
 	 * @param \Nette\Application\UI\Form $form 
 	 */
-	public function textEditFormSuccess($form)
+	public function textFormSuccess(Nette\Application\UI\Form $form)
 	{
 		try {
-			$this->game->updateStaticText($this->key, $form->getValues()->value);
+			foreach ($this->locales->langs as $lang) {
+				$value = 'value_' . $lang;
+				$this->game->updateStaticText($this->key, $lang, $form->getValues()->$value);
+			}
 			$this->presenter->flashMessage('Text byl uložen.', 'success');
 		} catch (\Exception $e) {
-			$this->presenter->flashMessage($e->getMessage(), 'error');
+			$form->addError($e->getMessage());
 		}
+		
+		$cache = new Nette\Caching\Cache($this->storage, str_replace('\\', '.', get_class($this->translator)));
+		$cache->remove('translations');
 	}
 }

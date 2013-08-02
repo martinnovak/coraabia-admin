@@ -9,7 +9,7 @@ use Nette,
 
 class NewsPresenter extends Framework\Application\UI\SecuredPresenter
 {
-
+	
 	public function actionUpdateNews($id) {
 		$this->getComponent('news')->newsId = (int)$id;
 	}

@@ -34,21 +34,9 @@ abstract class SecuredPresenter extends BasePresenter
 				if ($component !== NULL && $component instanceof Grido\Components\Filters\Filter) {
 					$checkSignal = FALSE;
 				}
-			} else if ($this->signal[1] === 'submit') { // Grido filter
-				/*$component = $this->signal[0] === '' ? $this : $this->getComponent($this->signal[0], FALSE);
-				if ($component !== NULL && $component instanceof Nette\Forms\Form) {
-					if (is_array($component->onSuccess)) { //@TODO
-						foreach ($component->onSuccess as $callback) {
-							if ($callback instanceof Nette\Callback && $callback->native[0] instanceof Grido\Grid) {
-								$checkSignal = FALSE;
-								break;
-							}
-						}
-					} else {
-						$checkSignal = FALSE;
-					}
-				}*/
-				$checkSignal = FALSE; //@TODO
+			} else if ($this->signal[1] === 'submit') { // form submit
+				/* Form submit permissions are checked by the page the form is on, so just skip checking this signal. */
+				$checkSignal = FALSE;
 			}
 		} else {
 			$checkSignal = FALSE;

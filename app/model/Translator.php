@@ -87,4 +87,22 @@ class Translator extends Nette\Object implements Nette\Localization\ITranslator
 		}
         return $message;
     }
+	
+	
+	
+	/**
+	 * @param string $key 
+	 * @param string|NULL $lang
+	 */
+	public function getTranslation($key, $lang = NULL)
+	{
+		if ($lang === NULL) {
+			$lang = $this->locales->lang;
+		}
+		if (isset($this->translations[$lang][$key])) {
+			return $this->translations[$lang][$key];
+		} else {
+			return '';
+		}
+	}
 }

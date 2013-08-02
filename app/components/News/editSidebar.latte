@@ -1,1 +1,1 @@
-<li><a href="{link News:removeNewsImage, id => $newsId}">{_'Smazat obrázek'}</a></li>
+<li n:if="isset($news) && isset($news->news_id) && $news->image_name != ''"><a href="{link News:removeNewsImage, id => $news->news_id}" onclick="javascript:return confirm({_'Opravdu chcete smazat obrázek?'});">{_'Smazat obrázek'}</a></li>

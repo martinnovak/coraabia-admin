@@ -724,13 +724,14 @@ class Game extends Model
 	
 	/**
 	 * @param string $key
-	 * @param string $value 
+	 * @param string $lang
+	 * @param string $value
 	 */
-	public function updateStaticText($key, $value)
+	public function updateStaticText($key, $lang, $value)
 	{
 		$this->connection->selectionFactory->table('translation')
 				->where('key = ?', $key)
-				->where('lang = ?', $this->locales->lang)
+				->where('lang = ?', $lang)
 				->fetch()
 				->update(array('value' => $value));
 	}

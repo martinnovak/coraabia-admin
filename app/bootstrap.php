@@ -25,6 +25,13 @@ $configurator->addConfig(__DIR__ . '/config/config.local.neon');
 
 \Kdyby\BootstrapFormRenderer\DI\RendererExtension::register($configurator);
 
+\Nette\Forms\Container::extensionMethod('addOptionList', function (\Nette\Forms\Container $container, $name, $label = NULL, array $items = NULL) {
+    return $container[$name] = new \Nextras\Forms\Controls\OptionList($label, $items);
+});
+\Nette\Forms\Container::extensionMethod('addMultiOptionList', function (\Nette\Forms\Container $container, $name, $label = NULL, array $items = NULL) {
+    return $container[$name] = new \Framework\Forms\Controls\MultiOptionList($label, $items);
+});
+
 $container = $configurator->createContainer();
 
 return $container;
