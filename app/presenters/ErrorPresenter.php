@@ -7,6 +7,7 @@ use Nette,
 	Nette\Diagnostics\Debugger;
 
 
+
 /**
  * Error presenter.
  */
