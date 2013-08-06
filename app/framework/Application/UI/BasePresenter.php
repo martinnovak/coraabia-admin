@@ -70,7 +70,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 		parent::startup();
 		
 		if ($this->user->isLoggedIn()) {
-			$lang = $this->user->getIdentity()->data['lang'];
+			$lang = $this->user->getIdentity()->lang;
 			if ($lang != $this->lang) { //intentionaly !=
 				$this->redirect('this', array('lang' => $lang));
 			}
