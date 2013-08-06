@@ -61,6 +61,7 @@ class CardControl extends Framework\Application\UI\BaseControl
 		$self = $this;
 		$editLink = $this->presenter->lazyLink('updateCard');
 		$removeLink = $this->lazyLink('deleteCard');
+		$artistLink = $this->presenter->lazyLink('Image:updateArtist');
 		$baseUri = $this->template->baseUri;
 		
 		$grido = $this->gridoFactory->create($this, $name);
@@ -72,8 +73,8 @@ class CardControl extends Framework\Application\UI\BaseControl
 				->setSortable();
 		
 		$grido->addColumn('translated_name', 'Jméno')
-				->setCustomRender(function ($item) use ($self) {
-					return '<span class="' . strtolower($item->fraction) . '">' . trim($self->translator->translate('card.' . $item->card_id)) . '</span>';
+				->setCustomRender(function ($item) use ($self, $editLink) {
+					return '<a href="' . $editLink->setParameter('id', $item->card_id) . '" class="' . strtolower($item->fraction) . '">' . trim($self->translator->translate('card.' . $item->card_id)) . '</a>';
 				});
 				
 		$grido->addColumnNumber('points', 'B')
@@ -117,12 +118,12 @@ class CardControl extends Framework\Application\UI\BaseControl
 							. ".png");
 					switch ($item->type) {
 						case \Coraabia\CardTypeEnum::TRICK_WIN:
-							$result .= ' <span title="'
+							$result .= '&nbsp;<span title="'
 								. $self->translator->translate('Body')
 								. '">&#9898;</span>';
 							break;
 						case \Coraabia\CardTypeEnum::TRICK_NOW:
-							$result .= ' <span title="'
+							$result .= '&nbsp;<span title="'
 								. $self->translator->translate('Skóre')
 								. '">&#9723;</span>';
 							break;
@@ -142,6 +143,24 @@ class CardControl extends Framework\Application\UI\BaseControl
 				->setSortable()
 				->setCustomRender(function ($item) {
 					return ucfirst(strtolower($item->subtype));
+				});
+		
+		$grido->addColumn('edition_id', 'E')
+				->setSortable()
+				->setCustomRender(function ($item) use ($self) {
+					return $self->translator->translate('edition.' . $item->edition_id);
+				});
+		
+		$artists = $this->game->getCardArtists();
+		$grido->addColumn('artist', 'A')
+				->setCustomRender(function ($item) use ($artists, $artistLink) {
+					return isset($artists[$item->card_id]) ?
+					'<a href="'
+					. $artistLink->setParameter('id', $artists[$item->card_id]->artist_id)
+					. '">'
+					. \Nette\Utils\Strings::truncate($artists[$item->card_id]->name, 25)
+					. '</a>'
+					: '';
 				});
 		
 		$grido->addColumn('ready', '')

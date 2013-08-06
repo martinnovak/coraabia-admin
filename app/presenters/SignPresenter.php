@@ -13,7 +13,7 @@ use Nette,
 class SignPresenter extends Framework\Application\UI\BasePresenter
 {
 	/** @var string @persistent */
-	public $backlink = ''; 
+	public $backlink = '';
 
 	
 	

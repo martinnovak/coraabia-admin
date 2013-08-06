@@ -25,7 +25,7 @@ class FormFactory extends Nette\Object
 	
 	
 	/**
-	 * @param \Nette\ComponentModel\IContainer $parent
+	 * @param \Nette\ComponentModel\IContainer|NULL $parent
 	 * @param string|NULL $name
 	 * @return \Nette\Application\UI\Form 
 	 */

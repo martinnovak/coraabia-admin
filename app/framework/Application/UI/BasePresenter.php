@@ -2,7 +2,8 @@
 
 namespace Framework\Application\UI;
 
-use Nette;
+use Nette,
+	App;
 
 
 
@@ -29,7 +30,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	/** @var string @persistent */
 	public $lang;
 	
-	
+
 	
 	/**
 	 * @param string|NULL $class

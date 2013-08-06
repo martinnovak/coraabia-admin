@@ -538,13 +538,13 @@ class Game extends Model
 			'SHOP_XOTTERY_VALUE_FOR_XOT_330',
 			'SHOP_XOTTERY_VALUE_FOR_XOT_570',
 			'SHOP_XOTTERY_VALUE_FOR_XOT_1200',
-			'SHOP_XOTTERY_VALUE_FOR_XOT_30_TOOLTIP',
-			'SHOP_XOTTERY_VALUE_FOR_XOT_70_TOOLTIP',
-			'SHOP_XOTTERY_VALUE_FOR_XOT_100_TOOLTIP',
-			'SHOP_XOTTERY_VALUE_FOR_XOT_210_TOOLTIP',
-			'SHOP_XOTTERY_VALUE_FOR_XOT_330_TOOLTIP',
-			'SHOP_XOTTERY_VALUE_FOR_XOT_570_TOOLTIP',
-			'SHOP_XOTTERY_VALUE_FOR_XOT_1200_TOOLTIP',
+			'SHOP_XOTTERY_PRODUCT_TOOLTIP_1',
+			'SHOP_XOTTERY_PRODUCT_TOOLTIP_2',
+			'SHOP_XOTTERY_PRODUCT_TOOLTIP_3',
+			'SHOP_XOTTERY_PRODUCT_TOOLTIP_4',
+			'SHOP_XOTTERY_PRODUCT_TOOLTIP_5',
+			'SHOP_XOTTERY_PRODUCT_TOOLTIP_6',
+			'SHOP_XOTTERY_PRODUCT_TOOLTIP_7',
 			'SHOP_XOTTERY_METHOD_SMS',
 			'SHOP_XOTTERY_METHOD_PAYPAL',
 			'SHOP_XOTTERY_METHOD_CARD',
@@ -734,5 +734,23 @@ class Game extends Model
 				->where('lang = ?', $lang)
 				->fetch()
 				->update(array('value' => $value));
+	}
+	
+	
+	
+	/**
+	 * @return array
+	 */
+	public function getCardArtists()
+	{
+		$artists = array();
+		foreach ($this->connection->query(
+				"SELECT c.card_id, a.*, r.authorized FROM artist a
+				LEFT JOIN art r USING (artist_id)
+				LEFT JOIN card c ON (c.face_id = r.face_id OR c.art_id = r.image_id OR c.avatar_id = r.avatar_id)")
+				->fetchAll() as $row) {
+			$artists[$row->card_id] = $row;
+		}
+		return $artists;
 	}
 }

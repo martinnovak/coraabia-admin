@@ -282,7 +282,7 @@ class NewsControl extends Framework\Application\UI\BaseControl
 				}
 			} else {
 				if ($values->image_name->getName() == '') { //intentionaly ==
-					unset($values->image_name);
+					unset($values->image_name); //no image was uploaded
 				} else {
 					throw new Nette\InvalidArgumentException('Soubor se nepodařilo nahrát.');
 				}

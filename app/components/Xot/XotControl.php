@@ -56,6 +56,11 @@ class XotControl extends Framework\Application\UI\BaseControl
 					return $item->amount . ' ' . $item->currencyInt;
 				});
 				
+		$grido->addColumnText('paymentService', 'Služby')
+				->setCustomRender(function ($item) use ($self) {
+					return implode(', ', $item->paymentService);
+				});
+				
 		$grido->addColumn('valid', 'Aktivní')
 				->setCustomRender(function ($item) use ($self) {
 					return $item->valid ? '<i class="icon-ok"></i>' : '';
@@ -68,5 +73,15 @@ class XotControl extends Framework\Application\UI\BaseControl
 				});
 		
 		return $grido;
+	}
+	
+	
+	
+	public function renderEdit()
+	{
+		throw new Nette\Application\ForbiddenRequestException;
+		$template = $this->template;
+		$template->setFile(__DIR__ . '/refillForm.latte');
+		$template->render();
 	}
 }
