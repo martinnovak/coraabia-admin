@@ -23,8 +23,8 @@ class UserControl extends Framework\Application\UI\BaseControl
 			$lang = $this->getParameter('lang');
 			$user = $this->game->userdata->where('user_id = ?', $this->user->getId())->fetch();
 			$user->update(array('lang' => $lang));
-			$this->user->storage->setIdentity(new Nette\Security\Identity($user->user_id, $user->role_id, $user->toArray()));
-			$this->presenter->flashMessage("Jazyk byl změněn na '" . strtoupper($lang) . "'", 'info');
+			$this->user->getIdentity()->lang = $lang;
+			$this->presenter->flashMessage("Jazyk byl změněn na '" . strtoupper($lang) . "'.", 'info');
 		} catch (\Exception $e) {
 			$this->presenter->flashMessage($e->getMessage(), 'error');
 		}
