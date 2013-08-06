@@ -62,4 +62,18 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 		$this->context->callInjects($component); //enable injecting into components
 		return $component;
 	}
+	
+	
+	
+	public function startup()
+	{
+		parent::startup();
+		
+		if ($this->user->isLoggedIn()) {
+			$lang = $this->user->getIdentity()->data['lang'];
+			if ($lang != $this->lang) { //intentionaly !=
+				$this->redirect('this', array('lang' => $lang));
+			}
+		}
+	}
 }

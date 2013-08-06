@@ -4,7 +4,8 @@ namespace App;
 
 use Nette,
 	Framework,
-	Grido;
+	Grido,
+	Grido\Components\Filters\Filter;
 
 
 
@@ -167,6 +168,15 @@ class CardControl extends Framework\Application\UI\BaseControl
 				->setCustomRender(function ($item) {
 					return $item->ready ? '<i class="icon-ok"></i>' : '';
 				});
+				
+		$editions = array();
+		foreach ($this->game->editions->fetchAll() as $edition) {
+			$editions[$edition->edition_id] = $this->translator->translate('edition.' . $edition->edition_id);
+		}
+		$grido->addFilterCustom('edition_id', new \Framework\Forms\Controls\MultiOptionList('Expanze', $editions))
+				->setCondition(\Grido\Components\Filters\Filter::CONDITION_CALLBACK, function ($item) {
+					return array('edition_id IN %i', $item);
+				});;
 
 		$grido->addAction('edit', 'Změnit')
 				->setIcon('edit')

@@ -230,11 +230,10 @@ class NewsControl extends Framework\Application\UI\BaseControl
 			}
 			$form->setDefaults($defaults);
 			
-			if ($defaults->image_name != '') { //intentionaly !=
-				$this->setImage($form['image_name'], $defaults->image_name);
-			}
+			$this->setImage($form['image_name'], $defaults->image_name);
 		} else {
 			$form->setDefaults(array('valid_from' => date('Y-m-d H:i:s')));
+			$this->setImage($form['image_name']);
 		}
 		
 		$form->onSuccess[] = $this->newsFormSuccess;
@@ -306,17 +305,21 @@ class NewsControl extends Framework\Application\UI\BaseControl
 	
 	
 	/**
-	 * @param \Nette\Forms\Controls\BaseControl $control
-	 * @param string $filename 
+	 * @param \Nette\Forms\Controls\UploadControl $control
+	 * @param string|NULL $filename 
 	 */
-	protected function setImage(Nette\Forms\Controls\BaseControl $control, $filename)
+	protected function setImage(Nette\Forms\Controls\UploadControl $control, $filename = NULL)
 	{
-		$control->setOption('description', Nette\Utils\Html::el('img')->addAttributes(array(
-			'src' => $this->locales->staticUrl . '/' . $filename,
-			'class' => 'img-polaroid',
-			'width' => self::IMAGE_MAXWIDTH / 2,
-			'height' => self::IMAGE_MAXHEIGHT / 2
-		)));
+		if ($filename == '') { //intentionaly ==
+			$control->setOption('description', 'Max. rozměry ' . self::IMAGE_MAXWIDTH . '×' . self::IMAGE_MAXHEIGHT . ', velikost ' . self::IMAGE_MAXSIZE . ' bytů.');
+		} else {
+			$control->setOption('description', Nette\Utils\Html::el('img')->addAttributes(array(
+				'src' => $this->locales->staticUrl . '/' . $filename,
+				'class' => 'img-polaroid',
+				'width' => self::IMAGE_MAXWIDTH / 2,
+				'height' => self::IMAGE_MAXHEIGHT / 2
+			)));
+		}
 	}
 	
 	

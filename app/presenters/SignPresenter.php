@@ -58,7 +58,7 @@ class SignPresenter extends Framework\Application\UI\BasePresenter
 			$this->getUser()->login($values->username, $values->password);
 			$this->flashMessage('Byl jste úspěšně přihlášen.', 'success');
 			$this->restoreRequest($this->backlink);
-			$this->redirect('User:showProfile');
+			$this->redirect('User:showProfile', array('lang' => $this->getUser()->getIdentity()->data['lang']));
 		} catch (Nette\Security\AuthenticationException $e) {
 			$form->addError($e->getMessage());
 		}

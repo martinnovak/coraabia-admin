@@ -15,7 +15,7 @@ class Game extends Model
 	public function getCards()
 	{
 		$result = $this->connection->selectionFactory->table('card');
-		return $this->locales->server == \Coraabia\ServerEnum::DEV ? $result : $result->where('card.ready', TRUE);
+		return $this->locales->server == \Coraabia\ServerEnum::DEV ? $result : $result->where('ready = ?', TRUE);
 	}
 	
 	
@@ -752,5 +752,16 @@ class Game extends Model
 			$artists[$row->card_id] = $row;
 		}
 		return $artists;
+	}
+	
+	
+	
+	/**
+	 * @return \Nette\Database\Table\Selection
+	 */
+	public function getEditions()
+	{
+		$result = $this->connection->selectionFactory->table('edition');
+		return $this->locales->server == \Coraabia\ServerEnum::DEV ? $result : $result->where('ready = ?', TRUE);
 	}
 }
