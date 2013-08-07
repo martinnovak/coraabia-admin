@@ -31,4 +31,18 @@ class UserControl extends Framework\Application\UI\BaseControl
 		
 		$this->presenter->redirect('this');
 	}
+	
+	
+	
+	public function handleChangeServer()
+	{
+		try {
+			$server = $this->getParameter('server');
+			$this->presenter->flashMessage("Nyní jste na serveru '" . strtoupper($server) . "'.", 'info');
+		} catch (\Exception $e) {
+			$this->presenter->flashMessage($e->getMessage(), 'error');
+		}
+		
+		$this->presenter->redirect('this', array('server' => $server));
+	}
 }
