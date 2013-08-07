@@ -14,7 +14,10 @@ class SignPresenter extends Framework\Application\UI\BasePresenter
 {
 	/** @var string @persistent */
 	public $backlink = '';
-
+	
+	/** @var \Model\Game @inject */
+	public $game;
+	
 	
 	
 	/**
@@ -56,6 +59,7 @@ class SignPresenter extends Framework\Application\UI\BasePresenter
 
 		try {
 			$this->getUser()->login($values->username, $values->password);
+			$this->updateUserLogin();
 			$this->flashMessage('Byl jste úspěšně přihlášen.', 'success');
 			$this->restoreRequest($this->backlink);
 			$this->redirect('User:showProfile', array('lang' => $this->getUser()->getIdentity()->lang));
@@ -81,5 +85,24 @@ class SignPresenter extends Framework\Application\UI\BasePresenter
 		$this->getUser()->logout();
 		$this->flashMessage('Byl jste úspěšně odhlášen.', 'warning');
 		$this->redirect('in');
+	}
+	
+	
+	
+	protected function updateUserLogin()
+	{
+		$currentUser = $this->getUser();
+		$last_login = Nette\DateTime::from($this->locales->timestamp);
+		$last_login_ip = ip2long($_SERVER['REMOTE_ADDR']);
+		
+		$this->game->userdata->where('user_id = ?', $currentUser->getId())
+				->fetch()
+				->update(array(
+					'last_login' => $last_login,
+					'last_login_ip' => $last_login_ip
+				));
+		
+		$currentUser->getIdentity()->last_login = $last_login;
+		$currentUser->getIdentity()->last_login_ip = $last_login_ip;
 	}
 }
