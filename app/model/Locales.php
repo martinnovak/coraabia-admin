@@ -5,7 +5,6 @@ namespace Model;
 use Nette;
 
 
-
 /**
  * Locales.
  * @method int getTimestamp
@@ -29,7 +28,10 @@ class Locales extends Nette\FreezableObject
 	private $langs;
 	
 	
-	
+	/**
+	 * @param array $staticUrls
+	 * @param array $langs 
+	 */
 	public function __construct(array $staticUrls, array $langs)
 	{
 		$this->staticUrls = $staticUrls;
@@ -38,7 +40,10 @@ class Locales extends Nette\FreezableObject
 	}
 	
 	
-	
+	/**
+	 * @return string
+	 * @throws Nette\OutOfRangeException 
+	 */
 	public function getStaticUrl()
 	{
 		if (!array_key_exists($this->server, $this->staticUrls)) {
@@ -46,7 +51,6 @@ class Locales extends Nette\FreezableObject
 		}
 		return $this->staticUrls[$this->server];
 	}
-	
 	
 	
 	/**
@@ -64,7 +68,6 @@ class Locales extends Nette\FreezableObject
 	}
 	
 	
-	
 	/**
 	 * @param string $server 
 	 */
@@ -73,7 +76,6 @@ class Locales extends Nette\FreezableObject
 		$this->updating();
 		$this->server = $server;
 	}
-	
 	
 	
 	/**
@@ -89,7 +91,6 @@ class Locales extends Nette\FreezableObject
 	}
 	
 	
-	
 	/**
 	 * @param string $lang
 	 */
@@ -101,7 +102,6 @@ class Locales extends Nette\FreezableObject
 		}
 		$this->lang = $lang;
 	}
-	
 	
 	
 	/**
@@ -117,7 +117,6 @@ class Locales extends Nette\FreezableObject
 	}
 	
 	
-	
 	/**
 	 * @param int $timestamp
 	 */
@@ -126,7 +125,6 @@ class Locales extends Nette\FreezableObject
 		$this->updating();
 		$this->timestamp = $timestamp;
 	}
-	
 	
 	
 	/**

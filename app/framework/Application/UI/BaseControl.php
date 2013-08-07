@@ -5,7 +5,6 @@ namespace Framework\Application\UI;
 use Nette;
 
 
-
 /**
  * Base control.
  */
@@ -24,7 +23,6 @@ abstract class BaseControl extends Nette\Application\UI\Control
 	public $locales;
 	
 	
-	
 	/**
 	 * @param string|NULL $class
 	 * @return \Nette\Templating\ITemplate 
@@ -37,7 +35,6 @@ abstract class BaseControl extends Nette\Application\UI\Control
 		$template->locales = $this->locales;
 		return $template;
 	}
-	
 	
 	
 	/**

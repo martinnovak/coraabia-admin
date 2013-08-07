@@ -14,8 +14,7 @@ class Coraabia extends Model
 	{
 		return $this->connection->selectionFactory->table('deck')
 				->select('deck.*, user.user_id, user.username');
-	}
-	
+	}	
 	
 	
 	/**
@@ -27,7 +26,6 @@ class Coraabia extends Model
 	}
 	
 	
-	
 	/**
 	 * @return \Nette\Database\Table\Selection
 	 */
@@ -35,7 +33,6 @@ class Coraabia extends Model
 	{
 		return $this->connection->selectionFactory->table('deck_connection');
 	}
-	
 	
 	
 	/**
@@ -47,7 +44,6 @@ class Coraabia extends Model
 	}
 	
 	
-	
 	/**
 	 * @return \Nette\Database\Table\Selection
 	 */
@@ -56,7 +52,6 @@ class Coraabia extends Model
 		return $this->connection->selectionFactory->table('news')
 				->select('*, CASE WHEN valid_from IS NOT NULL THEN valid_from ELSE created END AS order_by');
 	}
-	
 	
 	
 	/**

@@ -8,7 +8,6 @@ use Nette,
 	Grido;
 
 
-
 /**
  * @method setNewsId(int)
  * @method int getNewsId()
@@ -37,7 +36,6 @@ class NewsControl extends Framework\Application\UI\BaseControl
 	private $rowNumber = 0;
 	
 	
-	
 	public function renderList()
 	{
 		$self = $this;
@@ -52,7 +50,10 @@ class NewsControl extends Framework\Application\UI\BaseControl
 	}
 	
 	
-	
+	/**
+	 * @param string $name
+	 * @return \Grido\Grid 
+	 */
 	public function createComponentNewslist($name)
 	{
 		$self = $this;
@@ -141,7 +142,6 @@ class NewsControl extends Framework\Application\UI\BaseControl
 	}
 	
 	
-	
 	public function handleDeleteNews()
 	{
 		$news_id = $this->getParameter('id');
@@ -161,7 +161,6 @@ class NewsControl extends Framework\Application\UI\BaseControl
 	}
 	
 	
-	
 	public function renderEdit()
 	{
 		$self = $this;
@@ -177,7 +176,6 @@ class NewsControl extends Framework\Application\UI\BaseControl
 		
 		$template->render();
 	}
-	
 	
 	
 	/**
@@ -241,7 +239,6 @@ class NewsControl extends Framework\Application\UI\BaseControl
 	}
 	
 	
-	
 	/**
 	 * @param \Nette\Application\UI\Form $form 
 	 */
@@ -303,7 +300,6 @@ class NewsControl extends Framework\Application\UI\BaseControl
 	}
 	
 	
-	
 	/**
 	 * @param \Nette\Forms\Controls\UploadControl $control
 	 * @param string|NULL $filename 
@@ -323,7 +319,6 @@ class NewsControl extends Framework\Application\UI\BaseControl
 	}
 	
 	
-	
 	public function handleRemoveNewsImage()
 	{
 		$newsId = (int)$this->getParameter('id');
@@ -336,7 +331,6 @@ class NewsControl extends Framework\Application\UI\BaseControl
 		
 		$this->redirect('this');
 	}
-	
 	
 	
 	public function renderCreate()

@@ -6,7 +6,6 @@ use Nette,
 	Framework;
 
 
-
 /**
  * User presenter.
  */

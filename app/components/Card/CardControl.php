@@ -8,7 +8,6 @@ use Nette,
 	Grido\Components\Filters\Filter;
 
 
-
 class CardControl extends Framework\Application\UI\BaseControl
 {
 	/** @var \Model\Game @inject */
@@ -16,7 +15,6 @@ class CardControl extends Framework\Application\UI\BaseControl
 	
 	/** @var \Framework\Grido\GridoFactory @inject */
 	public $gridoFactory;
-	
 	
 	
 	public function renderTimeLine()
@@ -47,7 +45,6 @@ class CardControl extends Framework\Application\UI\BaseControl
 	}
 	
 	
-	
 	public function renderSpoiler()
 	{
 		$template = $this->template;
@@ -56,7 +53,10 @@ class CardControl extends Framework\Application\UI\BaseControl
 	}
 	
 	
-	
+	/**
+	 * @param string $name
+	 * @return \Grido\Grid 
+	 */
 	public function createComponentSpoiler($name)
 	{
 		$self = $this;
@@ -201,7 +201,6 @@ class CardControl extends Framework\Application\UI\BaseControl
 		
 		return $grido;
 	}
-	
 	
 	
 	public function handleDeleteCard()

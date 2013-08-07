@@ -5,7 +5,6 @@ namespace Model;
 use Nette;
 
 
-
 /**
  * Localization.
  * @method \Nette\Caching\IStorage getStorage()
@@ -26,7 +25,6 @@ class Translator extends Nette\Object implements Nette\Localization\ITranslator
 	private $translations;
 	
 	
-	
 	/**
 	 * @param \Model\Game $game
 	 * @param \Nette\Caching\IStorage $storage
@@ -38,7 +36,6 @@ class Translator extends Nette\Object implements Nette\Localization\ITranslator
 		$this->storage = $storage;
 		$this->locales = $locales;
 	}
-	
 	
 	
 	public function setupTranslations()
@@ -56,7 +53,6 @@ class Translator extends Nette\Object implements Nette\Localization\ITranslator
 	}
 	
 	
-	
 	/**
 	 * @param \Nette\Security\User $user
 	 */
@@ -68,7 +64,6 @@ class Translator extends Nette\Object implements Nette\Localization\ITranslator
 			$cache->remove('translations');
 		};
 	}
-	
 	
 	
 	/**
@@ -87,7 +82,6 @@ class Translator extends Nette\Object implements Nette\Localization\ITranslator
 		}
         return $message;
     }
-	
 	
 	
 	/**

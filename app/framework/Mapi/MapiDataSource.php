@@ -5,7 +5,6 @@ namespace Framework\Mapi;
 use Nette;
 
 
-
 class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSource
 {
 	/** @var \Framework\Mapi\MapiRequest */
@@ -21,7 +20,6 @@ class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSou
 	private $sorting = NULL;
 	
 	
-	
 	/**
 	 * @param \Framework\Mapi\MapiRequest $request 
 	 */
@@ -30,7 +28,6 @@ class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSou
 		$this->request = $request;
 		$this->dirty = TRUE;
 	}
-	
 	
 	
 	/**
@@ -54,7 +51,6 @@ class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSou
     }
 	
 	
-	
 	/**
      * @return array
      */
@@ -71,7 +67,6 @@ class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSou
     }
 
 	
-	
     /**
      * @return int
      */
@@ -79,7 +74,6 @@ class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSou
     {
         return count($this->getData());
     }
-	
 	
 	
 	/**
@@ -99,7 +93,6 @@ class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSou
 	}
 
 	
-	
     /**
      * @param int $offset
      * @param int $limit
@@ -111,7 +104,6 @@ class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSou
 		$this->dirty = TRUE;
 	}
 
-	
 	
     /**
      * @param array $sorting
@@ -147,7 +139,6 @@ class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSou
 		}
 	}
 
-	
 	
     /**
 	 * @param mixed $column

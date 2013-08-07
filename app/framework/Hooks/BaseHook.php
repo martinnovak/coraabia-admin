@@ -5,7 +5,6 @@ namespace Framework\Hooks;
 use Nette;
 
 
-
 /**
  * @method array getArgs()
  * @method bool isPropagationStopped()
@@ -18,7 +17,6 @@ class BaseHook extends Nette\Object
 	
 	/** @var bool */
 	private $propagationStopped = FALSE;
-	
 	
 	
 	public function __construct()

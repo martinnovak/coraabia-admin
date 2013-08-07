@@ -6,13 +6,15 @@ use Nette,
 	Grido;
 
 
-
 /**
  * Secure presenter.
  */
 abstract class SecuredPresenter extends BasePresenter
 {
-	
+	/**
+	 * @param mixed $element
+	 * @throws Nette\Application\ForbiddenRequestException 
+	 */
 	public function checkRequirements($element)
 	{
 		parent::checkRequirements($element);

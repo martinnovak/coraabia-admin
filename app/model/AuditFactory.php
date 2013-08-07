@@ -5,7 +5,6 @@ namespace Model;
 use Nette;
 
 
-
 class AuditFactory extends Nette\Object
 {
 	/** @var \Nette\DI\Container */
@@ -14,7 +13,6 @@ class AuditFactory extends Nette\Object
 	/** @var \Model\Locales */
 	private $locales;
 		
-	
 	
 	/**
 	 * @param \Nette\DI\Container $context
@@ -25,7 +23,6 @@ class AuditFactory extends Nette\Object
 		$this->context = $context;
 		$this->locales = $locales;
 	}
-	
 	
 	
 	/**

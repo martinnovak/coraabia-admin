@@ -5,7 +5,6 @@ namespace Model;
 use Nette;
 
 
-
 /**
  * Users management.
  */
@@ -21,7 +20,6 @@ class Authenticator extends Nette\Object implements Nette\Security\IAuthenticato
 	private $hashAlgorithm;
 
 
-
 	/**
 	 * @param \Model\Game $game
 	 * @param type $applicationSecret
@@ -33,7 +31,6 @@ class Authenticator extends Nette\Object implements Nette\Security\IAuthenticato
 		$this->applicationSecret = $applicationSecret;
 		$this->hashAlgorithm = $hashAlgorithm;
 	}
-
 
 
 	/**
@@ -61,7 +58,6 @@ class Authenticator extends Nette\Object implements Nette\Security\IAuthenticato
 		unset($arr['password']);
 		return new Nette\Security\Identity($row->user_id, $row->role_id, $arr);
 	}
-
 
 
 	/**

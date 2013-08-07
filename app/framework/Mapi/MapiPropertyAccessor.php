@@ -5,7 +5,6 @@ namespace Framework\Mapi;
 use Grido;
 
 
-
 class MapiPropertyAccessor implements Grido\PropertyAccessors\IPropertyAccessor
 {
 	/**
@@ -17,7 +16,6 @@ class MapiPropertyAccessor implements Grido\PropertyAccessors\IPropertyAccessor
 	{
 		return isset($object->$name);
 	}
-
 	
 	
     /**
@@ -30,7 +28,6 @@ class MapiPropertyAccessor implements Grido\PropertyAccessors\IPropertyAccessor
 		return $object->$name;
 	}
 
-	
 	
     /**
      * @param mixed $object

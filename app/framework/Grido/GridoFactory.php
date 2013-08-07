@@ -6,12 +6,10 @@ use Nette,
 	Grido;
 
 
-
 class GridoFactory extends Nette\Object
 {
 	/** @var \Nette\Localization\ITranslator */
 	private $translator;
-	
 	
 	
 	/**
@@ -21,7 +19,6 @@ class GridoFactory extends Nette\Object
 	{
 		$this->translator = $translator;
 	}
-	
 	
 	
 	/**

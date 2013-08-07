@@ -6,7 +6,6 @@ use Nette,
 	Framework;
 
 
-
 class AuditPresenter extends Framework\Application\UI\SecuredPresenter
 {
 

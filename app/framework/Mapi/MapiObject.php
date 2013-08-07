@@ -5,12 +5,10 @@ namespace Framework\Mapi;
 use Nette;
 
 
-
 class MapiObject implements \ArrayAccess {
 	
 	/** @var object */
 	private $obj;
-	
 	
 	
 	/**
@@ -27,7 +25,6 @@ class MapiObject implements \ArrayAccess {
 		}
 		$this->obj = $obj;
 	}
-	
 	
 	
 	/**
@@ -47,7 +44,6 @@ class MapiObject implements \ArrayAccess {
 	}
 	
 	
-	
 	/**
 	 * @return string 
 	 */
@@ -55,7 +51,6 @@ class MapiObject implements \ArrayAccess {
 	{
 		return json_encode($this->obj);
 	}
-	
 	
 	
 	/**
@@ -72,7 +67,6 @@ class MapiObject implements \ArrayAccess {
 	}
 	
 	
-	
 	/**
 	 * @param string $name
 	 * @param mixed $value 
@@ -81,7 +75,6 @@ class MapiObject implements \ArrayAccess {
 	{
 		$this->obj->$name = $value;
 	}
-	
 	
 	
 	/**
@@ -94,7 +87,6 @@ class MapiObject implements \ArrayAccess {
 	}
 	
 	
-	
 	/**
 	 * @param string $name 
 	 */
@@ -102,7 +94,6 @@ class MapiObject implements \ArrayAccess {
 	{
 		unset($this->obj->$name);
 	}
-	
 	
 	
 	/**
@@ -118,7 +109,6 @@ class MapiObject implements \ArrayAccess {
     }
 	
 	
-	
 	/**
 	 * @param string $offset
 	 * @return boolean 
@@ -128,14 +118,12 @@ class MapiObject implements \ArrayAccess {
     }
 	
 	
-	
 	/**
 	 * @param string $offset 
 	 */
     public function offsetUnset($offset) {
         unset($this->obj->$offset);
     }
-	
 	
 	
 	/**

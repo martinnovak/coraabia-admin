@@ -6,8 +6,8 @@ use Nette,
 	Framework;
 
 
-
-class SidebarControl extends Framework\Application\UI\BaseControl {
+class SidebarControl extends Framework\Application\UI\BaseControl
+{
 	
 	public function render()
 	{

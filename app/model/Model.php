@@ -5,7 +5,6 @@ namespace Model;
 use Nette;
 
 
-
 /**
  * @method \Nette\Database\Connection getConnection()
  * @method \Model\Locales getLocales()
@@ -19,7 +18,6 @@ abstract class Model extends Nette\Object
 	private $locales;
 	
 	
-	
 	/**
 	 * @param \Nette\Database\Connection $connection
 	 * @param \Model\Locales $locales 
@@ -29,7 +27,6 @@ abstract class Model extends Nette\Object
 		$this->connection = $connection;
 		$this->locales = $locales;
 	}
-	
 	
 	
 	/**

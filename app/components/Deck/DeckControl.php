@@ -8,7 +8,6 @@ use Nette,
 	Grido;
 
 
-
 class DeckControl extends Framework\Application\UI\BaseControl
 {
 	/** @var \Model\Game @inject */
@@ -19,7 +18,6 @@ class DeckControl extends Framework\Application\UI\BaseControl
 	
 	/** @var \Framework\Grido\GridoFactory @inject */
 	public $gridoFactory;
-	
 	
 	
 	public function renderList()
@@ -35,7 +33,10 @@ class DeckControl extends Framework\Application\UI\BaseControl
 	}
 	
 	
-	
+	/**
+	 * @param string $name
+	 * @return \Grido\Grid 
+	 */
 	public function createComponentDecklist($name)
 	{
 		$self = $this;
@@ -89,7 +90,9 @@ class DeckControl extends Framework\Application\UI\BaseControl
 	}
 	
 	
-	
+	/**
+	 * @param mixed $deck 
+	 */
 	protected function exportBotDeck($deck)
 	{
 		if ($deck) {
@@ -115,7 +118,6 @@ class DeckControl extends Framework\Application\UI\BaseControl
 	}
 	
 	
-	
 	public function handleExportBotDeck()
 	{
 		$coraabia = $this->coraabiaFactory->access();
@@ -127,7 +129,6 @@ class DeckControl extends Framework\Application\UI\BaseControl
 		
 		$this->exportBotDeck($deck);
 	}
-	
 	
 	
 	public function handleExportBotDecks()

@@ -5,7 +5,6 @@ namespace Framework\Hooks;
 use Nette\Latte;
 
 
-
 class HookMacros extends Latte\Macros\MacroSet
 {
 	/**
@@ -15,7 +14,6 @@ class HookMacros extends Latte\Macros\MacroSet
 	{
 		self::install($engine->getCompiler());
 	}
-
 	
 	
 	/**
@@ -27,7 +25,6 @@ class HookMacros extends Latte\Macros\MacroSet
 		
 		$me->addMacro('hook', array($me, 'macroHook'));
 	}
-	
 	
 	
 	public function macroHook(Latte\MacroNode $node, Latte\PhpWriter $writer)

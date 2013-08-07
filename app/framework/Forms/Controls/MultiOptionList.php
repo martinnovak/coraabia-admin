@@ -6,10 +6,12 @@ use Nette,
 	Nextras;
 
 
-
 class MultiOptionList extends Nextras\Forms\Controls\MultiOptionList
 {
-	
+	/**
+	 * @param string $label
+	 * @param array $items 
+	 */
 	public function __construct($label = NULL, array $items = NULL)
 	{
 		parent::__construct($label, $items);
@@ -18,7 +20,11 @@ class MultiOptionList extends Nextras\Forms\Controls\MultiOptionList
 	}
 	
 	
-	
+	/**
+	 * @param string $key
+	 * @param string|NULL $caption
+	 * @return \Nette\Utils\Html
+	 */
 	public function getLabelItem($key, $caption = NULL)
 	{
 		$label = parent::getLabelItem($key, $caption);

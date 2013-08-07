@@ -5,7 +5,6 @@ namespace Framework\Diagnostics;
 use Nette;
 
 
-
 /**
  * @method \Nette\Latte\Engine getLatte()
  * @method \Nette\Localization\ITranslator getTranslator()
@@ -17,7 +16,6 @@ abstract class Panel extends Nette\Object implements Nette\Diagnostics\IBarPanel
 	
 	/** @var \Nette\Localization\ITranslator */
 	private $translator;
-	
 	
 
 	/**

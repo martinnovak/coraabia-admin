@@ -8,7 +8,6 @@ use Nette,
 	Grido;
 
 
-
 /**
  * @method setKey(string) 
  */
@@ -27,7 +26,6 @@ class TextControl extends Framework\Application\UI\BaseControl
 	private $key;
 	
 	
-	
 	public function renderList()
 	{
 		$template = $this->template;
@@ -36,7 +34,10 @@ class TextControl extends Framework\Application\UI\BaseControl
 	}
 	
 	
-	
+	/**
+	 * @param string $name
+	 * @return \Grido\Grid 
+	 */
 	public function createComponentTextlist($name)
 	{
 		$self = $this;
@@ -80,14 +81,12 @@ class TextControl extends Framework\Application\UI\BaseControl
 	}
 	
 	
-	
 	public function renderEdit()
 	{
 		$template = $this->template;
 		$template->setFile(__DIR__ . '/textForm.latte');
 		$template->render();
 	}
-	
 	
 	
 	/**
@@ -117,7 +116,6 @@ class TextControl extends Framework\Application\UI\BaseControl
 		$form->onSuccess[] = $this->textFormSuccess;
 		return $form;
 	}
-	
 	
 	
 	/**

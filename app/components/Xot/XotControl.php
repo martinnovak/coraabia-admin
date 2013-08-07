@@ -9,7 +9,6 @@ use Nette,
 	Mapi;
 
 
-
 class XotControl extends Framework\Application\UI\BaseControl
 {
 	/** @var \Framework\Mapi\MapiRequestFactory @inject */
@@ -17,7 +16,6 @@ class XotControl extends Framework\Application\UI\BaseControl
 	
 	/** @var \Framework\Grido\GridoFactory @inject */
 	public $gridoFactory;
-	
 	
 	
 	public function renderList()
@@ -28,7 +26,10 @@ class XotControl extends Framework\Application\UI\BaseControl
 	}
 	
 	
-	
+	/**
+	 * @param string $name
+	 * @return \Grido\Grid 
+	 */
 	public function createComponentXotlist($name)
 	{
 		$self = $this;
@@ -74,7 +75,6 @@ class XotControl extends Framework\Application\UI\BaseControl
 		
 		return $grido;
 	}
-	
 	
 	
 	public function renderEdit()

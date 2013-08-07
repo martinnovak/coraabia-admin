@@ -6,15 +6,13 @@ use Nette,
 	Model;
 
 
-
 class MapiRequestFactory extends Nette\Object
 {
 	/** @var \Model\Locales */
 	private $locales;
 	
 	/** @var array */
-	private $urls;
-	
+	private $urls;	
 	
 	
 	/**
@@ -26,7 +24,6 @@ class MapiRequestFactory extends Nette\Object
 		$this->locales = $locales;
 		$this->urls = $urls;
 	}
-	
 	
 	
 	/**

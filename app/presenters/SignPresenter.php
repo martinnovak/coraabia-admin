@@ -6,7 +6,6 @@ use Nette,
 	Framework;
 
 
-
 /**
  * Sign in/out presenters.
  */
@@ -18,8 +17,7 @@ class SignPresenter extends Framework\Application\UI\BasePresenter
 	/** @var \Model\Game @inject */
 	public $game;
 	
-	
-	
+		
 	/**
 	 * Sign-in form factory.
 	 * @return \Nette\Application\UI\Form
@@ -41,7 +39,6 @@ class SignPresenter extends Framework\Application\UI\BasePresenter
 		$form->onSuccess[] = $this->signInFormSucceeded;
 		return $form;
 	}
-
 
 
 	/**
@@ -69,7 +66,6 @@ class SignPresenter extends Framework\Application\UI\BasePresenter
 	}
 
 
-
 	public function actionIn()
 	{
 		if ($this->getUser()->isLoggedIn()) {
@@ -78,15 +74,13 @@ class SignPresenter extends Framework\Application\UI\BasePresenter
 		}
 	}
 	
-	
-	
+		
 	public function actionOut()
 	{
 		$this->getUser()->logout();
 		$this->flashMessage('Byl jste úspěšně odhlášen.', 'warning');
 		$this->redirect('in');
 	}
-	
 	
 	
 	protected function updateUserLogin()

@@ -5,10 +5,8 @@ namespace Model;
 use Nette;
 
 
-
 class Game extends Model
 {
-	
 	/**
 	 * @return \Nette\Database\Table\Selection
 	 */
@@ -16,8 +14,7 @@ class Game extends Model
 	{
 		$result = $this->connection->selectionFactory->table('card');
 		return $this->locales->server == \Coraabia\ServerEnum::DEV ? $result : $result->where('ready = ?', TRUE);
-	}
-	
+	}	
 	
 	
 	/**
@@ -29,7 +26,6 @@ class Game extends Model
 	}
 	
 	
-	
 	/**
 	 * @return \Nette\Database\Table\Selection
 	 */
@@ -37,7 +33,6 @@ class Game extends Model
 	{
 		return $this->connection->selectionFactory->table('translation');
 	}
-	
 	
 	
 	/**
@@ -48,7 +43,6 @@ class Game extends Model
 		return $this->connection->selectionFactory->table('permission')
 				->select('role_id, resource, server');
 	}
-	
 	
 	
 	/**
@@ -83,7 +77,6 @@ class Game extends Model
 	}
 	
 	
-	
 	/**
 	 * @return array 
 	 */
@@ -108,7 +101,6 @@ class Game extends Model
 			'GL_STR'
 		);
 	}
-	
 	
 	
 	/**
@@ -146,14 +138,12 @@ class Game extends Model
 	}
 	
 	
-	
 	public function deleteBotDecks()
 	{
 		$this->connection->selectionFactory->table('deck')
 				->where('type ~ ?', '^BOT_[1-9][0-9]*$')
 				->delete();
 	}
-	
 	
 	
 	/**
@@ -721,7 +711,6 @@ class Game extends Model
 	}
 	
 	
-	
 	/**
 	 * @param string $key
 	 * @param string $lang
@@ -735,7 +724,6 @@ class Game extends Model
 				->fetch()
 				->update(array('value' => $value));
 	}
-	
 	
 	
 	/**
@@ -753,7 +741,6 @@ class Game extends Model
 		}
 		return $artists;
 	}
-	
 	
 	
 	/**

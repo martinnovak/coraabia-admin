@@ -6,7 +6,6 @@ use Nette,
 	App;
 
 
-
 /**
  * Base presenter for all application presenters.
  */
@@ -31,7 +30,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	public $lang;
 	
 
-	
 	/**
 	 * @param string|NULL $class
 	 * @return \Nette\Templating\ITemplate 
@@ -45,8 +43,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 		return $template;
 	}
 	
-	
-	
+		
 	/**
 	 * @param string $name
 	 * @return \Nette\ComponentModel\IComponent
@@ -62,7 +59,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 		$this->context->callInjects($component); //enable injecting into components
 		return $component;
 	}
-	
 	
 	
 	public function startup()

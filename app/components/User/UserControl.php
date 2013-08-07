@@ -6,12 +6,10 @@ use Nette,
 	Framework;
 
 
-
 class UserControl extends Framework\Application\UI\BaseControl
 {
 	/** @var \Model\Game @inject */
 	public $game;
-	
 	
 	
 	public function handleChangeLang()
@@ -30,7 +28,6 @@ class UserControl extends Framework\Application\UI\BaseControl
 	}
 	
 	
-	
 	public function handleChangeServer()
 	{
 		try {
@@ -42,7 +39,6 @@ class UserControl extends Framework\Application\UI\BaseControl
 		
 		$this->presenter->redirect('this', array('server' => $server));
 	}
-	
 	
 	
 	public function renderProfile()

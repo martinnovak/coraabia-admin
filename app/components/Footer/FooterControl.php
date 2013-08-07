@@ -6,7 +6,6 @@ use Nette,
 	Framework;
 
 
-
 class FooterControl extends Framework\Application\UI\BaseControl
 {
 	

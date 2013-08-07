@@ -5,12 +5,10 @@ namespace Framework\Hooks;
 use Nette\Templating\ITemplate;
 
 
-
 class TemplateHook extends BaseHook
 {
 	/** @var array \Nette\Templating\ITemplate */
 	protected $templates = array();
-	
 	
 	
 	/**
@@ -19,7 +17,6 @@ class TemplateHook extends BaseHook
 	public function addTemplate(ITemplate $template) {
 		$this->templates[] = $template;
 	}
-
 	
 	
 	/**

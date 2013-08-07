@@ -1,6 +1,7 @@
 parameters:
 	langs: [cs, en]
 	resourceDir: '%wwwDir%/images/resource'
+	gameXmlDir: '%appDir%/../data'
 
 php:
 	date.timezone: Europe/Prague
@@ -37,6 +38,10 @@ services:
 	- Framework\Mapi\MapiRequestFactory(..., %bazaarUrls%)
 	- Framework\Grido\GridoFactory
 	- Framework\Application\FormFactory
+	devgame: Framework\Xml\XmlReader::fromFile('%gameXmlDir%/game.dev.xml')
+	stagegame: Framework\Xml\XmlReader::fromFile('%gameXmlDir%/game.stage.xml')
+	betagame: Framework\Xml\XmlReader::fromFile('%gameXmlDir%/game.beta.xml')
+	- Model\GameXmlFactory
 	authorizator:
 		class: Model\Authorizator(@game)
 		setup: [ setupPermissions ]

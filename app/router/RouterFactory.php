@@ -7,7 +7,6 @@ use Nette,
 	Nette\Application\Routers\Route;
 
 
-
 /**
  * Router factory.
  */
@@ -20,7 +19,6 @@ class RouterFactory
 		'presenter' => 'User',
 		'action' => 'showProfile'
 	);
-	
 	
 	
 	/**

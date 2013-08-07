@@ -5,12 +5,10 @@ namespace Framework\Mapi;
 use Nette;
 
 
-
 class MapiResult extends Nette\Object implements \Countable, \Iterator, \ArrayAccess
 {
 	/** @var array */
-	private $data;
-	
+	private $data;	
 	
 	
 	/**
@@ -22,7 +20,6 @@ class MapiResult extends Nette\Object implements \Countable, \Iterator, \ArrayAc
 	}
 	
 	
-	
 	/**
 	 * @return int 
 	 */
@@ -30,7 +27,6 @@ class MapiResult extends Nette\Object implements \Countable, \Iterator, \ArrayAc
 	{
 		return count($this->data);
 	}
-	
 	
 	
 	/**
@@ -42,7 +38,6 @@ class MapiResult extends Nette\Object implements \Countable, \Iterator, \ArrayAc
 	}
 	
 	
-	
 	/**
 	 * @return mixed 
 	 */
@@ -52,19 +47,16 @@ class MapiResult extends Nette\Object implements \Countable, \Iterator, \ArrayAc
 	}
 	
 	
-	
 	public function next()
 	{
 		next($this->data);
 	}
 	
 	
-	
 	public function rewind()
 	{
 		reset($this->data);
 	}
-	
 	
 	
 	/**
@@ -74,7 +66,6 @@ class MapiResult extends Nette\Object implements \Countable, \Iterator, \ArrayAc
 	{
 		return key($this->data) !== NULL;
 	}
-	
 	
 	
 	/**
@@ -87,7 +78,6 @@ class MapiResult extends Nette\Object implements \Countable, \Iterator, \ArrayAc
     }
 	
 	
-	
 	/**
 	 * @param mixed $offset
 	 * @return boolean 
@@ -97,7 +87,6 @@ class MapiResult extends Nette\Object implements \Countable, \Iterator, \ArrayAc
     }
 	
 	
-	
 	/**
 	 * @param mixed $offset
 	 * @throws \Nette\InvalidStateException 
@@ -105,7 +94,6 @@ class MapiResult extends Nette\Object implements \Countable, \Iterator, \ArrayAc
     public function offsetUnset($offset) {
         throw new Nette\NotSupportedException("MapiResult nelze modifikovat.");
     }
-	
 	
 	
 	/**

@@ -5,7 +5,6 @@ namespace Model;
 use Nette;
 
 
-
 /**
  * Permission management.
  * @method \Nette\Caching\IStorage getStorage()
@@ -21,7 +20,6 @@ class Authorizator extends Nette\Security\Permission
 	private $storage;
 	
 	
-	
 	/**
 	 * @param \Model\Game $game
 	 * @param \Nette\Caching\IStorage $storage
@@ -31,7 +29,6 @@ class Authorizator extends Nette\Security\Permission
 		$this->game = $game;
 		$this->storage = $storage;
 	}
-	
 	
 	
 	/**
@@ -66,7 +63,6 @@ class Authorizator extends Nette\Security\Permission
 	}
 	
 	
-	
 	/**
 	 * @param \Nette\Security\User $user
 	 */
@@ -80,7 +76,6 @@ class Authorizator extends Nette\Security\Permission
 	}
 	
 	
-	
 	/**
 	 * @param string $server
 	 * @param string $action
@@ -90,7 +85,6 @@ class Authorizator extends Nette\Security\Permission
 	{
 		return strtolower($server . '/' . $action);
 	}
-	
 	
 	
 	/**

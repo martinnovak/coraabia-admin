@@ -6,7 +6,6 @@ use Nette,
 	Framework;
 
 
-
 class MenuControl extends Framework\Application\UI\BaseControl
 {
 	

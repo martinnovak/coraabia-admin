@@ -5,7 +5,6 @@ namespace Framework\Mapi;
 use Nette;
 
 
-
 class MapiRequest extends Nette\Object
 {
 	/** @var array */
@@ -16,7 +15,6 @@ class MapiRequest extends Nette\Object
 	
 	/** @var string */
 	private $retColumn;
-	
 	
 	
 	/**
@@ -32,7 +30,6 @@ class MapiRequest extends Nette\Object
 	}
 	
 	
-	
 	/**
 	 * @param string $name
 	 * @param string $value 
@@ -41,7 +38,6 @@ class MapiRequest extends Nette\Object
 	{
 		$this->args[$name] = $value;
 	}
-	
 	
 	
 	/**
@@ -78,7 +74,6 @@ class MapiRequest extends Nette\Object
 		
 		return $result->{$this->retColumn};
 	}
-	
 	
 	
 	/**

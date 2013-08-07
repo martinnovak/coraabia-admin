@@ -5,12 +5,10 @@ namespace Framework\Hooks;
 use Nette;
 
 
-
 class HookManager extends Nette\Object
 {
 	/** @var array int => array( string => callable ) */
 	protected $listeners;
-	
 	
 	
 	/**
@@ -43,7 +41,6 @@ class HookManager extends Nette\Object
 			}
 		}
 	}
-	
 	
 	
 	/**

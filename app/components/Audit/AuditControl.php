@@ -9,7 +9,6 @@ use Nette,
 	Nextras;
 
 
-
 class AuditControl extends Framework\Application\UI\BaseControl
 {
 	/** @var \Framework\Mapi\MapiRequestFactory @inject */
@@ -25,7 +24,6 @@ class AuditControl extends Framework\Application\UI\BaseControl
 	public $auditFactory;
 		
 	
-	
 	public function renderBazaar()
 	{
 		$template = $this->template;
@@ -34,6 +32,10 @@ class AuditControl extends Framework\Application\UI\BaseControl
 	}
 	
 	
+	/**
+	 * @param string $name
+	 * @return \Grido\Grid 
+	 */
 	public function createComponentBazaar($name)
 	{
 		$link = $this->presenter->lazyLink('showViewTransaction');
@@ -91,7 +93,6 @@ class AuditControl extends Framework\Application\UI\BaseControl
 	}
 	
 	
-	
 	public function renderShowTransaction()
 	{
 		$template = $this->template;
@@ -108,7 +109,6 @@ class AuditControl extends Framework\Application\UI\BaseControl
 	}
 	
 	
-	
 	public function renderAudit()
 	{
 		$template = $this->template;
@@ -117,7 +117,10 @@ class AuditControl extends Framework\Application\UI\BaseControl
 	}
 	
 	
-	
+	/**
+	 * @param string $name
+	 * @return \Grido\Grid 
+	 */
 	public function createComponentAudit($name)
 	{
 		$link = $this->presenter->lazyLink('showViewAudit');
@@ -173,7 +176,6 @@ class AuditControl extends Framework\Application\UI\BaseControl
 		
 		return $grido;
 	}
-	
 	
 	
 	public function renderShowAudit()

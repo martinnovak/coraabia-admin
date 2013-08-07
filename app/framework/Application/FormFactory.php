@@ -6,14 +6,12 @@ use Nette,
 	Kdyby;
 
 
-
 class FormFactory extends Nette\Object
 {
 	/** @var \Nette\Localization\ITranslator */
 	private $translator;
 	
-	
-	
+		
 	/**
 	 * @param \Nette\Localization\ITranslator $translator 
 	 */
@@ -21,7 +19,6 @@ class FormFactory extends Nette\Object
 	{
 		$this->translator = $translator;
 	}
-	
 	
 	
 	/**
