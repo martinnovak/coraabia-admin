@@ -1,0 +1,20 @@
+{var $identity = $user->getIdentity()}
+
+<h1>{$identity->username}</h1>
+
+<dl class="dl-horizontal">
+	<dt>{_'ID'}</dt>
+	<dd>{$identity->user_id}</dd>
+	<dt>{_'Email'}</dt>
+	<dd><a href="mailto:{$identity->email}">{$identity->email}</a></dd>
+	<dt>{_'Role'}</dt>
+	<dd>{$identity->role_id}</dd>
+	<dt>{_'Jazyk'}</dt>
+	<dd>{$identity->lang|upper}</dd>
+	<dt>{_'Vytvořen'}</dt>
+	<dd>{$identity->created}</dd>
+	<dt>{_'Poslední přihlášení'}</dt>
+	<dd>{$identity->last_login}</dd>
+	<dt>{_'Poslední IP'}</dt>
+	<dd>{long2ip($identity->last_login_ip)}</dd>
+</dl>
