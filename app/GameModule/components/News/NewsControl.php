@@ -38,14 +38,8 @@ class NewsControl extends Framework\Application\UI\BaseControl
 	
 	public function renderList()
 	{
-		$self = $this;
 		$template = $this->template;
 		$template->setFile(__DIR__ . '/list.latte');
-		$this->hookManager->listen('sidebar', function (\Framework\Hooks\TemplateHook $hook) use ($self) {
-			$tmpl = $self->createTemplate();
-			$tmpl->setFile(__DIR__ . '/listSidebar.latte');
-			$hook->addTemplate($tmpl);
-		});
 		$template->render();
 	}
 	
@@ -163,16 +157,12 @@ class NewsControl extends Framework\Application\UI\BaseControl
 	
 	public function renderEdit()
 	{
-		$self = $this;
 		$template = $this->template;
-		$template->setFile(__DIR__ . '/newsForm.latte');
+		$template->setFile(__DIR__ . '/edit.latte');
 		
-		$this->hookManager->listen('sidebar', function (\Framework\Hooks\TemplateHook $hook) use ($self) {
-			$tmpl = $self->createTemplate();
-			$tmpl->setFile(__DIR__ . '/editSidebar.latte');
-			$tmpl->news = $self->coraabiaFactory->access()->news->where('news_id = ?', $self->newsId)->fetch();
-			$hook->addTemplate($tmpl);
-		});
+		$template->news = $this->coraabiaFactory->access()->news
+				->where('news_id = ?', $this->newsId)
+				->fetch();
 		
 		$template->render();
 	}

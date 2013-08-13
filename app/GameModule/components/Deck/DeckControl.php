@@ -22,13 +22,8 @@ class DeckControl extends Framework\Application\UI\BaseControl
 	
 	public function renderList()
 	{
-		$self = $this;
 		$template = $this->template;
 		$template->setFile(__DIR__ . '/list.latte');
-		$template->hookManager->listen('sidebar', function (\Framework\Hooks\TemplateHook $hook) use ($self) {
-			$tmpl = $self->createTemplate()->setFile(__DIR__ . '/listSidebar.latte');
-			$hook->addTemplate($tmpl);
-		});
 		$template->render();
 	}
 	
