@@ -9,6 +9,9 @@ use Nette,
 	Mapi;
 
 
+/**
+ * @method setId(int) 
+ */
 class XotControl extends Framework\Application\UI\BaseControl
 {
 	/** @var \Framework\Mapi\MapiRequestFactory @inject */
@@ -16,6 +19,9 @@ class XotControl extends Framework\Application\UI\BaseControl
 	
 	/** @var \Framework\Grido\GridoFactory @inject */
 	public $gridoFactory;
+	
+	/** @var int */
+	private $id;
 	
 	
 	public function renderList()
