@@ -1,6 +1,6 @@
 <?php
 
-namespace App\GameModule;
+namespace App\CoraabiaModule;
 
 use Nette,
 	Framework;

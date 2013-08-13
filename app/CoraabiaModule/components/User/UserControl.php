@@ -1,6 +1,6 @@
 <?php
 
-namespace App\GameModule;
+namespace App\CoraabiaModule;
 
 use Nette,
 	Framework,
@@ -9,5 +9,5 @@ use Nette,
 
 class UserControl extends App\UserControl
 {
-	
+
 }
