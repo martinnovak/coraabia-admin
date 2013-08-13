@@ -47,13 +47,13 @@ abstract class SecuredPresenter extends BasePresenter
 		if ($checkSignal) {
 			$resource = $this->getUser()->getAuthorizator()->buildResourceName($this->locales->server, $this->signal[1]);
 			if (!$this->getUser()->isAllowed($resource)) {
-				throw new Nette\Application\ForbiddenRequestException("Zdroj '$resource' neexistuje.");
+				throw new Nette\Application\ForbiddenRequestException("Nemáte práva na zdroj '$resource'.");
 			}
 		}
 		
 		$resource = $this->getUser()->getAuthorizator()->buildResourceName($this->locales->server, $this->getParameter('action'));
 		if (!$this->getUser()->isAllowed($resource)) {
-			throw new Nette\Application\ForbiddenRequestException("Zdroj '$resource' neexistuje.");
+			throw new Nette\Application\ForbiddenRequestException("Nemáte práva na zdroj '$resource'.");
 		}
 	}
 }
