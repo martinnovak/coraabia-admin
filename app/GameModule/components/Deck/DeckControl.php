@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\GameModule;
 
 use Nette,
 	Framework,
@@ -107,13 +107,13 @@ class DeckControl extends Framework\Application\UI\BaseControl
 			
 			try {
 				$this->game->createBotDeck($deck->toArray(), $cards, $connections);
-				$this->presenter->flashMessage("Balík '{$deck->deck_id}' byl exportován na dev.", 'success');
+				$this->getPresenter()->flashMessage("Balík '{$deck->deck_id}' byl exportován na dev.", 'success');
 			} catch (\Exception $e) {
-				$this->presenter->flashMessage($e->getMessage(), 'error');
+				$this->getPresenter()->flashMessage($e->getMessage(), 'error');
 			}
 
 		} else {
-			$this->presenter->flashMessage("Balík není bot balík a nelze ho exportovat.", 'error');
+			$this->getPresenter()->flashMessage("Balík není bot balík a nelze ho exportovat.", 'error');
 		}
 	}
 	

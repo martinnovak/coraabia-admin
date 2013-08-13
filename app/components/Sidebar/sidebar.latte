@@ -1,6 +1,19 @@
-<div class="well sidebar">
+<div class="sidebar well">
 	<ul class="nav nav-list">
-		<li class="nav-header">{_'Akce'}</li>
-		{hook sidebar}
+		<li class="nav-header">{_'Karty'}</li>
+		<li{ifCurrent Card:showSpoiler} class="active"{/ifCurrent}><a href="{plink Card:showSpoiler}">{_'Spoiler'}</a></li>
+		<li{ifCurrent Card:cardTimeLine} class="active"{/ifCurrent}><a href="{plink Card:cardTimeLine}">{_'Timeline'}</a></li>
+		<li{ifCurrent Deck:showDeckList} class="active"{/ifCurrent}><a href="{plink Deck:showDeckList}">{_'Balíky'}</a></li>
+		<li class="divider"></li>
+		<li class="nav-header">{_'Audit'}</li>
+		<li{ifCurrent Audit:showAudit} class="active"{/ifCurrent}><a href="{plink Audit:showAudit}">{_'Audit'}</a></li>
+		<li{ifCurrent Audit:bazaarAudit} class="active"{/ifCurrent}><a href="{plink Audit:bazaarAudit}">{_'Bazaar'}</a></li>
+		<li class="divider"></li>
+		<li class="nav-header">{_'Obchod'}</li>
+		<li{ifCurrent Xot:showBazaarRefills} class="active"{/ifCurrent}><a href="{plink Xot:showBazaarRefills}">{_'Nákup měny'}</a></li>
+		<li class="divider"></li>
+		<li class="nav-header">{_'Ostatní'}</li>
+		<li{ifCurrent News:showNewsList} class="active"{/ifCurrent}><a href="{plink News:showNewsList}">{_'Novinky'}</a></li>
+		<li{ifCurrent Text:showStaticList} class="active"{/ifCurrent}><a href="{plink Text:showStaticList}">{_'Herní texty'}</a></li>
 	</ul>
 </div>

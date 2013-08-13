@@ -2,7 +2,8 @@
 
 namespace Model;
 
-use Nette;
+use Nette,
+	App;
 
 
 /**
@@ -14,6 +15,9 @@ class Locales extends Nette\FreezableObject
 {
 	/** @var string */
 	private $lang;
+	
+	/** @var string */
+	private $module;
 	
 	/** @var string */
 	private $server;
@@ -61,8 +65,10 @@ class Locales extends Nette\FreezableObject
 		$self = $this;
 		$application->onRequest[] = function ($application, $request) use ($self) {
 			$parameters = $request->getParameters();
+			$presenter = explode(':', $request->presenterName);
+			$self->module = count($presenter) == 2 ? $presenter[0] : FALSE;
 			$self->setLang($parameters['lang']);
-			$self->server = $parameters['server'];
+			$self->server = isset($parameters['server']) ? $parameters['server'] : FALSE;
 			//$self->freeze();
 		};
 	}
@@ -84,7 +90,7 @@ class Locales extends Nette\FreezableObject
 	 */
 	public function getServer()
 	{
-		if (!$this->server) {
+		if (!$this->server && $this->server !== FALSE) {
 			throw new Nette\InvalidStateException("Locales nebyly inicializovány.");
 		}
 		return $this->server;
@@ -134,5 +140,28 @@ class Locales extends Nette\FreezableObject
 	{
 		$this->updating();
 		$this->langs = $langs;
+	}
+	
+	
+	/**
+	 * @param string $module
+	 */
+	public function setModule($module)
+	{
+		$this->updating();
+		$this->module = $module;
+	}
+	
+	
+	/**
+	 * @return string
+	 * @throws \Nette\InvalidStateException 
+	 */
+	public function getModule()
+	{
+		if (!$this->module && $this->module !== FALSE) {
+			throw new Nette\InvalidStateException("Locales nebyly inicializovány.");
+		}
+		return $this->module;
 	}
 }

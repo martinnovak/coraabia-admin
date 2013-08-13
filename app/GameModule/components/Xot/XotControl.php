@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\GameModule;
 
 use Nette,
 	Framework,
@@ -33,7 +33,7 @@ class XotControl extends Framework\Application\UI\BaseControl
 	public function createComponentXotlist($name)
 	{
 		$self = $this;
-		$editLink = $this->presenter->lazyLink('doBazaarEditRefill');
+		$editLink = $this->getPresenter()->lazyLink('doBazaarEditRefill');
 		$request = $this->mapiRequestFactory->create('all-refill-offers', 'refillOffers');
 		
 		$grido = $this->gridoFactory->create($this, $name);

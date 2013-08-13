@@ -1,8 +1,8 @@
 /* separate menu and content */
 .navbar { margin-bottom: 1em; }
 
-/* minimal height for sidebar so it doesn't look ugly */
-.sidebar { min-height: 200px; }
+/* minimal height and padding for sidebar so it doesn't look ugly */
+.sidebar { min-height: 200px; padding: 1em 0.4em; }
 
 /* fraction colors */
 .guardian { color: #459cd8 !important; }
@@ -49,3 +49,8 @@ label.control-label.required { font-weight: bold; }
 
 /* highlight nette broken links */
 a[href~="error:"] { background-color: #f00 !important; color: #fff !important; }
+
+/** missing bootstrap classes */
+.text-left { text-align: left; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }

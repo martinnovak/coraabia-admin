@@ -45,11 +45,15 @@ abstract class BaseControl extends Nette\Application\UI\Control
 	{
 		$component = parent::createComponent($name);
 		if (!$component) {
-			$class = 'App\\' . ucfirst($name) . 'Control';
-			$component = $this->presenter->context->createInstance($class);
+			$class = 'App\\' . ucfirst($this->locales->module) . 'Module\\' . ucfirst($name) . 'Control';
+			if (!class_exists($class)) { //@todo THIS IS UGLY
+				$class = 'App\\' . ucfirst($name) . 'Control';
+			}
+			
+			$component = $this->getPresenter()->context->createInstance($class);
 		}
 		
-		$this->presenter->context->callInjects($component); //enable injecting into components
+		$this->getPresenter()->context->callInjects($component); //enable injecting into components
 		return $component;
 	}
 }

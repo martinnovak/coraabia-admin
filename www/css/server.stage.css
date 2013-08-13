@@ -1,0 +1,24 @@
+#header .navbar-inner {
+    background-color: #000085;
+    background-image: linear-gradient(to bottom, #000088, #000081);
+	border-bottom-color: #000072;
+}
+
+#header .navbar .brand {
+	text-shadow: 0 1px 0 #000066;
+}
+
+#header .navbar .nav > li > a {
+    text-shadow: 0 1px 0 #000066;
+}
+
+#header .navbar .nav li.dropdown.open > .dropdown-toggle,
+#header .navbar .nav li.dropdown.active > .dropdown-toggle,
+#header .navbar .nav li.dropdown.open.active > .dropdown-toggle {
+    background-color: #000073;
+}
+
+#header .navbar .divider-vertical {
+    border-left: 1px solid #000081;
+    border-right: 1px solid #000088;
+}

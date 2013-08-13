@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\GameModule;
 
 use Nette,
 	Framework,
@@ -38,7 +38,7 @@ class AuditControl extends Framework\Application\UI\BaseControl
 	 */
 	public function createComponentBazaar($name)
 	{
-		$link = $this->presenter->lazyLink('showViewTransaction');
+		$link = $this->getPresenter()->lazyLink('showViewTransaction');
 		
 		//request
 		$request = $this->mapiRequestFactory->create('transactions', 'txs');
@@ -98,7 +98,7 @@ class AuditControl extends Framework\Application\UI\BaseControl
 		$template = $this->template;
 		$template->setFile(__DIR__ . '/transaction.latte');
 		
-		$id = $this->presenter->getParameter('id');
+		$id = $this->getPresenter()->getParameter('id');
 		$transactions = array_filter($this->mapiRequestFactory->create('transactions', 'txs')->load(), function ($item) use ($id) {
 			return $item->txId == $id;
 		});
@@ -123,7 +123,7 @@ class AuditControl extends Framework\Application\UI\BaseControl
 	 */
 	public function createComponentAudit($name)
 	{
-		$link = $this->presenter->lazyLink('showViewAudit');
+		$link = $this->getPresenter()->lazyLink('showViewAudit');
 		
 		//types
 		$tmp = $this->game->auditEventTypes;
@@ -183,7 +183,7 @@ class AuditControl extends Framework\Application\UI\BaseControl
 		$template = $this->template;
 		$template->setFile(__DIR__ . '/event.latte');
 		
-		$id = $this->presenter->getParameter('id');
+		$id = $this->getPresenter()->getParameter('id');
 		$event = $this->auditFactory->access()->audits->where('audit_event_id = ?', $id)->fetch()->toArray();
 		$event['data'] = json_decode($event['data']);
 		

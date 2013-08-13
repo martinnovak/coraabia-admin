@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\GameModule;
 
 use Nette,
 	Framework,
@@ -41,7 +41,7 @@ class TextControl extends Framework\Application\UI\BaseControl
 	public function createComponentTextlist($name)
 	{
 		$self = $this;
-		$editLink = $this->presenter->lazyLink('updateStatic');
+		$editLink = $this->getPresenter()->lazyLink('updateStatic');
 		
 		$grido = $this->gridoFactory->create($this, $name);
 		$grido->setModel($this->game->staticTexts)
@@ -130,7 +130,7 @@ class TextControl extends Framework\Application\UI\BaseControl
 				$this->game->updateStaticText($this->key, $lang, $form->getValues()->$value);
 			}
 			$this->game->connection->commit();
-			$this->presenter->flashMessage('Text byl uložen.', 'success');
+			$this->getPresenter()->flashMessage('Text byl uložen.', 'success');
 		} catch (\Exception $e) {
 			$this->game->connection->rollBack();
 			$form->addError($e->getMessage());

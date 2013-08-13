@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\GameModule;
 
 use Nette,
 	Framework;
@@ -19,12 +19,12 @@ class UserControl extends Framework\Application\UI\BaseControl
 			$user = $this->game->userdata->where('user_id = ?', $this->getPresenter()->getUser()->getId())->fetch();
 			$user->update(array('lang' => $lang));
 			$this->getPresenter()->getUser()->getIdentity()->lang = $lang;
-			$this->presenter->flashMessage("Jazyk byl změněn na '" . strtoupper($lang) . "'.", 'info');
+			$this->getPresenter()->flashMessage("Jazyk byl změněn na '" . strtoupper($lang) . "'.", 'info');
 		} catch (\Exception $e) {
-			$this->presenter->flashMessage($e->getMessage(), 'error');
+			$this->getPresenter()->flashMessage($e->getMessage(), 'error');
 		}
 		
-		$this->presenter->redirect('this');
+		$this->getPresenter()->redirect('this');
 	}
 	
 	
@@ -32,12 +32,12 @@ class UserControl extends Framework\Application\UI\BaseControl
 	{
 		try {
 			$server = $this->getParameter('server');
-			$this->presenter->flashMessage("Nyní jste na serveru '" . strtoupper($server) . "'.", 'info');
+			$this->getPresenter()->flashMessage("Nyní jste na serveru '" . strtoupper($server) . "'.", 'info');
 		} catch (\Exception $e) {
-			$this->presenter->flashMessage($e->getMessage(), 'error');
+			$this->getPresenter()->flashMessage($e->getMessage(), 'error');
 		}
 		
-		$this->presenter->redirect('this', array('server' => $server));
+		$this->getPresenter()->redirect('this', array('server' => $server));
 	}
 	
 	

@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\GameModule;
 
 use Nette,
 	Framework,
@@ -57,7 +57,7 @@ class NewsControl extends Framework\Application\UI\BaseControl
 	public function createComponentNewslist($name)
 	{
 		$self = $this;
-		$editLink = $this->presenter->lazyLink('updateNews');
+		$editLink = $this->getPresenter()->lazyLink('updateNews');
 		$removeLink = $this->lazyLink('deleteNews');
 		
 		$grido = $this->gridoFactory->create($this, $name);
@@ -152,9 +152,9 @@ class NewsControl extends Framework\Application\UI\BaseControl
 					->fetch();
 			$news->delete();
 			$title = 'title_' . $this->locales->lang;
-			$this->presenter->flashMessage("Novinka '{$news->$title}' byla smazána.", 'success');
+			$this->getPresenter()->flashMessage("Novinka '{$news->$title}' byla smazána.", 'success');
 		} catch (\Exception $e) {
-			$this->presenter->flashMessage($e->getMessage(), 'error');
+			$this->getPresenter()->flashMessage($e->getMessage(), 'error');
 		}
 		
 		$this->redirect('this');
@@ -250,7 +250,7 @@ class NewsControl extends Framework\Application\UI\BaseControl
 			if ($values->image_name->isOk()) {
 				if ($values->image_name->isImage()) {
 					$filename = 'news/' . date('Y-m-d-His-') . \Nette\Utils\Strings::random() . '-' . $values->image_name->getSanitizedName();
-					$params = $this->presenter->context->getParameters();
+					$params = $this->getPresenter()->context->getParameters();
 					$imgPath = $params['resourceDir'] . '/' . $filename;
 					
 					//check image size & dimensions
@@ -270,9 +270,6 @@ class NewsControl extends Framework\Application\UI\BaseControl
 					//upload to static
 					$uploader = $params['appDir'] . "/../bin/{$this->locales->server}-image-uploader.sh $filename 2>&1";
 					@exec($uploader);
-					
-					//set image
-					$this->setImage($form['image_name'], $values->image_name);
 				} else {
 					throw new Nette\UnknownImageFileException('Nahraný soubor musí být obrázek typu GIF, PNG nebo JPEG.');
 				}
@@ -289,13 +286,17 @@ class NewsControl extends Framework\Application\UI\BaseControl
 			}
 
 			$row = $this->coraabiaFactory->access()->updateNews($this->newsId, (array)$values);
-			$this->presenter->flashMessage('Novinka byla uložena.', 'success');
+			//set image
+			if (isset($values->image_name) && is_string($values->image_name)) {
+				$this->setImage($form['image_name'], $values->image_name);
+			}
+			$this->getPresenter()->flashMessage('Novinka byla uložena.', 'success');
 		} catch (\Exception $e) {
 			$form->addError($e->getMessage());
 		}
 		
 		if ($row) {
-			$this->presenter->redirect('News:updateNews', array('id' => $row->news_id));
+			$this->getPresenter()->redirect('News:updateNews', array('id' => $row->news_id));
 		}
 	}
 	
@@ -324,9 +325,9 @@ class NewsControl extends Framework\Application\UI\BaseControl
 		$newsId = (int)$this->getParameter('id');
 		try {
 			$this->coraabiaFactory->access()->updateNews($newsId, array('image_name' => NULL));
-			$this->presenter->flashMessage('Obrázek byl smazán.', 'success');
+			$this->getPresenter()->flashMessage('Obrázek byl smazán.', 'success');
 		} catch (\Exception $e) {
-			$this->presenter->flashMessage($e->getMessage(), 'error');
+			$this->getPresenter()->flashMessage($e->getMessage(), 'error');
 		}
 		
 		$this->redirect('this');

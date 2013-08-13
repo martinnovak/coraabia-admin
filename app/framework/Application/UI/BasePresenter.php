@@ -52,7 +52,11 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	{
 		$component = parent::createComponent($name);
 		if (!$component) {
-			$class = 'App\\' . ucfirst($name) . 'Control';
+			$class = 'App\\' . ucfirst($this->locales->module) . 'Module\\' . ucfirst($name) . 'Control';
+			if (!class_exists($class)) { //@todo THIS IS UGLY
+				$class = 'App\\' . ucfirst($name) . 'Control';
+			}
+			
 			$component = $this->context->createInstance($class);
 		}
 		
@@ -65,8 +69,8 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	{
 		parent::startup();
 		
-		if ($this->user->isLoggedIn()) {
-			$lang = $this->user->getIdentity()->lang;
+		if ($this->getUser()->isLoggedIn()) {
+			$lang = $this->getUser()->getIdentity()->lang;
 			if ($lang != $this->lang) { //intentionaly !=
 				$this->redirect('this', array('lang' => $lang));
 			}

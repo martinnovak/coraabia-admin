@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\GameModule;
 
 use Nette,
 	Framework,
@@ -60,9 +60,9 @@ class CardControl extends Framework\Application\UI\BaseControl
 	public function createComponentSpoiler($name)
 	{
 		$self = $this;
-		$editLink = $this->presenter->lazyLink('updateCard');
+		$editLink = $this->getPresenter()->lazyLink('updateCard');
 		$removeLink = $this->lazyLink('deleteCard');
-		$artistLink = $this->presenter->lazyLink('Image:updateArtist');
+		$artistLink = $this->getPresenter()->lazyLink('Image:updateArtist');
 		$baseUri = $this->template->baseUri;
 		
 		$grido = $this->gridoFactory->create($this, $name);
@@ -205,6 +205,6 @@ class CardControl extends Framework\Application\UI\BaseControl
 	
 	public function handleDeleteCard()
 	{
-		$this->presenter->flashMessage('Karta byla smazána.', 'success');
+		$this->getPresenter()->flashMessage('Karta byla smazána.', 'success');
 	}
 }

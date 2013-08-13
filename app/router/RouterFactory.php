@@ -13,11 +13,23 @@ use Nette,
 class RouterFactory
 {
 	/** @var array */
-	private $defaults = array(
-		'lang' => 'cs',
-		'server' => 'dev',
-		'presenter' => 'User',
-		'action' => 'showProfile'
+	public $defaults = array(
+		'index' => array(
+			'lang' => 'cs',
+			'presenter' => 'Sign',
+			'action' => 'out'
+		),
+		'sign' => array(
+			'lang' => 'cs',
+			'presenter' => 'Sign',
+		),
+		'modules' => array(
+			'lang' => 'cs',
+			'module' => 'game',
+			'server' => 'dev',
+			'presenter' => 'User',
+			'action' => 'showProfile'
+		)
 	);
 	
 	
@@ -27,8 +39,9 @@ class RouterFactory
 	public function createRouter()
 	{
 		$router = new RouteList();
-		$router[] = new Route('index.php', $this->defaults, Route::ONE_WAY);
-		$router[] = new Route('<lang cs|en>/<server dev|stage|beta|static>/<presenter>/<action>[/<id>]', $this->defaults);
+		$router[] = new Route('index.php', $this->defaults['index'], Route::ONE_WAY);
+		$router[] = new Route('<lang cs|en>/sign/<action>', $this->defaults['sign']);
+		$router[] = new Route('<lang cs|en>/<module game|coraabia>/<server dev|stage|beta>/<presenter>/<action>[/<id>]', $this->defaults['modules']);
 		return $router;
 	}
 }

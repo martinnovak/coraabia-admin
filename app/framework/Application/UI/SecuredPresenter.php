@@ -19,8 +19,8 @@ abstract class SecuredPresenter extends BasePresenter
 	{
 		parent::checkRequirements($element);
 		
-		if (!$this->user->isLoggedIn()) {
-			$this->redirect('Sign:out', array('backlink' => $this->storeRequest()));
+		if (!$this->getUser()->isLoggedIn()) {
+			$this->redirect(':Sign:out', array('backlink' => $this->storeRequest()));
 		}
 		
 		if (NULL !== $this->signal) {
@@ -45,14 +45,14 @@ abstract class SecuredPresenter extends BasePresenter
 		}
 		
 		if ($checkSignal) {
-			$resource = $this->user->getAuthorizator()->buildResourceName($this->locales->server, $this->signal[1]);
-			if (!$this->user->isAllowed($resource)) {
+			$resource = $this->getUser()->getAuthorizator()->buildResourceName($this->locales->server, $this->signal[1]);
+			if (!$this->getUser()->isAllowed($resource)) {
 				throw new Nette\Application\ForbiddenRequestException("Zdroj '$resource' neexistuje.");
 			}
 		}
 		
-		$resource = $this->user->getAuthorizator()->buildResourceName($this->locales->server, $this->getParameter('action'));
-		if (!$this->user->isAllowed($resource)) {
+		$resource = $this->getUser()->getAuthorizator()->buildResourceName($this->locales->server, $this->getParameter('action'));
+		if (!$this->getUser()->isAllowed($resource)) {
 			throw new Nette\Application\ForbiddenRequestException("Zdroj '$resource' neexistuje.");
 		}
 	}

@@ -31,7 +31,7 @@ class LocalesPanel extends Panel
 	 */
 	public function getTab()
 	{
-		return '<span title="Locales"><img src="' . self::ICO . '" alt="icon" />' . strtoupper($this->locales->server) . '|' . $this->locales->lang . '</span>';
+		return '<span title="Locales"><img src="' . self::ICO . '" alt="icon" />' . strtoupper($this->locales->module) . '|' . strtoupper($this->locales->server) . '|' . strtoupper($this->locales->lang) . '</span>';
 	}
 	
 	
