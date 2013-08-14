@@ -22,7 +22,7 @@ class GridoFactory extends Nette\Object
 	
 	
 	/**
-	 * @param \Nette\ComponentModel\IContainer $parent
+	 * @param \Nette\ComponentModel\IContainer|NULL $parent
 	 * @param string|NULL $name
 	 * @return \Grido\Grid 
 	 */
