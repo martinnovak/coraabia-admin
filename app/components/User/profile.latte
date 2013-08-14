@@ -12,9 +12,9 @@
 	<dt>{_'Jazyk'}</dt>
 	<dd>{$identity->lang|upper}</dd>
 	<dt>{_'Vytvořen'}</dt>
-	<dd>{$identity->created}</dd>
+	<dd>{$identity->created|date:'d.m.Y H:i:s'}</dd>
 	<dt>{_'Poslední přihlášení'}</dt>
-	<dd>{$identity->last_login}</dd>
+	<dd>{$identity->last_login|date:'d.m.Y H:i:s'}</dd>
 	<dt>{_'Poslední IP'}</dt>
 	<dd>{long2ip($identity->last_login_ip)}</dd>
 </dl>

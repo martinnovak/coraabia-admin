@@ -1,24 +1,46 @@
 #header .navbar-inner {
-    background-color: #850000;
-    background-image: linear-gradient(to bottom, #880000, #810000);
-	border-bottom-color: #720000;
+    background-color: #AF94E5;
+    background-image: linear-gradient(to bottom, #B79CED, #A78CDD);
+	border-bottom-color: #574A72;
 }
 
-#header .navbar .brand {
-	text-shadow: 0 1px 0 #660000;
-}
-
+#header .navbar .brand,
 #header .navbar .nav > li > a {
-    text-shadow: 0 1px 0 #660000;
+	text-shadow: 0 1px 0 #2B2539;
+}
+
+#header .navbar-inverse .brand,
+#header .navbar-inverse .nav > li > a {
+	color: #EEEEEE;
+}
+
+#header .navbar-inverse .nav li.dropdown > .dropdown-toggle .caret {
+    border-bottom-color: #EEEEEE;
+    border-top-color: #EEEEEE;
+}
+
+#header .navbar-inverse .nav li.dropdown > .dropdown-toggle:hover .caret,
+#header .navbar-inverse .nav li.dropdown.open > .dropdown-toggle .caret,
+#header .navbar-inverse .nav li.dropdown.active > .dropdown-toggle .caret,
+#header .navbar-inverse .nav li.dropdown.open.active > .dropdown-toggle .caret {
+    border-bottom-color: #FFFFFF;
+    border-top-color: #FFFFFF;
+}
+
+#header .navbar-inverse .brand:hover,
+#header .navbar-inverse .nav > li > a:hover,
+#header .navbar-inverse .nav > li > a:focus,
+#header .navbar-inverse .nav > li > a:hover {
+	color: #FFFFFF;
 }
 
 #header .navbar .nav li.dropdown.open > .dropdown-toggle,
 #header .navbar .nav li.dropdown.active > .dropdown-toggle,
 #header .navbar .nav li.dropdown.open.active > .dropdown-toggle {
-    background-color: #730000;
+    background-color: #574A72;
 }
 
 #header .navbar .divider-vertical {
-    border-left: 1px solid #810000;
-    border-right: 1px solid #880000;
+    border-left: 1px solid #574A72;
+    border-right: 1px solid #574A72;
 }
