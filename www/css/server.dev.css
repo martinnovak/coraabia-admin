@@ -1,3 +1,23 @@
+a {
+	color: #AF94E5;
+}
+
+a:hover {
+	color: #574A72;
+}
+
+.nav-list > .active > a,
+.nav-list > .active > a:hover {
+    background-color: #AF94E5;
+}
+
+.dropdown-menu li > a:hover,
+.dropdown-menu li > a:focus,
+.dropdown-submenu:hover > a {
+    background-color: #AF94E5;
+    background-image: linear-gradient(to bottom, #B79CED, #A78CDD);
+}
+
 #header .navbar-inner {
     background-color: #AF94E5;
     background-image: linear-gradient(to bottom, #B79CED, #A78CDD);

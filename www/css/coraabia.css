@@ -21,6 +21,8 @@
 
 /* multioption form control */
 .multioption label { display: inline-block; margin-right: 20px; }
+.multioption .radio input[type="radio"],
+.multioption .checkbox input[type="checkbox"] { margin-left: -20px; }
 
 /* adjust bootstrap layout */
 input, textarea, .uneditable-input { width: 309px; }
