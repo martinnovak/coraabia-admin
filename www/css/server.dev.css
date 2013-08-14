@@ -11,11 +11,18 @@ a:hover {
     background-color: #AF94E5;
 }
 
+.dropdown-menu .active > a,
+.dropdown-menu .active > a:hover {
+    background-color: #AF94E5;
+    background-image: linear-gradient(to bottom, #B79CED, #A78CDD);
+}
+
 .dropdown-menu li > a:hover,
 .dropdown-menu li > a:focus,
 .dropdown-submenu:hover > a {
-    background-color: #AF94E5;
-    background-image: linear-gradient(to bottom, #B79CED, #A78CDD);
+	color: #574A72;
+    background-color: #EEEEEE;
+    background-image: none;
 }
 
 #header .navbar-inner {

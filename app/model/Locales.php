@@ -80,7 +80,7 @@ class Locales extends Nette\FreezableObject
 	public function setServer($server)
 	{
 		$this->updating();
-		$this->server = $server;
+		$this->server = strtolower($server);
 	}
 	
 	
@@ -93,7 +93,7 @@ class Locales extends Nette\FreezableObject
 		if (!$this->server && $this->server !== FALSE) {
 			throw new Nette\InvalidStateException("Locales nebyly inicializovány.");
 		}
-		return $this->server;
+		return strtolower($this->server);
 	}
 	
 	
@@ -106,7 +106,7 @@ class Locales extends Nette\FreezableObject
 		if (!in_array($lang, $this->langs)) {
 			throw new Nette\InvalidArgumentException("Jazyk '$lang' není podporován.");
 		}
-		$this->lang = $lang;
+		$this->lang = strtolower($lang);
 	}
 	
 	
@@ -119,7 +119,7 @@ class Locales extends Nette\FreezableObject
 		if (!$this->lang) {
 			throw new Nette\InvalidStateException("Locales nebyly inicializovány.");
 		}
-		return $this->lang;
+		return strtolower($this->lang);
 	}
 	
 	
@@ -149,7 +149,7 @@ class Locales extends Nette\FreezableObject
 	public function setModule($module)
 	{
 		$this->updating();
-		$this->module = $module;
+		$this->module = strtolower($module);
 	}
 	
 	
@@ -162,6 +162,6 @@ class Locales extends Nette\FreezableObject
 		if (!$this->module && $this->module !== FALSE) {
 			throw new Nette\InvalidStateException("Locales nebyly inicializovány.");
 		}
-		return $this->module;
+		return strtolower($this->module);
 	}
 }

@@ -5,23 +5,23 @@
 			<li class="dropdown">
 				<a href="#" class="dropdown-toggle" data-toggle="dropdown">{$locales->server|upper}<b class="caret"></b></a>
 				<ul class="dropdown-menu">
-					<li><a href="{plink User:changeServer!, server => dev}">{_'DEV'}</a></li>
-					<li><a href="{plink User:changeServer!, server => stage}">{_'STAGE'}</a></li>
-					<li><a href="{plink User:changeServer!, server => beta}">{_'BETA'}</a></li>
+					<li n:class="$locales->server == dev ? active"><a href="{plink User:changeServer!, server => dev}">{_'DEV'}</a></li>
+					<li n:class="$locales->server == stage ? active"><a href="{plink User:changeServer!, server => stage}">{_'STAGE'}</a></li>
+					<li n:class="$locales->server == beta ? active"><a href="{plink User:changeServer!, server => beta}">{_'BETA'}</a></li>
 				</ul>
 			</li>
 			<li class="dropdown">
 				<a href="#" class="dropdown-toggle" data-toggle="dropdown">{$locales->lang|upper}<b class="caret"></b></a>
 				<ul class="dropdown-menu">
-					<li><a href="{plink User:changeLang!, lang => cs}">{_'CS'}</a></li>
-					<li><a href="{plink User:changeLang!, lang => en}">{_'EN'}</a></li>
+					<li n:class="$locales->lang == cs ? active"><a href="{plink User:changeLang!, lang => cs}">{_'CS'}</a></li>
+					<li n:class="$locales->lang == en ? active"><a href="{plink User:changeLang!, lang => en}">{_'EN'}</a></li>
 				</ul>
 			</li>
 			<li class="dropdown">
 				<a href="#" class="dropdown-toggle" data-toggle="dropdown">{$locales->module|upper}<b class="caret"></b></a>
 				<ul class="dropdown-menu">
-					<li><a href="{plink :Game:User:showProfile}">{_'GAME'}</a></li>
-					<li><a href="{plink :Coraabia:User:showProfile}">{_'CORAABIA'}</a></li>
+					<li n:class="$locales->module == game ? active"><a href="{plink :Game:User:showProfile}">{_'GAME'}</a></li>
+					<li n:class="$locales->module == coraabia ? active"><a href="{plink :Coraabia:User:showProfile}">{_'CORAABIA'}</a></li>
 				</ul>
 			</li>
 			{if $user->isLoggedIn()}
