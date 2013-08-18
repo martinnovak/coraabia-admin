@@ -7,14 +7,19 @@ use Nette;
 
 class XmlElement extends Nette\Object
 {
+	/** @var string */
 	public $name;
 	
+	/** @var array */
 	public $attrs;
 	
+	/** @var \Framework\Xml\XmlElement|NULL */
 	public $parent;
 	
+	/** @var array */
 	public $children;
 	
+	/** @var string */
 	public $content;
 	
 	
@@ -33,6 +38,10 @@ class XmlElement extends Nette\Object
 	}
 	
 	
+	/**
+	 * @param string $name
+	 * @return NULL|\Framework\Xml\XmlElement|array
+	 */
 	public function getByName($name)
 	{
 		$result = array_filter($this->children, function ($item) use ($name) {
@@ -49,6 +58,11 @@ class XmlElement extends Nette\Object
 	}
 	
 	
+	/**
+	 * @param string $id
+	 * @param string $value
+	 * @return NULL|\Framework\Xml\XmlElement|array
+	 */
 	public function getByAttr($id, $value)
 	{
 		$result = array_filter($this->children, function ($item) use ($id, $value) {

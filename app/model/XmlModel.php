@@ -24,8 +24,8 @@ abstract class XmlModel extends Nette\Object
 	
 	/**
 	 * @param \Framework\Xml\XmlElement $element
-	 * @param string $filename
 	 * @param \Model\Locales $locales
+	 * @param string $filename
 	 */
 	public function __construct(Framework\Xml\XmlElement $element, Locales $locales, $filename = '')
 	{

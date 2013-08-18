@@ -7,13 +7,18 @@ use Nette;
 
 class XmlParser extends Nette\Object
 {
+	/** @var resource */
 	private $parser;
 	
+	/** @var string */
 	private $filename;
 	
+	/** @var \Framework\Xml\XmlElement */
 	public $parsed;
 	
+	/** @var \Framework\Xml\XmlElement */
 	private $current;
+	
 	
 	public function __construct()
 	{
@@ -24,6 +29,10 @@ class XmlParser extends Nette\Object
 	}
 	
 	
+	/**
+	 * @param string $filename
+	 * @return \Framework\Xml\XmlParser
+	 */
 	public function setFile($filename)
 	{
 		$this->filename = $filename;
@@ -31,6 +40,12 @@ class XmlParser extends Nette\Object
 	}
 	
 	
+	/**
+	 * @return \Framework\Xml\XmlParser
+	 * @throws \Nette\InvalidStateException
+	 * @throws \Nette\IOException
+	 * @throws \LogicException
+	 */
 	public function parse()
 	{
 		if (!$this->filename) {
@@ -49,7 +64,12 @@ class XmlParser extends Nette\Object
 	}
 	
 	
-	public function tagStart($parser, $name, $attrs)
+	/**
+	 * @param resource $parser
+	 * @param string $name
+	 * @param array $attrs
+	 */
+	public function tagStart($parser, $name, array $attrs)
 	{
 		$el = new XmlElement($name, $attrs, $this->current);
 		if ($this->parsed === NULL) {
@@ -62,12 +82,20 @@ class XmlParser extends Nette\Object
 	}
 	
 	
+	/**
+	 * @param resource $parser
+	 * @param string $name
+	 */
 	public function tagEnd($parser, $name)
 	{
 		$this->current = $this->current->parent;
 	}
 	
 	
+	/**
+	 * @param resource $parser
+	 * @param string $data
+	 */
 	public function tagContent($parser, $data)
 	{
 		$this->current->content .= $data;
