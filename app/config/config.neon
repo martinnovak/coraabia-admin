@@ -43,7 +43,7 @@ services:
 	- Framework\Grido\GridoFactory
 	- Framework\Application\FormFactory
 	- Model\GameXmlFactory
-	xmlFactory: Model\XmlFactory
+	xmlFactory: Framework\Xml\XmlFactory
 	gdev: Model\GameXml(@xmlFactory::createXml(%devGameXml%), ..., %devGameXml%)
 	gstage: Model\GameXml(@xmlFactory::createXml(%stageGameXml%), ..., %stageGameXml%)
 	gbeta: Model\GameXml(@xmlFactory::createXml(%betaGameXml%), ..., %betaGameXml%)

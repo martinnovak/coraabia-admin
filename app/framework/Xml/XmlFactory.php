@@ -1,6 +1,6 @@
 <?php
 
-namespace Model;
+namespace Framework\Xml;
 
 use Nette,
 	Framework;
@@ -28,7 +28,7 @@ class XmlFactory extends Nette\Object
 	{
 		$cache = new Nette\Caching\Cache($this->storage, str_replace('\\', '.', get_class()));
 		if (NULL === ($xml = $cache->load($filename))) {
-			$parser = new Framework\Xml\XmlParser;
+			$parser = new XmlParser;
 			$parser->setFile($filename)->parse();
 			$cache->save($filename, $xml = $parser->parsed, array(
 				Nette\Caching\Cache::FILES => $filename
