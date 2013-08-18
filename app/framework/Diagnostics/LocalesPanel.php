@@ -46,6 +46,5 @@ class LocalesPanel extends Panel
 		$template->setTranslator($this->translator);
 		$template->locales = $this->locales;
 		return $template;
-		
 	}
 }

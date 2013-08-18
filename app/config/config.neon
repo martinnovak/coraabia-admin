@@ -2,6 +2,9 @@ parameters:
 	langs: [cs, en]
 	resourceDir: '%wwwDir%/images/resource'
 	gameXmlDir: '%appDir%/../data'
+	devGameXml: '%gameXmlDir%/game.dev.xml'
+	stageGameXml: '%gameXmlDir%/game.stage.xml'
+	betaGameXml: '%gameXmlDir%/game.beta.xml'
 
 php:
 	date.timezone: Europe/Prague
@@ -16,6 +19,7 @@ nette:
 		expiration: 14 days
 	debugger:
 		bar:
+			- Framework\Diagnostics\TimerPanel(@nette.latte)
 			- Framework\Diagnostics\LocalesPanel(@nette.latte)
 			- Framework\Diagnostics\TranslationPanel(@nette.latte)
 			- Framework\Diagnostics\GitPanel(@nette.latte, ..., %appDir%)
@@ -31,17 +35,18 @@ services:
 	adev: Model\Coraabia(@nette.database.adev)
 	astage: Model\Coraabia(@nette.database.astage)
 	abeta: Model\Coraabia(@nette.database.abeta)
-	locales: Model\Locales(%staticUrls%, %langs%, ...)
+	locales: Model\Locales(%staticUrls%, %langs%)
 	- Model\CoraabiaFactory
 	- Model\AuditFactory
 	- Model\Authenticator(@game, %applicationSecret%, %hashAlgorithm%)
 	- Framework\Mapi\MapiRequestFactory(..., %bazaarUrls%)
 	- Framework\Grido\GridoFactory
 	- Framework\Application\FormFactory
-	devgame: Framework\Xml\XmlReader::fromFile('%gameXmlDir%/game.dev.xml')
-	stagegame: Framework\Xml\XmlReader::fromFile('%gameXmlDir%/game.stage.xml')
-	betagame: Framework\Xml\XmlReader::fromFile('%gameXmlDir%/game.beta.xml')
 	- Model\GameXmlFactory
+	xmlFactory: Model\XmlFactory
+	gdev: Model\GameXml(@xmlFactory::createXml(%devGameXml%), ..., %devGameXml%)
+	gstage: Model\GameXml(@xmlFactory::createXml(%stageGameXml%), ..., %stageGameXml%)
+	gbeta: Model\GameXml(@xmlFactory::createXml(%betaGameXml%), ..., %betaGameXml%)
 	authorizator:
 		class: Model\Authorizator(@game)
 		setup: [ setupPermissions ]

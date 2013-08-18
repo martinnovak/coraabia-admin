@@ -751,4 +751,43 @@ class Game extends Model
 		$result = $this->connection->selectionFactory->table('edition');
 		return $this->locales->server == \Coraabia\ServerEnum::DEV ? $result : $result->where('ready = ?', TRUE);
 	}
+	
+	
+	/**
+	 * @return \Nette\Database\Table\Selection
+	 */
+	public function getArtists()
+	{
+		return $this->connection->selectionFactory->table('artist');
+	}
+	
+	
+	/**
+	 * @return \Nette\Database\Table\Selection
+	 */
+	public function getCountries()
+	{
+		return $this->connection->selectionFactory->table('translation')
+				->where('key LIKE ?', 'country.%')
+				->where('lang = ?', $this->locales->lang);
+	}
+	
+	
+	/**
+	 * @param int|NULL $artistId
+	 * @param array $values
+	 * @return \Nette\Database\Table\ActiveRow|NULL
+	 */
+	public function updateArtist($artistId, array $values)
+	{
+		if ($artistId !== NULL) { //update
+			$this->connection->selectionFactory->table('artist')
+					->where('artist_id = ?', $artistId)
+					->fetch()
+					->update($values);
+		} else { //insert
+			return $this->connection->selectionFactory->table('artist')
+					->insert($values);
+		}
+	}
 }

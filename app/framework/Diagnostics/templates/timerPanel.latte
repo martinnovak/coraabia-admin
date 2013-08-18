@@ -1,0 +1,9 @@
+<h1>{_'Časy'}</h1>
+<div class="nette-inner">
+	<table n:inner-foreach="$times as $name => $value">
+		<tr>
+			<th>{$name}</th>
+			<td>{$value} s</td>
+		</tr>
+	</table>
+</div>

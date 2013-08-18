@@ -26,10 +26,10 @@ class GameXmlFactory extends Nette\Object
 	
 	
 	/**
-	 * @return \SimpleXMLElement
+	 * @return \Model\GameXml
 	 */
 	public function access()
 	{
-		return $this->context->getService($this->locales->server . 'game');
+		return $this->context->getService('g' . $this->locales->server);
 	}
 }

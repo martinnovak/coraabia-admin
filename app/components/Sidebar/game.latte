@@ -4,6 +4,9 @@
 		<li{ifCurrent Card:showSpoiler} class="active"{/ifCurrent}><a href="{plink Card:showSpoiler}">{_'Spoiler'}</a></li>
 		<li{ifCurrent Card:cardTimeLine} class="active"{/ifCurrent}><a href="{plink Card:cardTimeLine}">{_'Timeline'}</a></li>
 		<li class="divider"></li>
+		<li class="nav-header">{_'Arty'}</li>
+		<li{ifCurrent Image:showArtists} class="active"{/ifCurrent}><a href="{plink Image:showArtists}">{_'Artisté'}</a></li>
+		<li class="divider"></li>
 		<li class="nav-header">{_'Ostatní'}</li>
 		<li{ifCurrent Text:showStaticList} class="active"{/ifCurrent}><a href="{plink Text:showStaticList}">{_'Herní texty'}</a></li>
 	</ul>
