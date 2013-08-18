@@ -11,7 +11,6 @@ class UserControl extends Framework\Application\UI\BaseControl
 	/** @var \Model\Game @inject */
 	public $game;
 	
-	
 	public function handleChangeLang()
 	{
 		try {

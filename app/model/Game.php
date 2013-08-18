@@ -758,7 +758,9 @@ class Game extends Model
 	 */
 	public function getArtists()
 	{
-		return $this->connection->selectionFactory->table('artist');
+		return $this->connection->selectionFactory->table('artist')
+				->select('artist.*, COUNT(:art.art_id) AS arts')
+				->group('artist.artist_id');
 	}
 	
 	

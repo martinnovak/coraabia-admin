@@ -80,6 +80,9 @@ class ImageControl extends Framework\Application\UI\BaseControl
 					return $item->country ? $self->translator->translate('country.' . $item->country) : '';
 				});
 				
+		$grido->addColumn('arts', 'Artů')
+				->setSortable();
+				
 		$grido->addAction('edit', 'Změnit')
 				->setIcon('edit')
 				->setCustomHref(function ($item) use ($editLink) {
