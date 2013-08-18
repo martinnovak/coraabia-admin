@@ -2,8 +2,7 @@
 
 namespace App\CoraabiaModule;
 
-use Nette,
-	Framework;
+use Framework;
 
 
 class NewsPresenter extends Framework\Application\UI\SecuredPresenter

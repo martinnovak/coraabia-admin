@@ -2,8 +2,7 @@
 
 namespace Framework\Xml;
 
-use Nette,
-	Framework;
+use Nette;
 
 
 class XmlFactory extends Nette\Object

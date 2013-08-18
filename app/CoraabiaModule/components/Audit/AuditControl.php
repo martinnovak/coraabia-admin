@@ -2,11 +2,8 @@
 
 namespace App\CoraabiaModule;
 
-use Nette,
-	Framework,
-	Grido,
-	Grido\Components\Filters\Filter,
-	Nextras;
+use Framework,
+	Grido\Components\Filters\Filter;
 
 
 class AuditControl extends Framework\Application\UI\BaseControl

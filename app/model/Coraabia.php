@@ -2,8 +2,6 @@
 
 namespace Model;
 
-use Nette;
-
 
 class Coraabia extends Model
 {

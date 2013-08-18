@@ -2,8 +2,7 @@
 
 namespace App\GameModule;
 
-use Nette,
-	Framework;
+use Framework;
 
 
 class CardPresenter extends Framework\Application\UI\SecuredPresenter

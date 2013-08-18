@@ -2,8 +2,7 @@
 
 namespace Model;
 
-use Nette,
-	App;
+use Nette;
 
 
 /**

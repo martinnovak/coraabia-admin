@@ -2,8 +2,7 @@
 
 namespace Framework\Application\UI;
 
-use Nette,
-	App;
+use Nette;
 
 
 /**

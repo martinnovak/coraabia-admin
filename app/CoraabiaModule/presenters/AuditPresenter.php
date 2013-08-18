@@ -2,8 +2,7 @@
 
 namespace App\CoraabiaModule;
 
-use Nette,
-	Framework;
+use Framework;
 
 
 class AuditPresenter extends Framework\Application\UI\SecuredPresenter

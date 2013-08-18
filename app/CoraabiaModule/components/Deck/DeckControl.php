@@ -2,10 +2,7 @@
 
 namespace App\CoraabiaModule;
 
-use Nette,
-	Framework,
-	Model,
-	Grido;
+use Framework;
 
 
 class DeckControl extends Framework\Application\UI\BaseControl

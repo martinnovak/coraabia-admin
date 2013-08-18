@@ -3,9 +3,7 @@
 namespace App\CoraabiaModule;
 
 use Nette,
-	Framework,
-	Model,
-	Grido;
+	Framework;
 
 
 /**

@@ -2,8 +2,7 @@
 
 namespace App;
 
-use Nette,
-	Framework;
+use Framework;
 
 
 class SidebarControl extends Framework\Application\UI\BaseControl

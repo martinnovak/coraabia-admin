@@ -2,8 +2,7 @@
 
 namespace App;
 
-use Nette,
-	Framework;
+use Framework;
 
 
 class FooterControl extends Framework\Application\UI\BaseControl

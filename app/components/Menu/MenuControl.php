@@ -2,8 +2,7 @@
 
 namespace App;
 
-use Nette,
-	Framework;
+use Framework;
 
 
 class MenuControl extends Framework\Application\UI\BaseControl

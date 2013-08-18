@@ -2,9 +2,7 @@
 
 namespace App\GameModule;
 
-use Nette,
-	Framework,
-	App;
+use App;
 
 
 /**

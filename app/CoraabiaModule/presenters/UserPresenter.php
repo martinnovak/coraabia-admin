@@ -2,9 +2,7 @@
 
 namespace App\CoraabiaModule;
 
-use Nette,
-	Framework,
-	App;
+use App;
 
 
 /**

@@ -2,10 +2,7 @@
 
 namespace App\GameModule;
 
-use Nette,
-	Framework,
-	Grido,
-	Grido\Components\Filters\Filter;
+use Framework;
 
 
 class CardControl extends Framework\Application\UI\BaseControl

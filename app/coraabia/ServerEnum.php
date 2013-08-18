@@ -14,6 +14,6 @@ class ServerEnum
 	
 	public function __construct()
 	{
-		throw new \Nette\StaticClassException;
+		throw new Nette\StaticClassException;
 	}
 }

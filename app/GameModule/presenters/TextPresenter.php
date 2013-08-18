@@ -2,8 +2,7 @@
 
 namespace App\GameModule;
 
-use Nette,
-	Framework;
+use Framework;
 
 
 class TextPresenter extends Framework\Application\UI\SecuredPresenter

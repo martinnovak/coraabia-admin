@@ -3,9 +3,7 @@
 namespace App\GameModule;
 
 use Nette,
-	Framework,
-	Grido,
-	Grido\Components\Filters\Filter;
+	Framework;
 
 
 /**
