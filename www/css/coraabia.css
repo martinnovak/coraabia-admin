@@ -26,6 +26,7 @@
 
 /* adjust bootstrap layout */
 input, textarea, .uneditable-input { width: 309px; }
+select { width: 323px; }
 label.control-label.required { font-weight: bold; }
 
 /* blink */
