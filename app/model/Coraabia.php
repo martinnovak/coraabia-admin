@@ -9,9 +9,9 @@ class Coraabia extends Model
 	 */
 	public function getDecks()
 	{
-		return $this->getDataSource()->getSelectionFactory()->table('deck')
+		return $this->getSelectionFactory()->table('deck')
 				->select('deck.*, user.user_id, user.username');
-	}	
+	}
 	
 	
 	/**
@@ -19,7 +19,7 @@ class Coraabia extends Model
 	 */
 	public function getDeckInstances()
 	{
-		return $this->getDataSource()->getSelectionFactory()->table('deck_instance')
+		return $this->getSelectionFactory()->table('deck_instance')
 				->select('deck_instance.*, instance.*');
 	}
 	
@@ -29,7 +29,7 @@ class Coraabia extends Model
 	 */
 	public function getDeckConnections()
 	{
-		return $this->getDataSource()->getSelectionFactory()->table('deck_connection');
+		return $this->getSelectionFactory()->table('deck_connection');
 	}
 	
 	
@@ -38,7 +38,7 @@ class Coraabia extends Model
 	 */
 	public function getAudits()
 	{
-		return $this->getDataSource()->getSelectionFactory()->table('audit_event');
+		return $this->getSelectionFactory()->table('audit_event');
 	}
 	
 	
@@ -47,7 +47,7 @@ class Coraabia extends Model
 	 */
 	public function getNews()
 	{
-		return $this->getDataSource()->getSelectionFactory()->table('news')
+		return $this->getSelectionFactory()->table('news')
 				->select('*, CASE WHEN valid_from IS NOT NULL THEN valid_from ELSE created END AS order_by');
 	}
 	
@@ -60,12 +60,12 @@ class Coraabia extends Model
 	public function updateNews($newsId, array $values)
 	{
 		if ($newsId !== NULL) { //update
-			$this->getDataSource()->getSelectionFactory()->table('news')
+			$this->getSelectionFactory()->table('news')
 					->where('news_id = ?', $newsId)
 					->fetch()
 					->update($values);
 		} else { //insert
-			return $this->getDataSource()->getSelectionFactory()->table('news')
+			return $this->getSelectionFactory()->table('news')
 					->insert($values);
 		}
 	}

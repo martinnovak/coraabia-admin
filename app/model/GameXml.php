@@ -10,7 +10,7 @@ class GameXml extends Model
 	public function getCards()
 	{
 		$result = array();
-		foreach ($this->getDataSource()->getElement()->getByName('editions')->getByName('edition') as $edition) {
+		foreach ($this->getElement()->getByName('editions')->getByName('edition') as $edition) {
 			$result = array_merge($result, $edition->getByName('card'));
 		}
 		return $result;

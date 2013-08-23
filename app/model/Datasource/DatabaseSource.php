@@ -30,7 +30,7 @@ class DatabaseSource extends Nette\Object implements ISource
 	
 	
 	/**
-	 * @throws Nette\NotSupportedException
+	 * @throws \Nette\NotSupportedException
 	 */
 	public function getElement()
 	{

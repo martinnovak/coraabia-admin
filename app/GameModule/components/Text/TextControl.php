@@ -122,15 +122,15 @@ class TextControl extends Framework\Application\UI\BaseControl
 	public function textFormSuccess(Nette\Application\UI\Form $form)
 	{
 		try {
-			$this->game->getDatasource()->connection->beginTransaction();
+			$this->game->getConnection()->beginTransaction();
 			foreach ($this->locales->langs as $lang) {
 				$value = 'value_' . $lang;
 				$this->game->updateStaticText($this->key, $lang, $form->getValues()->$value);
 			}
-			$this->game->getDatasource()->connection->commit();
+			$this->game->getConnection()->commit();
 			$this->getPresenter()->flashMessage('Text byl uložen.', 'success');
 		} catch (\Exception $e) {
-			$this->game->getDatasource()->connection->rollBack();
+			$this->game->getConnection()->rollBack();
 			$form->addError($e->getMessage());
 		}
 		

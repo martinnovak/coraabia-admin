@@ -27,7 +27,7 @@ class XmlSource extends Nette\Object implements ISource
 	
 	
 	/**
-	 * @throws Nette\NotSupportedException
+	 * @throws \Nette\NotSupportedException
 	 */
 	public function getConnection()
 	{
@@ -45,7 +45,7 @@ class XmlSource extends Nette\Object implements ISource
 	
 	
 	/**
-	 * @throws Nette\NotSupportedException
+	 * @throws \Nette\NotSupportedException
 	 */
 	public function getSelectionFactory()
 	{
