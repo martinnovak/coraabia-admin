@@ -6,28 +6,25 @@ use Nette,
 	Model\Datasource;
 
 
+/**
+ * @method \Model\Locales getLocales()
+ */
 abstract class Model extends Nette\Object
 {
 	/** @var \Model\Datasource\ISource */
 	private $datasource;
 	
+	/** @var \Model\Locales */
+	private $locales;
+	
 	
 	/**
 	 * @param \Model\Datasource\ISource $source
+	 * @param \Model\Locales $locales
 	 */
-	public function __construct(Datasource\ISource $source) {
+	public function __construct(Datasource\ISource $source, Locales $locales) {
 		$this->datasource = $source;
-	}
-	
-	
-	/**
-	 * @todo THIS IS UGLY
-	 * @param string $name
-	 * @param array $args
-	 * @return mixed
-	 */
-	public function __call($name, $args) {
-		return call_user_func_array(array($this->datasource, $name), $args);
+		$this->locales = $locales;
 	}
 	
 	
