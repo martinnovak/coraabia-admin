@@ -21,7 +21,7 @@ abstract class Model extends Nette\Object
 	
 	
 	/**
-	 * 
+	 * @todo THIS IS UGLY
 	 * @param string $name
 	 * @param array $args
 	 * @return mixed

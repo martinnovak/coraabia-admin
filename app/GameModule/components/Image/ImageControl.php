@@ -165,7 +165,7 @@ class ImageControl extends Framework\Application\UI\BaseControl
 		
 		if ($this->artistId != NULL) {
 			$defaults = $this->game->getArtists()
-					->where('artist_id = ?', $this->artistId)
+					->where('artist.artist_id = ?', $this->artistId)
 					->fetch();
 			$form->setDefaults($defaults);
 		}
