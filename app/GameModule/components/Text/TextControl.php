@@ -42,7 +42,7 @@ class TextControl extends Framework\Application\UI\BaseControl
 		$editLink = $this->getPresenter()->lazyLink('updateStatic');
 		
 		$grido = $this->gridoFactory->create($this, $name);
-		$grido->setModel($this->game->staticTexts)
+		$grido->setModel($this->game->getStaticTexts())
 				->setPrimaryKey('key')
 				->setDefaultSort(array('key' => 'ASC'));
 		
@@ -122,15 +122,15 @@ class TextControl extends Framework\Application\UI\BaseControl
 	public function textFormSuccess(Nette\Application\UI\Form $form)
 	{
 		try {
-			$this->game->connection->beginTransaction();
+			$this->game->getDatasource()->connection->beginTransaction();
 			foreach ($this->locales->langs as $lang) {
 				$value = 'value_' . $lang;
 				$this->game->updateStaticText($this->key, $lang, $form->getValues()->$value);
 			}
-			$this->game->connection->commit();
+			$this->game->getDatasource()->connection->commit();
 			$this->getPresenter()->flashMessage('Text byl uložen.', 'success');
 		} catch (\Exception $e) {
-			$this->game->connection->rollBack();
+			$this->game->getDatasource()->connection->rollBack();
 			$form->addError($e->getMessage());
 		}
 		

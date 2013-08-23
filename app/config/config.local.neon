@@ -6,22 +6,22 @@ nette:
 		game:
 			dsn: 'pgsql:host=localhost port=5432 dbname=game'
 			lazy: TRUE
-		dev:
+		coraabia.dev:
 			dsn: 'pgsql:host=localhost port=5432 dbname=coraabia'
 			lazy: TRUE
-		stage:
+		coraabia.stage:
 			dsn: 'pgsql:host=localhost port=5438 dbname=coraabia'
 			lazy: TRUE
-		beta:
+		coraabia.beta:
 			dsn: 'pgsql:host=localhost port=5433 dbname=coraabia'
 			lazy: TRUE
-		adev:
+		audit.dev:
 			dsn: 'pgsql:host=localhost port=5432 dbname=audit'
 			lazy: TRUE
-		astage:
+		audit.stage:
 			dsn: 'pgsql:host=localhost port=5438 dbname=audit'
 			lazy: TRUE
-		abeta:
+		audit.beta:
 			dsn: 'pgsql:host=localhost port=5433 dbname=audit'
 			lazy: TRUE
 

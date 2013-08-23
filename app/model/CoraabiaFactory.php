@@ -30,6 +30,6 @@ class CoraabiaFactory extends Nette\Object
 	 */
 	public function access()
 	{
-		return $this->context->getService($this->locales->server);
+		return $this->context->getService('coraabia.' . $this->locales->server);
 	}
 }

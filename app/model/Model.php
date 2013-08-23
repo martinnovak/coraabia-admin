@@ -2,38 +2,40 @@
 
 namespace Model;
 
-use Nette;
+use Nette,
+	Model\Datasource;
 
 
-/**
- * @method \Nette\Database\Connection getConnection()
- * @method \Model\Locales getLocales()
- */
 abstract class Model extends Nette\Object
 {
-	/** @var \Nette\Database\Connection */
-	private $connection;
-	
-	/** @var \Model\Locales */
-	private $locales;
+	/** @var \Model\Datasource\ISource */
+	private $datasource;
 	
 	
 	/**
-	 * @param \Nette\Database\Connection $connection
-	 * @param \Model\Locales $locales 
+	 * @param \Model\Datasource\ISource $source
 	 */
-	public function __construct(Nette\Database\Connection $connection, Locales $locales)
-	{
-		$this->connection = $connection;
-		$this->locales = $locales;
+	public function __construct(Datasource\ISource $source) {
+		$this->datasource = $source;
 	}
 	
 	
 	/**
-	 * @return \Nette\Database\SelectionFactory 
+	 * 
+	 * @param string $name
+	 * @param array $args
+	 * @return mixed
 	 */
-	public function getSelectionFactory()
+	public function __call($name, $args) {
+		return call_user_func_array(array($this->datasource, $name), $args);
+	}
+	
+	
+	/**
+	 * @return \Model\Datasource\ISource
+	 */
+	public function getDataSource()
 	{
-		return $this->connection->selectionFactory;
+		return $this->datasource;
 	}
 }

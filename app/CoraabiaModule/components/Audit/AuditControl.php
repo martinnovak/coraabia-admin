@@ -41,7 +41,7 @@ class AuditControl extends Framework\Application\UI\BaseControl
 		$request = $this->mapiRequestFactory->create('transactions', 'txs');
 		
 		//types
-		$tmp = $this->game->bazaarTransactionTypes;
+		$tmp = $this->game->getBazaarTransactionTypes();
 		$types = array_combine($tmp, $tmp);
 		
 		//grido
@@ -123,12 +123,12 @@ class AuditControl extends Framework\Application\UI\BaseControl
 		$link = $this->getPresenter()->lazyLink('showViewAudit');
 		
 		//types
-		$tmp = $this->game->auditEventTypes;
+		$tmp = $this->game->getAuditEventTypes();
 		$types = array_combine($tmp, $tmp);
 		
 		//grido
 		$grido = $this->gridoFactory->create($this, $name);
-		$grido->setModel($this->auditFactory->access()->audits)
+		$grido->setModel($this->auditFactory->access()->getAudits())
 				->setPrimaryKey('audit_event_id')
 				->setDefaultSort(array('audit_event_id' => 'DESC'));
 		
@@ -181,7 +181,10 @@ class AuditControl extends Framework\Application\UI\BaseControl
 		$template->setFile(__DIR__ . '/event.latte');
 		
 		$id = $this->getPresenter()->getParameter('id');
-		$event = $this->auditFactory->access()->audits->where('audit_event_id = ?', $id)->fetch()->toArray();
+		$event = $this->auditFactory->access()->getAudits()
+				->where('audit_event_id = ?', $id)
+				->fetch()
+				->toArray();
 		$event['data'] = json_decode($event['data']);
 		
 		$template->event = $event;

@@ -35,7 +35,7 @@ class DeckControl extends Framework\Application\UI\BaseControl
 		$exportLink = $this->lazyLink('exportBotDeck');
 		
 		$grido = $this->gridoFactory->create($this, $name);
-		$grido->setModel($this->coraabiaFactory->access()->decks)
+		$grido->setModel($this->coraabiaFactory->access()->getDecks())
 				->setPrimaryKey('deck_id')
 				->setDefaultSort(array('name' => 'ASC'));
 		
@@ -90,10 +90,10 @@ class DeckControl extends Framework\Application\UI\BaseControl
 		if ($deck) {
 			$coraabia = $this->coraabiaFactory->access();
 			
-			$cards = $coraabia->deckInstances->select('instance.card_id')
+			$cards = $coraabia->getDeckInstances()->select('instance.card_id')
 					->where('deck_id = ?', $deck->deck_id)
 					->fetchAll();
-			$connections = $coraabia->deckConnections->select('connection_id')
+			$connections = $coraabia->getDeckConnections()->select('connection_id')
 					->where('deck_id = ?', $deck->deck_id)
 					->fetchAll();
 			
@@ -115,7 +115,7 @@ class DeckControl extends Framework\Application\UI\BaseControl
 		$coraabia = $this->coraabiaFactory->access();
 		
 		$deckId = (int)$this->getParameter('id');
-		$deck = $coraabia->decks->where('deck.deck_id = ?', $deckId)
+		$deck = $coraabia->getDecks()->where('deck.deck_id = ?', $deckId)
 				->where('user.username ~ ?', '^b0t[1-9][0-9]*$')
 				->fetch();
 		
@@ -127,7 +127,7 @@ class DeckControl extends Framework\Application\UI\BaseControl
 	{
 		$coraabia = $this->coraabiaFactory->access();
 		
-		$decks = $coraabia->decks->where('user.username ~ ?', '^b0t[1-9][0-9]*$')
+		$decks = $coraabia->getDecks()->where('user.username ~ ?', '^b0t[1-9][0-9]*$')
 				->fetchAll();
 		
 		if ($decks) {

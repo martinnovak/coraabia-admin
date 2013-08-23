@@ -43,7 +43,7 @@ class Translator extends Nette\Object implements Nette\Localization\ITranslator
 		$cache = new Nette\Caching\Cache($this->storage, str_replace('\\', '.', get_class()));
 		if (NULL === ($translations = $cache->load('translations'))) {
 			$translations = array();
-			foreach ($this->game->translations->fetchAll() as $row) {
+			foreach ($this->game->getTranslations()->fetchAll() as $row) {
 				$translations[$row->lang][$row->key] = $row->value;
 			}
 			$cache->save('translations', $translations);

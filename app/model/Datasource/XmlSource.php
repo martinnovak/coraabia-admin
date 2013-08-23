@@ -1,6 +1,6 @@
 <?php
 
-namespace Model;
+namespace Model\Datasource;
 
 use Nette,
 	Framework;
@@ -10,7 +10,7 @@ use Nette,
  * @method \Framework\Xml\XmlElement getElement()
  * @method \Model\Locales getLocales()
  */
-abstract class XmlModel extends Nette\Object
+abstract class XmlSource extends Nette\Object implements ISource
 {
 	/** @var \Framework\Xml\XmlElement */
 	private $element;
@@ -27,7 +27,7 @@ abstract class XmlModel extends Nette\Object
 	 * @param \Model\Locales $locales
 	 * @param string $filename
 	 */
-	public function __construct(Framework\Xml\XmlElement $element, Locales $locales, $filename = '')
+	public function __construct(Framework\Xml\XmlElement $element, \Model\Locales $locales, $filename = '')
 	{
 		$this->element = $element;
 		$this->locales = $locales;

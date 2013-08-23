@@ -28,25 +28,35 @@ services:
 	- App\RouterFactory
 	router: @App\RouterFactory::createRouter
 	- Framework\Hooks\HookManager
-	game: Model\Game(@nette.database.game)
-	dev: Model\Coraabia(@nette.database.dev)
-	stage: Model\Coraabia(@nette.database.stage)
-	beta: Model\Coraabia(@nette.database.beta)
-	adev: Model\Coraabia(@nette.database.adev)
-	astage: Model\Coraabia(@nette.database.astage)
-	abeta: Model\Coraabia(@nette.database.abeta)
 	locales: Model\Locales(%staticUrls%, %langs%)
-	- Model\CoraabiaFactory
-	- Model\AuditFactory
 	- Model\Authenticator(@game, %applicationSecret%, %hashAlgorithm%)
 	- Framework\Mapi\MapiRequestFactory(..., %bazaarUrls%)
 	- Framework\Grido\GridoFactory
 	- Framework\Application\FormFactory
-	- Model\GameXmlFactory
 	xmlFactory: Framework\Xml\XmlFactory
-	gdev: Model\GameXml(@xmlFactory::createXml(%devGameXml%), ..., %devGameXml%)
-	gstage: Model\GameXml(@xmlFactory::createXml(%stageGameXml%), ..., %stageGameXml%)
-	gbeta: Model\GameXml(@xmlFactory::createXml(%betaGameXml%), ..., %betaGameXml%)
+	- Model\GameXmlFactory
+	- Model\CoraabiaFactory
+	- Model\AuditFactory
+	source.game: Model\Datasource\GameSource(@nette.database.game)
+	source.game.dev: Model\Datasource\GameXmlSource(@xmlFactory::createXml(%devGameXml%), ..., %devGameXml%)
+	source.game.stage: Model\Datasource\GameXmlSource(@xmlFactory::createXml(%stageGameXml%), ..., %stageGameXml%)
+	source.game.beta: Model\Datasource\GameXmlSource(@xmlFactory::createXml(%betaGameXml%), ..., %betaGameXml%)
+	source.coraabia.dev: Model\Datasource\CoraabiaSource(@nette.database.coraabia.dev)
+	source.coraabia.stage: Model\Datasource\CoraabiaSource(@nette.database.coraabia.stage)
+	source.coraabia.beta: Model\Datasource\CoraabiaSource(@nette.database.coraabia.beta)
+	source.audit.dev: Model\Datasource\CoraabiaSource(@nette.database.audit.dev)
+	source.audit.stage: Model\Datasource\CoraabiaSource(@nette.database.audit.stage)
+	source.audit.beta: Model\Datasource\CoraabiaSource(@nette.database.audit.beta)
+	game: Model\Game(@source.game)
+	game.dev: Model\GameXml(@source.game.dev)
+	game.stage: Model\GameXml(@source.game.stage)
+	game.beta: Model\GameXml(@source.game.beta)
+	coraabia.dev: Model\Coraabia(@source.coraabia.dev)
+	coraabia.stage: Model\Coraabia(@source.coraabia.stage)
+	coraabia.beta: Model\Coraabia(@source.coraabia.beta)
+	audit.dev: Model\Coraabia(@source.audit.dev)
+	audit.stage: Model\Coraabia(@source.audit.stage)
+	audit.beta: Model\Coraabia(@source.audit.beta)
 	authorizator:
 		class: Model\Authorizator(@game)
 		setup: [ setupPermissions ]

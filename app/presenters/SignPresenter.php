@@ -89,7 +89,7 @@ class SignPresenter extends Framework\Application\UI\BasePresenter
 		$last_login = Nette\DateTime::from($this->locales->timestamp);
 		$last_login_ip = ip2long($_SERVER['REMOTE_ADDR']);
 		
-		$this->game->userdata->where('user_id = ?', $currentUser->getId())
+		$this->game->getUserdata()->where('user_id = ?', $currentUser->getId())
 				->fetch()
 				->update(array(
 					'last_login' => $last_login,

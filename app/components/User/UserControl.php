@@ -15,7 +15,7 @@ class UserControl extends Framework\Application\UI\BaseControl
 	{
 		try {
 			$lang = $this->getParameter('lang');
-			$user = $this->game->userdata->where('user_id = ?', $this->getPresenter()->getUser()->getId())->fetch();
+			$user = $this->game->getUserdata()->where('user_id = ?', $this->getPresenter()->getUser()->getId())->fetch();
 			$user->update(array('lang' => $lang));
 			$this->getPresenter()->getUser()->getIdentity()->lang = $lang;
 			$this->getPresenter()->flashMessage("Jazyk byl změněn na '" . strtoupper($lang) . "'.", 'info');

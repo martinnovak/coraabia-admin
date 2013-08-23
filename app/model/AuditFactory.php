@@ -30,6 +30,6 @@ class AuditFactory extends Nette\Object
 	 */
 	public function access()
 	{
-		return $this->context->getService('a' . $this->locales->server);
+		return $this->context->getService('audit.' . $this->locales->server);
 	}
 }

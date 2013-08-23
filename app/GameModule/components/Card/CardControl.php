@@ -26,7 +26,7 @@ class CardControl extends Framework\Application\UI\BaseControl
 		});
 		
 		$start = $finish = $dates = array();
-		foreach ($this->game->cards->fetchAll() as $card) {
+		foreach ($this->game->getCards()->fetchAll() as $card) {
 			$from = $card->valid_from ? $card->valid_from->setTime(0, 0, 0) : 0;
 			$to = $card->valid_to ? $card->valid_to->setTime(0, 0, 0) : 0;
 			$start[strtotime((string)$from)][] = $card;
@@ -63,7 +63,7 @@ class CardControl extends Framework\Application\UI\BaseControl
 		$baseUri = $this->template->baseUri;
 		
 		$grido = $this->gridoFactory->create($this, $name);
-		$grido->setModel($this->game->cards)
+		$grido->setModel($this->game->getCards())
 				->setPrimaryKey('card_id')
 				->setDefaultSort(array('type' => 'ASC', 'fraction' => 'ASC', 'rarity' => 'ASC'));
 		
@@ -167,7 +167,7 @@ class CardControl extends Framework\Application\UI\BaseControl
 				});
 				
 		$editions = array();
-		foreach ($this->game->editions->fetchAll() as $edition) {
+		foreach ($this->game->getEditions()->fetchAll() as $edition) {
 			$editions[$edition->edition_id] = $this->translator->translate('edition.' . $edition->edition_id);
 		}
 		$grido->addFilterCustom('edition_id', new \Framework\Forms\Controls\MultiOptionList('Expanze', $editions))

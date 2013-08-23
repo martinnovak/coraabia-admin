@@ -2,19 +2,7 @@
 
 namespace Model;
 
-
-class GameXml extends XmlModel
+class GameXml extends Model
 {
 	
-	/**
-	 * @return array
-	 */
-	public function getCards()
-	{
-		$result = array();
-		foreach ($this->element->getByName('editions')->getByName('edition') as $edition) {
-			$result = array_merge($result, $edition->getByName('card'));
-		}
-		return $result;
-	}
 }

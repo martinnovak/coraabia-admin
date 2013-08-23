@@ -41,7 +41,7 @@ class Authenticator extends Nette\Object implements Nette\Security\IAuthenticato
 	public function authenticate(array $credentials)
 	{
 		list($username, $password) = $credentials;
-		$row = $this->game->userdata
+		$row = $this->game->getUserdata()
 				->where('username = ?', $username)
 				->where('enabled = ?', TRUE)
 				->fetch();

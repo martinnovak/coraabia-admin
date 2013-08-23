@@ -40,7 +40,7 @@ class ImageControl extends Framework\Application\UI\BaseControl
 		$removeLink = $this->lazyLink('deleteArtist');
 		
 		$grido = $this->gridoFactory->create($this, $name);
-		$grido->setModel($this->game->artists)
+		$grido->setModel($this->game->getArtists())
 				->setPrimaryKey('artist_id')
 				->setDefaultSort(array('name' => 'ASC'));
 		
@@ -104,7 +104,7 @@ class ImageControl extends Framework\Application\UI\BaseControl
 	{
 		$id = (int)$this->getParameter('id');
 		try {
-			$this->game->artists
+			$this->game->getArtists()
 					->where('artist_id = ?', $id)
 					->fetch()
 					->delete();
@@ -147,7 +147,7 @@ class ImageControl extends Framework\Application\UI\BaseControl
 		$form->addText('web', 'Web');
 		
 		$countries = array();
-		foreach ($this->game->countries->order('value ASC')->fetchAll() as $country) {
+		foreach ($this->game->getCountries()->order('value ASC')->fetchAll() as $country) {
 			$countries[substr($country->key, 8)] = $country->value;
 		}
 		$form->addSelect('country', 'Země', array('' => '') + $countries);
@@ -164,7 +164,7 @@ class ImageControl extends Framework\Application\UI\BaseControl
 		$form->addSubmit('submit', 'Uložit');
 		
 		if ($this->artistId != NULL) {
-			$defaults = $this->game->artists
+			$defaults = $this->game->getArtists()
 					->where('artist_id = ?', $this->artistId)
 					->fetch();
 			$form->setDefaults($defaults);

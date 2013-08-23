@@ -53,7 +53,7 @@ class NewsControl extends Framework\Application\UI\BaseControl
 		$removeLink = $this->lazyLink('deleteNews');
 		
 		$grido = $this->gridoFactory->create($this, $name);
-		$grido->setModel($this->coraabiaFactory->access()->news)
+		$grido->setModel($this->coraabiaFactory->access()->getNews())
 				->setPrimaryKey('news_id')
 				->setDefaultSort(array('order_by' => 'DESC'));
 		
@@ -139,7 +139,7 @@ class NewsControl extends Framework\Application\UI\BaseControl
 		$news_id = $this->getParameter('id');
 		
 		try {
-			$news = $this->coraabiaFactory->access()->news
+			$news = $this->coraabiaFactory->access()->getNews()
 					->where('news_id = ?', $news_id)
 					->fetch();
 			$news->delete();
@@ -158,7 +158,7 @@ class NewsControl extends Framework\Application\UI\BaseControl
 		$template = $this->template;
 		$template->setFile(__DIR__ . '/edit.latte');
 		
-		$template->news = $this->coraabiaFactory->access()->news
+		$template->news = $this->coraabiaFactory->access()->getNews()
 				->where('news_id = ?', $this->newsId)
 				->fetch();
 		
@@ -208,7 +208,7 @@ class NewsControl extends Framework\Application\UI\BaseControl
 		$form->addSubmit('submit', 'Uložit');
 		
 		if ($this->newsId != NULL) {
-			$defaults = $this->coraabiaFactory->access()->news
+			$defaults = $this->coraabiaFactory->access()->getNews()
 					->where('news_id = ?', $this->newsId)
 					->fetch();
 			if ($defaults->valid_from == '') { //intentionaly ==
