@@ -5,7 +5,7 @@ namespace Model\Datasource;
 use Nette;
 
 
-abstract class DatabaseSource extends Nette\Object implements ISource
+class DatabaseSource extends Nette\Object implements ISource
 {
 	/** @var \Nette\Database\Connection */
 	private $connection;

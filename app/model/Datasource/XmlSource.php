@@ -6,7 +6,7 @@ use Nette,
 	Framework;
 
 
-abstract class XmlSource extends Nette\Object implements ISource
+class XmlSource extends Nette\Object implements ISource
 {
 	/** @var \Framework\Xml\XmlElement */
 	private $element;
