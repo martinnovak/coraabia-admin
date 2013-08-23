@@ -34,3 +34,7 @@ parameters:
 		dev: 'http://dev.static.coraabia.cz'
 		stage: 'http://stage.static.coraabia.cz'
 		beta: 'http://static.coraabia.com'
+	gameXmlUrls:
+		dev: '%staticUrls.dev%/flash-data/game.xml'
+		stage: '%staticUrls.stage%/flash-data/game.xml'
+		beta: '%staticUrls.beta%/flash-data/game.xml'

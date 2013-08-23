@@ -51,9 +51,9 @@ class XmlParser extends Nette\Object
 		if (!$this->filename) {
 			throw new Nette\InvalidStateException('XmlParser nemá nastavený soubor.');
 		}
-		if (!is_readable($this->filename)) {
+		/*if (!is_readable($this->filename)) {
 			throw new Nette\IOException("XmlParser nemůže otevřít soubor '" . $this->filename . "'.");
-		}
+		}*/
 		$this->parsed = $this->current = NULL;
 		if (!xml_parse($this->parser, file_get_contents($this->filename), TRUE)) {
 			$message = xml_error_string(xml_get_error_code($this->parser));

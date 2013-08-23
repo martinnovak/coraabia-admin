@@ -2,7 +2,8 @@
 
 namespace Framework\Xml;
 
-use Nette;
+use Nette,
+	Framework\Diagnostics\TimerPanel;
 
 
 class XmlFactory extends Nette\Object
@@ -26,13 +27,17 @@ class XmlFactory extends Nette\Object
 	public function createXml($filename)
 	{
 		$cache = new Nette\Caching\Cache($this->storage, str_replace('\\', '.', get_class()));
+		TimerPanel::start('game.xml load');
 		if (NULL === ($xml = $cache->load($filename))) {
+			TimerPanel::start('game.xml parsing');
 			$parser = new XmlParser;
 			$parser->setFile($filename)->parse();
 			$cache->save($filename, $xml = $parser->parsed, array(
 				Nette\Caching\Cache::FILES => $filename
 			));
+			TimerPanel::stop('game.xml parsing');
 		}
+		TimerPanel::stop('game.xml load');
 		return $xml;
 	}
 }
