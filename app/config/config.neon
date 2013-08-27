@@ -1,6 +1,7 @@
 parameters:
 	langs: [cs, en]
-	resourceDir: '%wwwDir%/images/resource'
+	resourcePath: '/images/resource'
+	resourceDir: '%wwwDir%/%resourcePath%'
 	
 php:
 	date.timezone: Europe/Prague

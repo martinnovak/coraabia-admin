@@ -1,0 +1,9 @@
+{snippet gallery}
+{block images}
+<div class="gallery">
+{foreach $data as $art}
+	<img id="{$art->art_id}" src="{$control->imageAccessor($art)}" class="img-polaroid" width="160" height="12" />
+{/foreach}
+</div>
+{/block}
+{/snippet}

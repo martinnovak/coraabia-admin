@@ -9,7 +9,7 @@ class Game extends Model
 	 */
 	public function getCards()
 	{
-		$result = $this->getSelectionFactory()->table('card');
+		$result = $this->getSource()->getSelectionFactory()->table('card');
 		return $this->locales->server == \Coraabia\ServerEnum::DEV ? $result : $result->where('ready = ?', TRUE);
 	}
 	
@@ -19,7 +19,7 @@ class Game extends Model
 	 */
 	public function getUserdata()
 	{
-		return $this->getSelectionFactory()->table('userdata');
+		return $this->getSource()->getSelectionFactory()->table('userdata');
 	}
 	
 	
@@ -28,7 +28,7 @@ class Game extends Model
 	 */
 	public function getTranslations()
 	{
-		return $this->getSelectionFactory()->table('translation');
+		return $this->getSource()->getSelectionFactory()->table('translation');
 	}
 	
 	
@@ -37,7 +37,7 @@ class Game extends Model
 	 */
 	public function getPermissions()
 	{
-		return $this->getSelectionFactory()->table('permission')
+		return $this->getSource()->getSelectionFactory()->table('permission')
 				->select('role_id, resource, server');
 	}
 	
@@ -115,13 +115,13 @@ class Game extends Model
 			'start_ch' => '',
 			'type' => 'BOT_' . substr($deck['username'], 3)
 		);
-		$this->getConnection()->query('INSERT INTO deck', $gameDeck);
+		$this->getSource()->query('INSERT INTO deck', $gameDeck);
 		
 		$cards = array_values(array_map(function ($item) use ($deckId) {
 			return array('deck_id' => $deckId, 'card_id' => $item->card_id);
 		}, $cards));
 		if (count($cards)) {
-			$this->getSelectionFactory()->table('deck_card')
+			$this->getSource()->getSelectionFactory()->table('deck_card')
 					->insert($cards);
 		}
 		
@@ -129,7 +129,7 @@ class Game extends Model
 			return array('connection_id' => $item->connection_id, 'deck_id' => $deckId);
 		}, $connections));
 		if (count($connections)) {
-			$this->getSelectionFactory()->table('deck_connection')
+			$this->getSource()->getSelectionFactory()->table('deck_connection')
 					->insert($connections);
 		}
 	}
@@ -137,7 +137,7 @@ class Game extends Model
 	
 	public function deleteBotDecks()
 	{
-		$this->getSelectionFactory()->table('deck')
+		$this->getSource()->getSelectionFactory()->table('deck')
 				->where('type ~ ?', '^BOT_[1-9][0-9]*$')
 				->delete();
 	}
@@ -702,7 +702,7 @@ class Game extends Model
 			'GAME_TOURNAMENT_SCORE_POINTS_234',
 			'GAME_TOURNAMENT_SCORE_POINTS_5',
 		);
-		return $this->getSelectionFactory()->table('translation')
+		return $this->getSource()->getSelectionFactory()->table('translation')
 				->where('key IN ?', $keys)
 				->where('lang = ?', $this->locales->lang);
 	}
@@ -715,7 +715,7 @@ class Game extends Model
 	 */
 	public function updateStaticText($key, $lang, $value)
 	{
-		$this->getSelectionFactory()->table('translation')
+		$this->getSource()->getSelectionFactory()->table('translation')
 				->where('key = ?', $key)
 				->where('lang = ?', $lang)
 				->fetch()
@@ -729,7 +729,7 @@ class Game extends Model
 	public function getCardArtists()
 	{
 		$artists = array();
-		foreach ($this->getConnection()->query(
+		foreach ($this->getSource()->query(
 				"SELECT c.card_id, a.*, r.authorized FROM artist a
 				LEFT JOIN art r USING (artist_id)
 				LEFT JOIN card c ON (c.face_id = r.face_id OR c.art_id = r.image_id OR c.avatar_id = r.avatar_id)")
@@ -745,7 +745,7 @@ class Game extends Model
 	 */
 	public function getEditions()
 	{
-		$result = $this->getSelectionFactory()->table('edition');
+		$result = $this->getSource()->getSelectionFactory()->table('edition');
 		return $this->locales->server == \Coraabia\ServerEnum::DEV ? $result : $result->where('ready = ?', TRUE);
 	}
 	
@@ -755,7 +755,7 @@ class Game extends Model
 	 */
 	public function getArtists()
 	{
-		return $this->getSelectionFactory()->table('artist')
+		return $this->getSource()->getSelectionFactory()->table('artist')
 				->select('artist.*, COUNT(:art.art_id) AS arts')
 				->group('artist.artist_id');
 	}
@@ -766,7 +766,7 @@ class Game extends Model
 	 */
 	public function getCountries()
 	{
-		return $this->getSelectionFactory()->table('translation')
+		return $this->getSource()->getSelectionFactory()->table('translation')
 				->where('key LIKE ?', 'country.%')
 				->where('lang = ?', $this->locales->lang);
 	}
@@ -780,13 +780,23 @@ class Game extends Model
 	public function updateArtist($artistId, array $values)
 	{
 		if ($artistId !== NULL) { //update
-			$this->getSelectionFactory()->table('artist')
+			$this->getSource()->getSelectionFactory()->table('artist')
 					->where('artist_id = ?', $artistId)
 					->fetch()
 					->update($values);
 		} else { //insert
-			return $this->getSelectionFactory()->table('artist')
+			return $this->getSource()->getSelectionFactory()->table('artist')
 					->insert($values);
 		}
+	}
+	
+	
+	/**
+	 * @return \Nette\Database\Table\Selection
+	 */
+	public function getArts()
+	{
+		return $this->getSource()->getSelectionFactory()->table('art')
+				->select('art.*, image.path AS art_path, face.path AS face_path, avatar.path AS avatar_path');
 	}
 }

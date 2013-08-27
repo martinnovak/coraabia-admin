@@ -8,8 +8,9 @@ use Nette,
 
 /**
  * @method \Model\Locales getLocales()
+ * @method \Model\Datasource\ISource getDatasource()
  */
-abstract class Model extends Nette\Object implements Datasource\ISource
+abstract class Model extends Nette\Object
 {
 	/** @var \Model\Datasource\ISource */
 	private $datasource;
@@ -29,40 +30,10 @@ abstract class Model extends Nette\Object implements Datasource\ISource
 	
 	
 	/**
-	 * @return \Model\Datasource\ISource
+	 * @return mixed
 	 */
-	public function getDataSource()
+	public function getSource()
 	{
-		return $this->datasource;
-	}
-	
-
-	/**
-	 * @return \Nette\Database\Connection
-	 * @throws \Nette\NotSupportedException
-	 */
-	public function getConnection()
-	{
-		return $this->datasource->getConnection();
-	}
-	
-	
-	/**
-	 * @return \Framework\Xml\XmlElement
-	 * @throws \Nette\NotSupportedException
-	 */
-	public function getElement()
-	{
-		return $this->datasource->getElement();
-	}
-	
-	
-	/**
-	 * @return \Nette\Database\SelectionFactory
-	 * @throws \Nette\NotSupportedException
-	 */
-	public function getSelectionFactory()
-	{
-		return $this->datasource->getSelectionFactory();
+		return $this->datasource->getSource();
 	}
 }

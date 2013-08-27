@@ -9,7 +9,7 @@ class DatabaseSource extends Nette\Object implements ISource
 {
 	/** @var \Nette\Database\Connection */
 	private $connection;
-		
+	
 	
 	/**
 	 * @param \Nette\Database\Connection $connection
@@ -23,26 +23,8 @@ class DatabaseSource extends Nette\Object implements ISource
 	/**
 	 * @return \Nette\Database\Connection
 	 */
-	public function getConnection()
+	public function getSource()
 	{
 		return $this->connection;
-	}
-	
-	
-	/**
-	 * @throws \Nette\NotSupportedException
-	 */
-	public function getElement()
-	{
-		throw new Nette\NotSupportedException("DatabaseSource does not support getElement method.");
-	}
-	
-	
-	/**
-	 * @return \Nette\Database\SelectionFactory 
-	 */
-	public function getSelectionFactory()
-	{
-		return $this->connection->selectionFactory;
 	}
 }

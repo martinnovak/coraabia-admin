@@ -29,6 +29,9 @@ input, textarea, .uneditable-input { width: 309px; }
 select { width: 323px; }
 label.control-label.required { font-weight: bold; }
 
+/* gallery */
+.gallery img { display: inline-block; }
+
 /* blink */
 @keyframes blink {
 	from { opacity: 1; }

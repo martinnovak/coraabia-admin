@@ -27,28 +27,10 @@ class XmlSource extends Nette\Object implements ISource
 	
 	
 	/**
-	 * @throws \Nette\NotSupportedException
-	 */
-	public function getConnection()
-	{
-		throw new Nette\NotSupportedException("XmlSource does not support getConnection method.");
-	}
-	
-	
-	/**
 	 * @return \Framework\Xml\XmlElement
 	 */
-	public function getElement()
+	public function getSource()
 	{
 		return $this->element;
-	}
-	
-	
-	/**
-	 * @throws \Nette\NotSupportedException
-	 */
-	public function getSelectionFactory()
-	{
-		throw new Nette\NotSupportedException("XmlSource does not support getSelectionFactory method.");
 	}
 }

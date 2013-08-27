@@ -201,4 +201,25 @@ class ImageControl extends Framework\Application\UI\BaseControl
 		$template->setFile(__DIR__ . '/artistForm.latte');
 		$template->render();
 	}
+	
+	
+	public function renderGallery()
+	{
+		$template = $this->template;
+		$template->setFile(__DIR__ . '/gallery.latte');
+		$template->render();
+	}
+	
+	
+	public function createComponentGallery($name)
+	{
+		$parameters = $this->getPresenter()->getContext()->getParameters();
+		$gallery = new \Gallery\Gallery($this, $name);
+		$gallery->setModel($this->game->getArts())
+				->setTranslator($this->translator)
+				->setImageAccessor(function ($item) use ($parameters) {
+					return $parameters['resourcePath'] . '/' . $item->art_path;
+				});
+		return $gallery;
+	}
 }
