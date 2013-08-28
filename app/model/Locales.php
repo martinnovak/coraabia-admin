@@ -6,9 +6,8 @@ use Nette;
 
 
 /**
- * Locales.
- * @method int getTimestamp
- * @method getLangs()
+ * @method \Nette\DateTime getTimestamp()
+ * @method array getLangs()
  */
 class Locales extends Nette\FreezableObject
 {
@@ -21,7 +20,7 @@ class Locales extends Nette\FreezableObject
 	/** @var string */
 	private $server;
 	
-	/** @var int */
+	/** @var \Nette\DateTime */
 	private $timestamp;
 	
 	/** @var array */
@@ -39,7 +38,7 @@ class Locales extends Nette\FreezableObject
 	{
 		$this->staticUrls = $staticUrls;
 		$this->langs = $langs;
-		$this->timestamp = time();
+		$this->timestamp = Nette\DateTime::from(time());
 	}
 	
 	
@@ -65,9 +64,9 @@ class Locales extends Nette\FreezableObject
 		$application->onRequest[] = function ($application, $request) use ($self) {
 			$parameters = $request->getParameters();
 			$presenter = explode(':', $request->presenterName);
-			$self->module = count($presenter) == 2 ? $presenter[0] : FALSE;
-			$self->setLang($parameters['lang']);
-			$self->server = isset($parameters['server']) ? $parameters['server'] : FALSE;
+			$self->module = count($presenter) == 2 ? strtolower($presenter[0]) : FALSE;
+			$self->setLang(strtolower($parameters['lang']));
+			$self->server = isset($parameters['server']) ? strtolower($parameters['server']) : FALSE;
 			//$self->freeze();
 		};
 	}
@@ -85,19 +84,16 @@ class Locales extends Nette\FreezableObject
 	
 	/**
 	 * @return string
-	 * @throws Nette\InvalidStateException 
 	 */
 	public function getServer()
 	{
-		/*if (!$this->server && $this->server !== FALSE) {
-			throw new Nette\InvalidStateException("Locales nebyly inicializovány.");
-		}*/
 		return strtolower($this->server);
 	}
 	
 	
 	/**
 	 * @param string $lang
+	 * @throws \Nette\InvalidArgumentException
 	 */
 	public function setLang($lang)
 	{
@@ -111,24 +107,20 @@ class Locales extends Nette\FreezableObject
 	
 	/**
 	 * @return string
-	 * @throws Nette\InvalidStateException 
 	 */
 	public function getLang()
 	{
-		/*if (!$this->lang) {
-			throw new Nette\InvalidStateException("Locales nebyly inicializovány.");
-		}*/
 		return strtolower($this->lang);
 	}
 	
 	
 	/**
-	 * @param int $timestamp
+	 * @param mixed $timestamp
 	 */
 	public function setTimestamp($timestamp)
 	{
 		$this->updating();
-		$this->timestamp = $timestamp;
+		$this->timestamp = Nette\DateTime::from($timestamp);
 	}
 	
 	
@@ -154,13 +146,9 @@ class Locales extends Nette\FreezableObject
 	
 	/**
 	 * @return string
-	 * @throws \Nette\InvalidStateException 
 	 */
 	public function getModule()
 	{
-		/*if (!$this->module && $this->module !== FALSE) {
-			throw new Nette\InvalidStateException("Locales nebyly inicializovány.");
-		}*/
 		return strtolower($this->module);
 	}
 }

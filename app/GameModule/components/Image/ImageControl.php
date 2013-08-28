@@ -217,9 +217,8 @@ class ImageControl extends Framework\Application\UI\BaseControl
 		$gallery = new \Gallery\Gallery($this, $name);
 		$gallery->setModel($this->game->getArts())
 				->setTranslator($this->translator)
-				->setImageAccessor(function ($item) use ($parameters) {
-					return $parameters['resourcePath'] . '/' . $item->art_path;
-				});
+				->setImageAccessor(new \Framework\Gallery\ArtAccessor)
+				->setBaseImagePath($parameters['resourcePath']);
 		return $gallery;
 	}
 }

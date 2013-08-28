@@ -11,10 +11,11 @@ use Nette;
  */
 class Authorizator extends Nette\Security\Permission
 {
-	const ACCESS_STRING = 'Coraabia_Route_Access';
-	
 	/** @var \Model\Game */
 	private $game;
+	
+	/** @var \Model\Locales */
+	private $locales;
 	
 	/** @var \Nette\Caching\IStorage */
 	private $storage;
@@ -22,11 +23,13 @@ class Authorizator extends Nette\Security\Permission
 	
 	/**
 	 * @param \Model\Game $game
+	 * @param \Model\Locales $locales
 	 * @param \Nette\Caching\IStorage $storage
 	 */
-	public function __construct(Game $game, Nette\Caching\IStorage $storage)
+	public function __construct(Game $game, Locales $locales, Nette\Caching\IStorage $storage)
 	{
 		$this->game = $game;
+		$this->locales = $locales;
 		$this->storage = $storage;
 	}
 	
@@ -39,7 +42,7 @@ class Authorizator extends Nette\Security\Permission
 		$cache = new Nette\Caching\Cache($this->storage, str_replace('\\', '.', get_class()));
 		if (NULL === ($permissions = $cache->load('permissions'))) {
 			$permissions = array();
-			foreach ($this->game->getPermissions()->where('action', self::ACCESS_STRING)->fetchAll() as $row) {
+			foreach ($this->game->getPermissions()->fetchAll() as $row) {
 				$permissions[] = $row->toArray();
 			}
 			$cache->save('permissions', $permissions);
@@ -52,7 +55,7 @@ class Authorizator extends Nette\Security\Permission
 			}
 			
 			//setup resources
-			$resource = $this->buildResourceName($p['server'], $p['resource']);
+			$resource = $this->buildResourceName($p['resource']);
 			if (!$this->hasResource($resource)) {
 				$this->addResource($resource);
 			}
@@ -77,13 +80,12 @@ class Authorizator extends Nette\Security\Permission
 	
 	
 	/**
-	 * @param string $server
-	 * @param string $action
+	 * @param string $resource
 	 * @return string 
 	 */
-	public function buildResourceName($server, $action)
+	public function buildResourceName($resource)
 	{
-		return strtolower($server . '/' . $action);
+		return strtolower("{$this->locales->module}/{$this->locales->server}/$resource");
 	}
 	
 	

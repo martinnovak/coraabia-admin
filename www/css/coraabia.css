@@ -30,7 +30,9 @@ select { width: 323px; }
 label.control-label.required { font-weight: bold; }
 
 /* gallery */
-.gallery img { display: inline-block; }
+.gallery .images img { display: inline-block; }
+.gallery .images a { display: inline-block; }
+.gallery .images a:hover img { background-color: #F5F5F5; }
 
 /* blink */
 @keyframes blink {
@@ -54,7 +56,7 @@ label.control-label.required { font-weight: bold; }
 }
 
 /* highlight nette broken links */
-a[href~="error:"] { background-color: #f00 !important; color: #fff !important; }
+a[href~="error:"] { background: #f00 !important; color: #fff !important; }
 
 /** missing bootstrap classes */
 .text-left { text-align: left; }

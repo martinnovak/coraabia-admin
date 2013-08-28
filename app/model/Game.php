@@ -37,8 +37,7 @@ class Game extends Model
 	 */
 	public function getPermissions()
 	{
-		return $this->getSource()->getSelectionFactory()->table('permission')
-				->select('role_id, resource, server');
+		return $this->getSource()->getSelectionFactory()->table('permission2');
 	}
 	
 	

@@ -92,8 +92,8 @@ class NewsControl extends Framework\Application\UI\BaseControl
 				
 		$grido->addColumn('active', 'Aktivní')
 				->setCustomRender(function ($item) use ($self) {
-					return ($item->valid_from === NULL || $item->valid_from->getTimestamp() <= $self->locales->timestamp)
-							&& ($item->valid_to === NULL || $item->valid_to->getTimestamp() >= $self->locales->timestamp)
+					return ($item->valid_from === NULL || $item->valid_from->getTimestamp() <= $self->locales->timestamp->getTimestamp())
+							&& ($item->valid_to === NULL || $item->valid_to->getTimestamp() >= $self->locales->timestamp->getTimestamp())
 							&& $self->rowNumber++ < $self::VISIBLE_NEWS
 							? '<i class="icon-ok"></i>'
 							: '';

@@ -86,7 +86,7 @@ class SignPresenter extends Framework\Application\UI\BasePresenter
 	protected function updateUserLogin()
 	{
 		$currentUser = $this->getUser();
-		$last_login = Nette\DateTime::from($this->locales->timestamp);
+		$last_login = $this->locales->timestamp;
 		$last_login_ip = ip2long($_SERVER['REMOTE_ADDR']);
 		
 		$this->game->getUserdata()->where('user_id = ?', $currentUser->getId())

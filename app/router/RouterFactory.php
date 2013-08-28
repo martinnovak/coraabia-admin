@@ -27,7 +27,7 @@ class RouterFactory
 			'module' => 'game',
 			'server' => 'dev',
 			'presenter' => 'User',
-			'action' => 'showProfile'
+			'action' => 'profile'
 		)
 	);
 	
