@@ -57,9 +57,9 @@ class CardControl extends Framework\Application\UI\BaseControl
 	public function createComponentSpoiler($name)
 	{
 		$self = $this;
-		$editLink = $this->getPresenter()->lazyLink('updateCard');
+		$editLink = $this->getPresenter()->lazyLink('editCard');
 		$removeLink = $this->lazyLink('deleteCard');
-		$artistLink = $this->getPresenter()->lazyLink('Image:updateArtist');
+		$artistLink = $this->getPresenter()->lazyLink('Image:editArtist');
 		$baseUri = $this->template->baseUri;
 		
 		$grido = $this->gridoFactory->create($this, $name);
@@ -174,15 +174,6 @@ class CardControl extends Framework\Application\UI\BaseControl
 				->setCondition(\Grido\Components\Filters\Filter::CONDITION_CALLBACK, function ($item) {
 					return array('edition_id IN %i', $item);
 				});;
-
-		$grido->addAction('edit', 'Změnit')
-				->setIcon('edit')
-				->setCustomHref(function ($item) use ($editLink) {
-					return $editLink->setParameter('id', $item->card_id);
-				})
-				->setDisable(function ($item) use ($self) {
-					return $self->locales->server != \Coraabia\ServerEnum::DEV;
-				});
 
 		$grido->addAction('remove', 'Smazat')
 				->setIcon('remove')

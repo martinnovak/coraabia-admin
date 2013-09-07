@@ -14,22 +14,17 @@ class Authorizator extends Nette\Security\Permission
 	/** @var \Model\Game */
 	private $game;
 	
-	/** @var \Model\Locales */
-	private $locales;
-	
 	/** @var \Nette\Caching\IStorage */
 	private $storage;
 	
 	
 	/**
 	 * @param \Model\Game $game
-	 * @param \Model\Locales $locales
 	 * @param \Nette\Caching\IStorage $storage
 	 */
-	public function __construct(Game $game, Locales $locales, Nette\Caching\IStorage $storage)
+	public function __construct(Game $game, Nette\Caching\IStorage $storage)
 	{
 		$this->game = $game;
-		$this->locales = $locales;
 		$this->storage = $storage;
 	}
 	
@@ -55,7 +50,7 @@ class Authorizator extends Nette\Security\Permission
 			}
 			
 			//setup resources
-			$resource = $this->buildResourceName($p['resource']);
+			$resource = $this->buildResourceName($p['module'], $p['server'], $p['resource']);
 			if (!$this->hasResource($resource)) {
 				$this->addResource($resource);
 			}
@@ -80,12 +75,14 @@ class Authorizator extends Nette\Security\Permission
 	
 	
 	/**
+	 * @param string $module
+	 * @param string $server
 	 * @param string $resource
 	 * @return string 
 	 */
-	public function buildResourceName($resource)
+	public function buildResourceName($module, $server, $resource)
 	{
-		return strtolower("{$this->locales->module}/{$this->locales->server}/$resource");
+		return strtolower("$module/$server/$resource");
 	}
 	
 	

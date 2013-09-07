@@ -238,8 +238,7 @@ class NewsControl extends Framework\Application\UI\BaseControl
 			if ($values->image_name->isOk()) {
 				if ($values->image_name->isImage()) {
 					$filename = 'news/' . date('Y-m-d-His-') . \Nette\Utils\Strings::random() . '-' . $values->image_name->getSanitizedName();
-					$params = $this->getPresenter()->context->getParameters();
-					$imgPath = $params['resourceDir'] . '/' . $filename;
+					$imgPath = $this->getPresenter()->getContext()->parameters['resourceDir'] . '/' . $filename;
 					
 					//check image size & dimensions
 					$size = $values->image_name->getSize();

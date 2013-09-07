@@ -5,11 +5,10 @@ namespace Coraabia;
 use Nette;
 
 
-class CardTypeEnum
+class ModuleEnum
 {
-	const CHARACTER = 'CHARACTER';
-	const TRICK_WIN = 'TRICK_WIN';
-	const TRICK_NOW = 'TRICK_NOW';
+	const GAME = 'game';
+	const CORAABIA = 'coraabia';
 	
 	
 	/**

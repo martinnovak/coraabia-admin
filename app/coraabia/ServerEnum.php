@@ -12,6 +12,9 @@ class ServerEnum
 	const BETA = 'beta';
 
 	
+	/**
+	 * @throws Nette\StaticClassException
+	 */
 	public function __construct()
 	{
 		throw new Nette\StaticClassException;

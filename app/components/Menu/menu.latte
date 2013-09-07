@@ -2,12 +2,12 @@
 	<div class="navbar-inner">
 		<a class="brand" href="{plink User:showProfile, module => game}">{_'Coraabia Admin'}</a>
 		<ul class="nav pull-right" n:if="$user->isLoggedIn()">
-			<li class="dropdown">
+			<li class="dropdown" n:if="!($locales->module == \Coraabia\ModuleEnum::GAME)">
 				<a href="#" class="dropdown-toggle" data-toggle="dropdown">{$locales->server|upper}<b class="caret"></b></a>
 				<ul class="dropdown-menu">
-					<li n:class="$locales->server == dev ? active"><a href="{plink User:changeServer!, server => dev}">{_'DEV'}</a></li>
-					<li n:class="$locales->server == stage ? active"><a href="{plink User:changeServer!, server => stage}">{_'STAGE'}</a></li>
-					<li n:class="$locales->server == beta ? active"><a href="{plink User:changeServer!, server => beta}">{_'BETA'}</a></li>
+					<li n:class="$locales->server == \Coraabia\ServerEnum::DEV ? active"><a href="{plink User:changeServer!, server => \Coraabia\ServerEnum::DEV}">{_'DEV'}</a></li>
+					<li n:class="$locales->server == \Coraabia\ServerEnum::STAGE ? active"><a href="{plink User:changeServer!, server => \Coraabia\ServerEnum::STAGE}">{_'STAGE'}</a></li>
+					<li n:class="$locales->server == \Coraabia\ServerEnum::BETA ? active"><a href="{plink User:changeServer!, server => \Coraabia\ServerEnum::BETA}">{_'BETA'}</a></li>
 				</ul>
 			</li>
 			<li class="dropdown">
@@ -20,8 +20,8 @@
 			<li class="dropdown">
 				<a href="#" class="dropdown-toggle" data-toggle="dropdown">{$locales->module|upper}<b class="caret"></b></a>
 				<ul class="dropdown-menu">
-					<li n:class="$locales->module == game ? active"><a href="{plink :Game:User:showProfile}">{_'GAME'}</a></li>
-					<li n:class="$locales->module == coraabia ? active"><a href="{plink :Coraabia:User:showProfile}">{_'CORAABIA'}</a></li>
+					<li n:class="$locales->module == \Coraabia\ModuleEnum::GAME ? active"><a href="{plink :Game:User:profile, server => ''}">{_'GAME'}</a></li>
+					<li n:class="$locales->module == \Coraabia\ModuleEnum::CORAABIA ? active"><a href="{plink :Coraabia:User:profile, server => \Coraabia\ServerEnum::DEV}">{_'CORAABIA'}</a></li>
 				</ul>
 			</li>
 			{if $user->isLoggedIn()}

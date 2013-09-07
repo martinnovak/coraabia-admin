@@ -59,7 +59,7 @@ class SignPresenter extends Framework\Application\UI\BasePresenter
 			$this->updateUserLogin();
 			$this->flashMessage('Byl jste úspěšně přihlášen.', 'success');
 			$this->restoreRequest($this->backlink);
-			$this->redirect(':Game:User:showProfile', array('lang' => $this->getUser()->getIdentity()->lang));
+			$this->redirect(':Game:User:profile', array('lang' => $this->getUser()->getIdentity()->lang));
 		} catch (Nette\Security\AuthenticationException $e) {
 			$form->addError($e->getMessage());
 		}
@@ -70,16 +70,18 @@ class SignPresenter extends Framework\Application\UI\BasePresenter
 	{
 		if ($this->getUser()->isLoggedIn()) {
 			$this->flashMessage('Už jste přihlášen.');
-			$this->redirect(':Game:User:showProfile');
+			$this->redirect(':Game:User:profile');
 		}
 	}
 	
 		
 	public function actionOut()
 	{
-		$this->getUser()->logout();
-		$this->flashMessage('Byl jste úspěšně odhlášen.', 'warning');
-		$this->redirect('in');
+		if ($this->getUser()->isLoggedIn()) {
+			$this->getUser()->logout();
+			$this->flashMessage('Byl jste úspěšně odhlášen.', 'warning');
+			$this->redirect('in');
+		}
 	}
 	
 	

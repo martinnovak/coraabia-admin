@@ -10,7 +10,7 @@ class TextPresenter extends Framework\Application\UI\SecuredPresenter
 	/**
 	 * @param string $id 
 	 */
-	public function actionUpdateStatic($id) {
+	public function actionEditStaticText($id) {
 		$this->getComponent('text')->key = $id;
 	}
 }

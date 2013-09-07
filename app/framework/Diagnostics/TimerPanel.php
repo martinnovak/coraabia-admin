@@ -12,6 +12,9 @@ class TimerPanel extends Panel
 	/** @var array */
 	private static $times = array();
 	
+	/** @var array */
+	private static $running = array();
+	
 	
 	/**
 	 * @return string
@@ -36,13 +39,14 @@ class TimerPanel extends Panel
 	}
 	
 	
-	public static function start($name)
+	public static function timer($name)
 	{
-		Nette\Diagnostics\Debugger::timer($name);
-	}
-	
-	public static function stop($name)
-	{
-		self::$times[$name] = Nette\Diagnostics\Debugger::timer($name);
+		if (!isset(self::$running[$name])) {
+			self::$running[$name] = TRUE;
+			Nette\Diagnostics\Debugger::timer($name);
+		} else {
+			unset(self::$running[$name]);
+			self::$times[$name] += Nette\Diagnostics\Debugger::timer($name);
+		}
 	}
 }

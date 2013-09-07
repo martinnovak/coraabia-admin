@@ -4,7 +4,7 @@ includes:
 nette:
 	database:
 		game:
-			dsn: 'pgsql:host=localhost port=5432 dbname=game'
+			dsn: 'pgsql:host=localhost port=5432 dbname=game2'
 			lazy: TRUE
 		coraabia.dev:
 			dsn: 'pgsql:host=localhost port=5432 dbname=coraabia'
@@ -26,6 +26,7 @@ nette:
 			lazy: TRUE
 
 parameters:
+	secured: FALSE
 	bazaarUrls:
 		dev: 'http://localhost:8081/bazaar'
 		stage: 'http://localhost:8088/bazaar'

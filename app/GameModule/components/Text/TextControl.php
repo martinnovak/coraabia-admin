@@ -39,7 +39,7 @@ class TextControl extends Framework\Application\UI\BaseControl
 	public function createComponentTextlist($name)
 	{
 		$self = $this;
-		$editLink = $this->getPresenter()->lazyLink('updateStatic');
+		$editLink = $this->getPresenter()->lazyLink('editStaticText');
 		
 		$grido = $this->gridoFactory->create($this, $name);
 		$grido->setModel($this->game->getStaticTexts())
@@ -48,6 +48,9 @@ class TextControl extends Framework\Application\UI\BaseControl
 		
 		$grido->addColumn('key', 'Klíč')
 				->setSortable()
+				->setCustomRender(function ($item) use ($editLink) {
+					return '<a href="' . $editLink->setParameter('id', $item->key) . '">' . $item->key . '</a>';
+				})
 				->setFilterText()
 						->setSuggestion(function ($item) { //no idea why it bugs out when you use ->setSuggestion(NULL)
 							return $item->key;
@@ -68,13 +71,7 @@ class TextControl extends Framework\Application\UI\BaseControl
 					}
 					return $result;
 				});
-		
-		$grido->addAction('edit', 'Změnit')
-				->setIcon('edit')
-				->setCustomHref(function ($item) use ($editLink) {
-					return $editLink->setParameter('id', $item->key);
-				});
-		
+				
 		return $grido;
 	}
 	

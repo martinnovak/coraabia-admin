@@ -36,7 +36,7 @@ class ImageControl extends Framework\Application\UI\BaseControl
 	public function createComponentArtistList($name)
 	{
 		$self = $this;
-		$editLink = $this->getPresenter()->lazyLink('updateArtist');
+		$editLink = $this->getPresenter()->lazyLink('editArtist');
 		$removeLink = $this->lazyLink('deleteArtist');
 		
 		$grido = $this->gridoFactory->create($this, $name);
@@ -81,12 +81,6 @@ class ImageControl extends Framework\Application\UI\BaseControl
 		$grido->addColumn('arts', 'Artů')
 				->setSortable();
 				
-		$grido->addAction('edit', 'Změnit')
-				->setIcon('edit')
-				->setCustomHref(function ($item) use ($editLink) {
-					return $editLink->setParameter('id', $item->artist_id);
-				});
-
 		$grido->addAction('remove', 'Smazat')
 				->setIcon('remove')
 				->setCustomHref(function ($item) use ($removeLink) {
@@ -105,7 +99,7 @@ class ImageControl extends Framework\Application\UI\BaseControl
 		$id = (int)$this->getParameter('id');
 		try {
 			$this->game->getArtists()
-					->where('artist_id = ?', $id)
+					->where('artist.artist_id = ?', $id)
 					->fetch()
 					->delete();
 			$this->getPresenter()->flashMessage('Artista byl smazán.', 'success');
@@ -113,7 +107,7 @@ class ImageControl extends Framework\Application\UI\BaseControl
 			$this->getPresenter()->flashMessage($e->getMessage(), 'error');
 		}
 		
-		$this->getPresenter()->redirect('showArtists');
+		$this->getPresenter()->redirect('artists');
 	}
 	
 	
@@ -190,7 +184,7 @@ class ImageControl extends Framework\Application\UI\BaseControl
 		}
 		
 		if ($row) {
-			$this->getPresenter()->redirect('Image:updateArtist', array('id' => $row->artist_id));
+			$this->getPresenter()->redirect('Image:editArtist', array('id' => $row->artist_id));
 		}
 	}
 	
@@ -213,12 +207,11 @@ class ImageControl extends Framework\Application\UI\BaseControl
 	
 	public function createComponentGallery($name)
 	{
-		$parameters = $this->getPresenter()->getContext()->getParameters();
 		$gallery = new \Gallery\Gallery($this, $name);
 		$gallery->setModel($this->game->getArts())
 				->setTranslator($this->translator)
 				->setImageAccessor(new \Framework\Gallery\ArtAccessor)
-				->setBaseImagePath($parameters['resourcePath']);
+				->setBaseImagePath($this->getPresenter()->getContext()->parameters['resourcePath']);
 		return $gallery;
 	}
 }

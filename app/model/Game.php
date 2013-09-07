@@ -37,7 +37,7 @@ class Game extends Model
 	 */
 	public function getPermissions()
 	{
-		return $this->getSource()->getSelectionFactory()->table('permission2');
+		return $this->getSource()->getSelectionFactory()->table('permission');
 	}
 	
 	
@@ -797,5 +797,97 @@ class Game extends Model
 	{
 		return $this->getSource()->getSelectionFactory()->table('art')
 				->select('art.*, image.path AS art_path, face.path AS face_path, avatar.path AS avatar_path');
+	}
+	
+	
+	/**
+	 * @return \Nette\Database\Table\Selection
+	 */
+	public function getActivities()
+	{
+		return $this->getSource()->getSelectionFactory()->table('activity');
+	}
+	
+	
+	/**
+	 * @return array
+	 */
+	public function getFractions()
+	{
+		return array(
+			'GUARDIAN',
+			'XENNO',
+			'MERCENARY',
+			'UNLIVING',
+			'OUTLAW'
+		);
+	}
+	
+	
+	/**
+	 * @return array
+	 */
+	public function getActivityVariants()
+	{
+		return array(
+			'ACTIVITY',
+			'TITLE',
+			'GRIND'
+		);
+	}
+	
+	
+	/**
+	 * @return array
+	 */
+	public function getActivityTypes()
+	{
+		return array(
+			'CLASSIC',
+			'SPECIAL',
+			'TOURNAMENT'
+		);
+	}
+	
+	
+	/**
+	 * @return array
+	 */
+	public function getActivityStartTypes()
+	{
+		return array(
+			'MM',
+			'PVP',
+			'ELO'
+		);
+	}
+		
+	
+	/**
+	 * @param string $table
+	 * @param mixed $activityId
+	 * @param array $values
+	 * @return \Nette\Database\Table\ActiveRow|NULL
+	 */
+	public function update($table, $id, array $values)
+	{
+		if ($id !== NULL) { //update
+			$this->getSource()->getSelectionFactory()->table($table)
+					->where($table . '_id = ?', $id)
+					->fetch()
+					->update($values);
+		} else { //insert
+			return $this->getSource()->getSelectionFactory()->table($table)
+					->insert($values);
+		}
+	}
+	
+	
+	/**
+	 * @return \Nette\Database\Table\Selection
+	 */
+	public function getGamerooms()
+	{
+		return $this->getSource()->getSelectionFactory()->table('gamerooms');
 	}
 }
