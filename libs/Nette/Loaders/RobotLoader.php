@@ -113,13 +113,11 @@ class RobotLoader extends AutoLoader
 		}
 
 		if (isset($this->classes[$type]['file'])) {
-			if (empty($this->classes[$type]['filter'])) {
-				Nette\Utils\LimitedScope::load($this->classes[$type]['file'], TRUE);
-			} else {
-				$item = $this->getPhpCache()->load($this->classes[$type]['file']);
-				Nette\Utils\LimitedScope::load($item['file'], TRUE);
+			$info = $this->classes[$type];
+			if (!empty($info['filter'])) {
+				$info = $this->getPhpCache()->load($info['file']);
 			}
-			self::$count++;
+			call_user_func(function($file) { require $file; }, $info['file']);
 		} else {
 			$this->missing[$type] = TRUE;
 		}
@@ -234,12 +232,12 @@ class RobotLoader extends AutoLoader
 		}
 
 		$iterator = Nette\Utils\Finder::findFiles(array_map(function($ext) { return "*.$ext"; }, array_keys($this->filters)))
-			->filter(function($file) use (& $disallow){
+			->filter(function($file) use (& $disallow) {
 				return !isset($disallow[$file->getPathname()]);
 			})
 			->from($dir)
 			->exclude($ignoreDirs)
-			->filter($filter = function($dir) use (& $disallow){
+			->filter($filter = function($dir) use (& $disallow) {
 				$path = $dir->getPathname();
 				if (is_file("$path/netterobots.txt")) {
 					foreach (file("$path/netterobots.txt") as $s) {

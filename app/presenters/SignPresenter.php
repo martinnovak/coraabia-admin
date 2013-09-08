@@ -80,8 +80,8 @@ class SignPresenter extends Framework\Application\UI\BasePresenter
 		if ($this->getUser()->isLoggedIn()) {
 			$this->getUser()->logout();
 			$this->flashMessage('Byl jste úspěšně odhlášen.', 'warning');
-			$this->redirect('in');
 		}
+		$this->redirect('in');
 	}
 	
 	

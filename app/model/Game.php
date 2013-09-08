@@ -731,7 +731,7 @@ class Game extends Model
 		foreach ($this->getSource()->query(
 				"SELECT c.card_id, a.*, r.authorized FROM artist a
 				LEFT JOIN art r USING (artist_id)
-				LEFT JOIN card c ON (c.face_id = r.face_id OR c.art_id = r.image_id OR c.avatar_id = r.avatar_id)")
+				LEFT JOIN card c USING (art_id)")
 				->fetchAll() as $row) {
 			$artists[$row->card_id] = $row;
 		}
@@ -768,25 +768,6 @@ class Game extends Model
 		return $this->getSource()->getSelectionFactory()->table('translation')
 				->where('key LIKE ?', 'country.%')
 				->where('lang = ?', $this->locales->lang);
-	}
-	
-	
-	/**
-	 * @param int|NULL $artistId
-	 * @param array $values
-	 * @return \Nette\Database\Table\ActiveRow|NULL
-	 */
-	public function updateArtist($artistId, array $values)
-	{
-		if ($artistId !== NULL) { //update
-			$this->getSource()->getSelectionFactory()->table('artist')
-					->where('artist_id = ?', $artistId)
-					->fetch()
-					->update($values);
-		} else { //insert
-			return $this->getSource()->getSelectionFactory()->table('artist')
-					->insert($values);
-		}
 	}
 	
 	
@@ -888,6 +869,6 @@ class Game extends Model
 	 */
 	public function getGamerooms()
 	{
-		return $this->getSource()->getSelectionFactory()->table('gamerooms');
+		return $this->getSource()->getSelectionFactory()->table('gameroom');
 	}
 }

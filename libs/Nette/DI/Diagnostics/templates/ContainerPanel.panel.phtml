@@ -6,7 +6,27 @@ use Nette,
 	Nette\Diagnostics\Dumper;
 
 ?>
-<style class="nette-debug">#nette-debug .nette-ContainerPanel .nette-inner{width:700px}#nette-debug .nette-ContainerPanel table{width:100%;white-space:nowrap}#nette-debug .nette-ContainerPanel .created{font-weight:bold}#nette-debug .nette-ContainerPanel .yes{color:green;font-weight:bold}</style>
+<style class="nette-debug">
+
+	#nette-debug .nette-ContainerPanel .nette-inner {
+		width: 700px;
+	}
+
+	#nette-debug .nette-ContainerPanel table {
+		width: 100%;
+		white-space: nowrap;
+	}
+
+	#nette-debug .nette-ContainerPanel .created {
+		font-weight: bold;
+	}
+
+	#nette-debug .nette-ContainerPanel .yes {
+		color: green;
+		font-weight: bold;
+	}
+
+</style>
 
 <div class="nette-ContainerPanel">
 <h1><?php echo get_class($this->container) ?></h1>

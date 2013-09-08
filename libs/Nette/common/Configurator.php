@@ -100,7 +100,9 @@ class Configurator extends Object
 		$debugMode = static::detectDebugMode();
 		return array(
 			'appDir' => isset($trace[1]['file']) ? dirname($trace[1]['file']) : NULL,
-			'wwwDir' => isset($_SERVER['SCRIPT_FILENAME']) ? dirname($_SERVER['SCRIPT_FILENAME']) : NULL,
+			'wwwDir' => isset($_SERVER['SCRIPT_FILENAME'])
+				? dirname(realpath($_SERVER['SCRIPT_FILENAME']))
+				: NULL,
 			'debugMode' => $debugMode,
 			'productionMode' => !$debugMode,
 			'environment' => $debugMode ? 'development' : 'production',
@@ -162,7 +164,7 @@ class Configurator extends Object
 			$cache->save($cacheKey, $code, array($cache::FILES => $dependencies));
 			$cached = $cache->load($cacheKey);
 		}
-		Nette\Utils\LimitedScope::load($cached['file'], TRUE);
+		require $cached['file'];
 
 		$container = new $this->parameters['container']['class'];
 		$container->initialize();

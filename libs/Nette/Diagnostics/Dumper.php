@@ -164,7 +164,7 @@ class Dumper
 		$out = '<span class="nette-dump-array">array</span> (';
 
 		if (empty($var)) {
-			return $out . "0)\n";
+			return $out . ")\n";
 
 		} elseif (isset($var[$marker])) {
 			return $out . (count($var) - 1) . ") [ <i>RECURSION</i> ]\n";
@@ -213,7 +213,7 @@ class Dumper
 		}
 
 		static $list = array();
-		$out = '<span class="nette-dump-object">' . get_class($var) . "</span> (" . count($fields) . ')';
+		$out = '<span class="nette-dump-object">' . get_class($var) . '</span> <span class="nette-dump-hash">#' . substr(md5(spl_object_hash($var)), 0, 4) . '</span>';
 
 		if (empty($fields)) {
 			return $out . "\n";

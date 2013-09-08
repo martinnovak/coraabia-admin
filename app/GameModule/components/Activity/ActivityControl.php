@@ -105,6 +105,24 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 		$this->hookManager->listen('scripts', function (\Framework\Hooks\TemplateHook $hook) use ($self) {
 			$tmpl = $self->createTemplate();
 			$tmpl->setFile(__DIR__ . '/activityScripts.latte');
+			
+			$tmpl->gamerooms = array_values(array_map(function ($item) use ($self) {
+				return array(
+					'id' => $item->gameroom_id,
+					'name' => $self->translator->translate('gameroom.' . $item->gameroom_id),
+					'ready' => $item->ready,
+					'ag_ready' => FALSE
+				);
+			}, $self->game->getGamerooms()->fetchAll()));
+			
+			$tmpl->activities = array_values(array_map(function ($item) use ($self) {
+				return array(
+					'id' => $item->activity_id,
+					'name' => $self->translator->translate('activity-name.' . $item->activity_id),
+					'ready' => $item->ready
+				);
+			}, $self->game->getActivities()->fetchAll()));
+			
 			$hook->addTemplate($tmpl);
 		});
 		$template->render();
@@ -123,10 +141,9 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 		$form->addGroup('Nastavení');
 			
 		$form->addText('activity_id', 'ID')
-			->setRequired()
-			->addRule(Nette\Forms\Form::FILLED, 'Vyplňte ID aktivity.')
-			->addRule(Nette\Forms\Form::MAX_LENGTH, 'Maximální délka ID je 17 znaků.', 17)
-			->setOption('description', 'Přípona _I bude přidána automaticky.');
+			->setRequired('Vyplňte ID aktivity.')
+			->addRule(Nette\Forms\Form::MAX_LENGTH, 'Maximální délka ID je %value znaků.', 20)
+			->addRule(Nette\Forms\Form::PATTERN, 'ID musí končit jednou z přípon _I, _II, _III, _IV', '.*_I{1,3}V?');
 		
 		$fractions = $this->game->getFractions();
 		$fractions = array_combine(
@@ -155,17 +172,21 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 		$form->addGroup('Pozice');
 		
 		$form->addText('tree', 'Strom')
-			->setRequired();
+			->setRequired('Vyplňte strom.')
+			->addRule(Nette\Forms\Form::INTEGER, 'Hodnota musí být celé číslo.')
+			->setOption('description', 'Stromy 0-5 jsou frakční a obecný.');
 		
 		$form->addText('posx', 'Pozice X')
-			->setRequired();
+			->setRequired('Vyplňte x-ovou pozici ve stromě.')
+			->addRule(Nette\Forms\Form::INTEGER, 'Hodnota musí být celé číslo.')
+			->setOption('description', '0 je hlavní linka stromu.');
 		
 		$form->addText('posy', 'Pozice Y')
-			->setRequired();
+			->setRequired('Vyplňte y-ovou pozici ve stromě.')
+			->addRule(Nette\Forms\Form::INTEGER, 'Hodnota musí být celé číslo.')
+			->setOption('description', '0 je kořen stromu.');
 
 		$form->setCurrentGroup();
-		
-		$form->addHidden('gamerooms', $this->buildList($this->game->getGamerooms()->fetchAll()));
 		
 		$form->addSubmit('submit', 'Uložit');
 		
@@ -180,7 +201,6 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 	public function activityCreateFormSuccess(Nette\Application\UI\Form $form)
 	{
 		$values = $form->getValues();
-		$values->activity_id .= '_I';
 		$row = NULL;
 		try {
 			$this->game->getSource()->beginTransaction();

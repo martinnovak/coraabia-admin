@@ -36,7 +36,9 @@ class Form extends Container
 	/** validator */
 	const EQUAL = ':equal',
 		IS_IN = self::EQUAL,
+		NOT_EQUAL = ':notEqual',
 		FILLED = ':filled',
+		BLANK = ':blank',
 		REQUIRED = self::FILLED,
 		VALID = ':valid';
 
@@ -245,7 +247,7 @@ class Form extends Container
 
 	/**
 	 * Removes fieldset group from form.
-	 * @param  string|FormGroup
+	 * @param  string|ControlGroup
 	 * @return void
 	 */
 	public function removeGroup($name)
@@ -271,7 +273,7 @@ class Form extends Container
 
 	/**
 	 * Returns all defined groups.
-	 * @return FormGroup[]
+	 * @return ControlGroup[]
 	 */
 	public function getGroups()
 	{
@@ -516,7 +518,7 @@ class Form extends Container
 	 * Sets form renderer.
 	 * @return self
 	 */
-	public function setRenderer(IFormRenderer $renderer)
+	public function setRenderer(IFormRenderer $renderer = NULL)
 	{
 		$this->renderer = $renderer;
 		return $this;

@@ -12,5 +12,46 @@
 			{/foreach}
 		</div>
 	</div>
+	<div class="row-fluid">
+		<div class="activity-gamerooms">
+			<div class="span4 well">
+				<h5>{_'Gameroomy'}</h5>
+				<div class="gamerooms" data-bind="sortable: { data: activity_gamerooms }">
+					<a class="btn" data-bind="click: switchReady, attr: { class: getClass() }">
+						<i data-bind="visible: ready, attr: { class: activity_gameroom_ready() ? 'icon-ok' : 'icon-remove'}"></i>
+						<span data-bind="text: name"></span>
+					</a>
+				</div>
+			</div>
+			<div class="span8 well">
+				<input type="text" data-bind="value: searchGamerooms, valueUpdate: 'afterkeydown'" placeholder="{_'Hledej...'}" />
+				<div class="gamerooms" data-bind="sortable: { data: gamerooms }">
+					<a class="btn" data-bind="visible: visible, attr: { class: ready ? 'btn' : 'btn disabled' }">
+						<span data-bind="text: name"></span>
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row-fluid">
+		<div class="parent-activities">
+			<div class="span4 well">
+				<h5>{_'Rodičovské aktivity'}</h5>
+				<div class="activities" data-bind="sortable: { data: parent_activities }">
+					<a class="btn" data-bind="attr: { class: ready ? 'btn' : 'btn disabled' }">
+						<span data-bind="text: name"></span>
+					</a>
+				</div>
+			</div>
+			<div class="span8 well">
+				<input type="text" data-bind="value: searchActivities, valueUpdate: 'afterkeydown'" placeholder="{_'Hledej...'}" />
+				<div class="activities" data-bind="sortable: { data: activities }">
+					<a class="btn" data-bind="visible: visible, attr: { class: ready ? 'btn' : 'btn disabled' }">
+						<span data-bind="text: name"></span>
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
 	{$form->render('body')}
 {/form}

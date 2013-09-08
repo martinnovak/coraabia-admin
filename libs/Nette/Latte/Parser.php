@@ -177,7 +177,7 @@ class Parser extends Nette\Object
 		$matches = $this->match('~
 			(?P<end>\ ?/?>)([ \t]*\n)?|  ##  end of HTML tag
 			'.$this->macroRe.'|          ##  macro tag
-			\s*(?P<attr>[^\s/>={]+)(?:\s*=\s*(?P<value>["\']|[^\s/>{]+))? ## begin of HTML attribute
+			\s*(?P<attr>[^\s/>={]+)(?:\s*=\s*(?P<value>["\']|[^\s/>{]+))? ## beginning of HTML attribute
 		~xsi');
 
 		if (!empty($matches['end'])) { // end of HTML tag />
@@ -266,7 +266,9 @@ class Parser extends Nette\Object
 				$this->addToken(Token::TEXT, $value);
 			}
 			$this->offset = $matches[0][1] + strlen($matches[0][0]);
-			foreach ($matches as $k => $v) $matches[$k] = $v[0];
+			foreach ($matches as $k => $v) {
+				$matches[$k] = $v[0];
+			}
 		}
 		return $matches;
 	}

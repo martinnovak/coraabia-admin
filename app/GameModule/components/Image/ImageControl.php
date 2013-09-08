@@ -177,7 +177,7 @@ class ImageControl extends Framework\Application\UI\BaseControl
 		$values = $form->getValues();
 		$row = NULL;
 		try {
-			$row = $this->game->updateArtist($this->artistId, (array)$values);
+			$row = $this->game->update('artist', $this->artistId, (array)$values);
 			$this->getPresenter()->flashMessage('Artista byl uložen.', 'success');
 		} catch (\Exception $e) {
 			$form->addError($e->getMessage());

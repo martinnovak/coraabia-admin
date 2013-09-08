@@ -53,10 +53,10 @@ class NetteLoader extends AutoLoader
 		'Nette\ArrayList' => '/common/ArrayList',
 		'Nette\Callback' => '/common/Callback',
 		'Nette\Configurator' => '/common/Configurator',
-		'Nette\DI\MissingServiceException' => '/DI/exceptions',
-		'Nette\DI\ServiceCreationException' => '/DI/exceptions',
 		'Nette\Database\Reflection\AmbiguousReferenceKeyException' => '/Database/Reflection/exceptions',
 		'Nette\Database\Reflection\MissingReferenceException' => '/Database/Reflection/exceptions',
+		'Nette\DI\MissingServiceException' => '/DI/exceptions',
+		'Nette\DI\ServiceCreationException' => '/DI/exceptions',
 		'Nette\DateTime' => '/common/DateTime',
 		'Nette\DeprecatedException' => '/common/exceptions',
 		'Nette\DirectoryNotFoundException' => '/common/exceptions',
@@ -116,12 +116,10 @@ class NetteLoader extends AutoLoader
 			trigger_error("Class $type has been renamed to {$this->renamed[$type]}.", E_USER_WARNING);
 
 		} elseif (isset($this->list[$type])) {
-			Nette\Utils\LimitedScope::load(NETTE_DIR . $this->list[$type] . '.php', TRUE);
-			self::$count++;
+			require __DIR__ . '/../' . $this->list[$type] . '.php';
 
-		} elseif (substr($type, 0, 6) === 'Nette\\' && is_file($file = NETTE_DIR . strtr(substr($type, 5), '\\', '/') . '.php')) {
-			Nette\Utils\LimitedScope::load($file, TRUE);
-			self::$count++;
+		} elseif (substr($type, 0, 6) === 'Nette\\' && is_file($file = __DIR__ . '/../' . strtr(substr($type, 5), '\\', '/') . '.php')) {
+			require $file;
 		}
 	}
 

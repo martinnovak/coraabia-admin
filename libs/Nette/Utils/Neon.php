@@ -93,7 +93,7 @@ class Neon extends Nette\Object
 			$isList = Arrays::isList($var);
 			$s = '';
 			if ($options & self::BLOCK) {
-				if (count($var) === 0){
+				if (count($var) === 0) {
 					return "[]";
 				}
 				foreach ($var as $k => $v) {
@@ -238,7 +238,9 @@ class Neon extends Nette\Object
 					}
 
 				} else {
-					while (isset($tokens[$n+1]) && $tokens[$n+1][0][0] === "\n") $n++; // skip to last indent
+					while (isset($tokens[$n+1]) && $tokens[$n+1][0][0] === "\n") {
+						$n++; // skip to last indent
+					}
 					if (!isset($tokens[$n+1])) {
 						break;
 					}

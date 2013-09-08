@@ -298,7 +298,8 @@ final class Environment
 		$configurator = new Nette\Configurator;
 		$configurator
 			->setDebugMode(!self::isProduction())
-			->setTempDirectory(TEMP_DIR);
+			->setTempDirectory(TEMP_DIR)
+			->addParameters(array('container' => array('class' => 'EnvironmentContainer')));
 		if ($file) {
 			$configurator->addConfig($file, $section);
 		}
@@ -306,7 +307,7 @@ final class Environment
 
 		self::$createdAt = '?';
 		foreach (debug_backtrace(FALSE) as $row) {
-			if (isset($row['file']) && is_file($row['file']) && strpos($row['file'], NETTE_DIR . DIRECTORY_SEPARATOR) !== 0) {
+			if (isset($row['file']) && $row['file'] !== __FILE__ && is_file($row['file'])) {
 				self::$createdAt = "$row[file]:$row[line]";
 				break;
 			}

@@ -62,3 +62,12 @@ a[href~="error:"] { background: #f00 !important; color: #fff !important; }
 .text-left { text-align: left; }
 .text-center { text-align: center; }
 .text-right { text-align: right; }
+
+
+.activity-gamerooms .gamerooms { min-height: 36px; }
+.activity-gamerooms h5 { margin-top: 5px; margin-bottom: 5px; }
+.activity-gamerooms .gamerooms .btn { margin: 3px 3px 3px 0px; }
+
+.parent-activities .activities { min-height: 36px; }
+.parent-activities h5 { margin-top: 5px; margin-bottom: 5px; }
+.parent-activities .activities .btn { margin: 3px 3px 3px 0px; }

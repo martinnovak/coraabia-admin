@@ -1,2 +1,91 @@
+<script type="text/javascript" src="{$basePath}/js/jquery-ui.min.js"></script>
 <script type="text/javascript" src="{$basePath}/js/knockout.min.js"></script>
 <script type="text/javascript" src="{$basePath}/js/knockout-sortable.min.js"></script>
+<script type="text/javascript">
+	var activityData = {
+		gamerooms: {$gamerooms},
+		activities: {$activities}
+	};
+</script>
+<script type="text/javascript">
+(function($, _, ko, undefined) {
+
+	var Gameroom = function(data) {
+		var self = this;
+		this.id = data.id;
+		this.name = ko.observable(data.name);
+		this.ready = data.ready;
+		this.activity_gameroom_ready = ko.observable(false);
+		this.visible = ko.observable(true);
+
+		this.switchReady = function() {
+			self.activity_gameroom_ready(self.ready ? !self.activity_gameroom_ready() : false);
+		};
+		
+		this.getClass = ko.computed(function() {
+			var result = 'btn';
+			if (!self.ready) result = result + ' disabled';
+			if (self.activity_gameroom_ready()) result = result + ' btn-success';
+			return result;
+		});
+		
+		this.dropped = function(arg, event, ui) {
+			self.activity_gameroom_ready(false);
+		};
+	};
+	
+	var Activity = function(data) {
+		this.id = data.id;
+		this.name = ko.observable(data.name);
+		this.ready = data.ready;
+		this.visible = ko.observable(true);
+	};
+
+	var Model = function(gamerooms, activities) {
+		var self = this;
+		
+		this.gamerooms = ko.observableArray(gamerooms);
+		this.gamerooms.id = 'gamerooms';
+		this.activity_gamerooms = ko.observableArray([]);
+		this.activity_gamerooms.id = 'gamerooms';
+		this.searchGamerooms = ko.observable('');
+		
+		this._searchGamerooms = ko.computed(function() {
+			_.each(this.gamerooms(), function(item) {
+				item.visible(item.name().toLowerCase().indexOf(self.searchGamerooms().toLowerCase()) > -1);
+			});
+		}, this);
+		
+		this.activities = ko.observableArray(activities);
+		this.activities.id = 'activities';
+		this.parent_activities = ko.observableArray([]);
+		this.parent_activities.id = 'activities';
+		this.searchActivities = ko.observable('');
+		
+		this._searchActivities = ko.computed(function() {
+			_.each(this.activities(), function(item) {
+				item.visible(item.name().toLowerCase().indexOf(self.searchActivities().toLowerCase()) > -1);
+			});
+		}, this);
+	};
+
+	ko.bindingHandlers.sortable.beforeMove = function(arg, event, ui) {
+		if (arg.sourceParent.id !== arg.targetParent.id) {
+			arg.cancelDrop = true;
+		} else if (typeof arg.item.dropped === 'function') {
+			arg.item.dropped(arg, event, ui);
+		}
+	};
+	
+	var gamerooms = _.map(activityData.gamerooms, function(item) {
+		return new Gameroom(item);
+	});
+	
+	var activities = _.map(activityData.activities, function(item) {
+		return new Activity(item);
+	});
+	
+	var model = new Model(gamerooms, activities);
+	ko.applyBindings(model);
+})(jQuery, _, ko);
+</script>

@@ -155,7 +155,7 @@ final class Debugger
 		self::$time = isset($_SERVER['REQUEST_TIME_FLOAT']) ? $_SERVER['REQUEST_TIME_FLOAT'] : microtime(TRUE);
 		if (isset($_SERVER['REQUEST_URI'])) {
 			self::$source = (isset($_SERVER['HTTPS']) && strcasecmp($_SERVER['HTTPS'], 'off') ? 'https://' : 'http://')
-				. (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : (isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : ''))
+				. (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '')
 				. $_SERVER['REQUEST_URI'];
 		} else {
 			self::$source = empty($_SERVER['argv']) ? 'CLI' : 'CLI: ' . implode(' ', $_SERVER['argv']);
@@ -230,7 +230,7 @@ final class Debugger
 	{
 		if (!self::$blueScreen) {
 			self::$blueScreen = new BlueScreen;
-			self::$blueScreen->collapsePaths[] = NETTE_DIR;
+			self::$blueScreen->collapsePaths[] = dirname(__DIR__);
 			self::$blueScreen->addPanel(function($e) {
 				if ($e instanceof Nette\Templating\FilterException) {
 					return array(
@@ -398,10 +398,9 @@ final class Debugger
 
 		$error = error_get_last();
 		if (in_array($error['type'], array(E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE))) {
-			self::_exceptionHandler(Helpers::fixStack(new Nette\FatalErrorException($error['message'], 0, $error['type'], $error['file'], $error['line'], NULL)));
-		}
+			self::_exceptionHandler(Helpers::fixStack(new Nette\FatalErrorException($error['message'], 0, $error['type'], $error['file'], $error['line'], NULL)), TRUE);
 
-		if (!connection_aborted() && !self::$productionMode && self::isHtmlMode()) {
+		} elseif (!connection_aborted() && !self::$productionMode && self::isHtmlMode()) {
 			self::getBar()->render();
 		}
 	}
@@ -413,8 +412,13 @@ final class Debugger
 	 * @return void
 	 * @internal
 	 */
-	public static function _exceptionHandler(\Exception $exception)
+	public static function _exceptionHandler(\Exception $exception, $shutdown = FALSE)
 	{
+		if (!self::$enabled) {
+			return;
+		}
+		self::$enabled = FALSE; // prevent double rendering
+
 		if (!headers_sent()) {
 			$protocol = isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.1';
 			$code = isset($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE ') !== FALSE ? 503 : 500;
@@ -466,8 +470,9 @@ final class Debugger
 			}
 		}
 
-		self::$enabled = FALSE; // un-register shutdown function
-		exit(254);
+		if (!$shutdown) {
+			exit(254);
+		}
 	}
 
 
@@ -508,7 +513,7 @@ final class Debugger
 		}
 
 		$message = 'PHP ' . (isset(self::$errorTypes[$severity]) ? self::$errorTypes[$severity] : 'Unknown error') . ": $message";
-		$count = & self::getBar()->getPanel(__CLASS__ . ':errors')->data["$message|$file|$line"];
+		$count = & self::getBar()->getPanel(__CLASS__ . ':errors')->data["$file|$line|$message"];
 
 		if ($count++) { // repeated error
 			return NULL;
