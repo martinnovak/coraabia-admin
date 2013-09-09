@@ -148,13 +148,18 @@ class CardControl extends Framework\Application\UI\BaseControl
 				->setCustomRender(function ($item) use ($self) {
 					return $self->translator->translate('edition.' . $item->edition_id);
 				});
-		
+
+		//Cache artists, otherwise it's very slow.
+		$artists = array();
+		foreach ($this->game->getArts()->select(':card.card_id, artist.artist_id, artist.name')->fetchAll() as $art) {
+			$artists[$art->card_id] = $art;
+		}
 		$grido->addColumn('artist', 'A')
-				->setCustomRender(function ($item) use ($artistLink) {
-					return $item->art !== NULL
+				->setCustomRender(function ($item) use ($artistLink, $artists) {
+					return isset($artists[$item->card_id])
 							? \Nette\Utils\Html::el('a')
-								->href($artistLink->setParameter('id', $item->art->artist_id))
-								->setText(\Nette\Utils\Strings::truncate($item->art->artist->name, 25))
+								->href($artistLink->setParameter('id', $artists[$item->card_id]->artist_id))
+								->setText(\Nette\Utils\Strings::truncate($artists[$item->card_id]->name, 25))
 							: '';
 				});
 		
