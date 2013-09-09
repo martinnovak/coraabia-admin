@@ -9,8 +9,7 @@ class Game extends Model
 	 */
 	public function getCards()
 	{
-		$result = $this->getSource()->getSelectionFactory()->table('card');
-		return $this->locales->server == \Coraabia\ServerEnum::DEV ? $result : $result->where('ready = ?', TRUE);
+		return $this->getSource()->getSelectionFactory()->table('card');
 	}
 	
 	
@@ -723,29 +722,11 @@ class Game extends Model
 	
 	
 	/**
-	 * @return array
-	 */
-	public function getCardArtists()
-	{
-		$artists = array();
-		foreach ($this->getSource()->query(
-				"SELECT c.card_id, a.*, r.authorized FROM artist a
-				LEFT JOIN art r USING (artist_id)
-				LEFT JOIN card c USING (art_id)")
-				->fetchAll() as $row) {
-			$artists[$row->card_id] = $row;
-		}
-		return $artists;
-	}
-	
-	
-	/**
 	 * @return \Nette\Database\Table\Selection
 	 */
 	public function getEditions()
 	{
-		$result = $this->getSource()->getSelectionFactory()->table('edition');
-		return $this->locales->server == \Coraabia\ServerEnum::DEV ? $result : $result->where('ready = ?', TRUE);
+		return $this->getSource()->getSelectionFactory()->table('edition');
 	}
 	
 	

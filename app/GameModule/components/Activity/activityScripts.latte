@@ -2,45 +2,78 @@
 <script type="text/javascript" src="{$basePath}/js/knockout.min.js"></script>
 <script type="text/javascript" src="{$basePath}/js/knockout-sortable.min.js"></script>
 <script type="text/javascript">
-	var activityData = {
-		gamerooms: {$gamerooms},
-		activities: {$activities}
-	};
+	var activityData = {$activityData};
 </script>
 <script type="text/javascript">
 (function($, _, ko, undefined) {
 
+	/**
+	 * @param object data
+	 * @returns Gameroom
+	 */
 	var Gameroom = function(data) {
 		var self = this;
+		/** @var string */
 		this.id = data.id;
+		/** @var function(string) */
 		this.name = ko.observable(data.name);
+		/** @var boolean */
 		this.ready = data.ready;
+		/** @var function(boolean) */
 		this.activity_gameroom_ready = ko.observable(false);
+		/** @var function(boolean) */
 		this.visible = ko.observable(true);
 
+		/**
+		 * Toggle activity_gameroom_ready value or set to false when not ready.
+		 * @returns undefined
+		 */
 		this.switchReady = function() {
 			self.activity_gameroom_ready(self.ready ? !self.activity_gameroom_ready() : false);
 		};
 		
+		/**
+		 * Returns button class.
+		 */
 		this.getClass = ko.computed(function() {
 			var result = 'btn';
 			if (!self.ready) result = result + ' disabled';
-			if (self.activity_gameroom_ready()) result = result + ' btn-success';
+			if (self.activity_gameroom_ready()) result = result + ' btn-warning';
 			return result;
 		});
 		
+		/**
+		 * Called before object is dropped into sortable.
+		 * @param object arg
+		 * @param object event
+		 * @param object ui
+		 * @returns undefined
+		 */
 		this.dropped = function(arg, event, ui) {
 			self.activity_gameroom_ready(false);
 		};
 	};
 	
+	/**
+	 * @param object data
+	 * @returns Activity
+	 */
 	var Activity = function(data) {
+		/** @var string */
 		this.id = data.id;
+		/** @var function(string) */
 		this.name = ko.observable(data.name);
+		/** @var boolean */
 		this.ready = data.ready;
+		/** @var function(boolean) */
 		this.visible = ko.observable(true);
 	};
 
+	/**
+	 * @param array gamerooms
+	 * @param array activities
+	 * @returns Model
+	 */
 	var Model = function(gamerooms, activities) {
 		var self = this;
 		
@@ -55,6 +88,11 @@
 				item.visible(item.name().toLowerCase().indexOf(self.searchGamerooms().toLowerCase()) > -1);
 			});
 		}, this);
+		this.gameroomList = ko.computed(function() {
+			return _.map(this.activity_gamerooms(), function(item) {
+				return item.id + '-' + (item.activity_gameroom_ready() ? 1 : 0);
+			}).join('--');
+		}, this);
 		
 		this.activities = ko.observableArray(activities);
 		this.activities.id = 'activities';
@@ -66,6 +104,11 @@
 			_.each(this.activities(), function(item) {
 				item.visible(item.name().toLowerCase().indexOf(self.searchActivities().toLowerCase()) > -1);
 			});
+		}, this);
+		this.parentList = ko.computed(function() {
+			return _.map(this.parent_activities(), function(item) {
+				return item.id;
+			}).join('--');
 		}, this);
 	};
 

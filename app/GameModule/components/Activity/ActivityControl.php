@@ -106,22 +106,23 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 			$tmpl = $self->createTemplate();
 			$tmpl->setFile(__DIR__ . '/activityScripts.latte');
 			
-			$tmpl->gamerooms = array_values(array_map(function ($item) use ($self) {
-				return array(
-					'id' => $item->gameroom_id,
-					'name' => $self->translator->translate('gameroom.' . $item->gameroom_id),
-					'ready' => $item->ready,
-					'ag_ready' => FALSE
-				);
-			}, $self->game->getGamerooms()->fetchAll()));
-			
-			$tmpl->activities = array_values(array_map(function ($item) use ($self) {
-				return array(
-					'id' => $item->activity_id,
-					'name' => $self->translator->translate('activity-name.' . $item->activity_id),
-					'ready' => $item->ready
-				);
-			}, $self->game->getActivities()->fetchAll()));
+			$tmpl->activityData = array(
+				'gamerooms' => array_values(array_map(function ($item) use ($self) {
+					return array(
+						'id' => $item->gameroom_id,
+						'name' => $self->translator->translate('gameroom.' . $item->gameroom_id),
+						'ready' => $item->ready,
+						'ag_ready' => FALSE
+					);
+				}, $self->game->getGamerooms()->fetchAll())),
+				'activities' => array_values(array_map(function ($item) use ($self) {
+					return array(
+						'id' => $item->activity_id,
+						'name' => $self->translator->translate('activity-name.' . $item->activity_id),
+						'ready' => $item->ready
+					);
+				}, $self->game->getActivities()->fetchAll()))
+			);
 			
 			$hook->addTemplate($tmpl);
 		});
@@ -143,7 +144,7 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 		$form->addText('activity_id', 'ID')
 			->setRequired('Vyplňte ID aktivity.')
 			->addRule(Nette\Forms\Form::MAX_LENGTH, 'Maximální délka ID je %value znaků.', 20)
-			->addRule(Nette\Forms\Form::PATTERN, 'ID musí končit jednou z přípon _I, _II, _III, _IV', '.*_I{1,3}V?');
+			->addRule(Nette\Forms\Form::PATTERN, 'ID musí končit jednou z přípon _I, _II, _III, _IV a nesmí obsahovat pomlčku', '[^-]+_I([IV]?|II)');
 		
 		$fractions = $this->game->getFractions();
 		$fractions = array_combine(
@@ -185,8 +186,32 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 			->setRequired('Vyplňte y-ovou pozici ve stromě.')
 			->addRule(Nette\Forms\Form::INTEGER, 'Hodnota musí být celé číslo.')
 			->setOption('description', '0 je kořen stromu.');
+		
+		foreach ($this->locales->langs as $lang) {
+			
+			$form->addGroup(strtoupper($lang));
+			
+			$form->addText('activity_name_' . $lang, 'Jméno')
+				->setRequired('Vyplňte jméno ' . strtoupper($lang) . ' aktivity');
+			
+			$form->addTextArea('activity_flavor_' . $lang, 'Flavor')
+				->setAttribute('rows', 10);
+			
+			$form->addTextArea('activity_task_' . $lang, 'Text zadání')
+				->setAttribute('rows', 10);
+			
+			$form->addTextArea('activity_finish_' . $lang, 'Text splnění')
+				->setAttribute('rows', 10);
+		}
 
 		$form->setCurrentGroup();
+		
+		$form->addHidden('gameroomList')
+			->getControlPrototype()
+			->addAttributes(array('data-bind' => 'value: gameroomList()'));
+		$form->addHidden('parentList')
+			->getControlPrototype()
+			->addAttributes(array('data-bind' => 'value: parentList()'));
 		
 		$form->addSubmit('submit', 'Uložit');
 		

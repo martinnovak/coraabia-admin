@@ -1,20 +1,15 @@
 {form activityCreateForm}
 	{$form->render('errors')}
-	<div class="row-fluid">
-		<div class="span6">
-			{foreach $form->getGroups() as $group}
-				{if $iterator->isOdd()}{$form->render($group)}{/if}
-			{/foreach}
-		</div>
-		<div class="span6">
-			{foreach $form->getGroups() as $group}
-				{if $iterator->isEven()}{$form->render($group)}{/if}
-			{/foreach}
-		</div>
-	</div>
+	{foreach $form->getGroups() as $group}
+		{if $iterator->isOdd()}<div class="row-fluid">{/if}
+		<div class="span6">{$form->render($group)}</div>
+		{if $iterator->isEven()}</div>{/if}
+	{/foreach}
+	{if count($form->getGroups()) % 2}</div>{/if}
 	<div class="row-fluid">
 		<div class="activity-gamerooms">
 			<div class="span4 well">
+				{input gameroomList}
 				<h5>{_'Gameroomy'}</h5>
 				<div class="gamerooms" data-bind="sortable: { data: activity_gamerooms }">
 					<a class="btn" data-bind="click: switchReady, attr: { class: getClass() }">
@@ -36,6 +31,7 @@
 	<div class="row-fluid">
 		<div class="parent-activities">
 			<div class="span4 well">
+				{input parentList}
 				<h5>{_'Rodičovské aktivity'}</h5>
 				<div class="activities" data-bind="sortable: { data: parent_activities }">
 					<a class="btn" data-bind="attr: { class: ready ? 'btn' : 'btn disabled' }">

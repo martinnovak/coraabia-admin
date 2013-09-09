@@ -149,16 +149,13 @@ class CardControl extends Framework\Application\UI\BaseControl
 					return $self->translator->translate('edition.' . $item->edition_id);
 				});
 		
-		$artists = $this->game->getCardArtists();
 		$grido->addColumn('artist', 'A')
-				->setCustomRender(function ($item) use ($artists, $artistLink) {
-					return isset($artists[$item->card_id]) ?
-					'<a href="'
-					. $artistLink->setParameter('id', $artists[$item->card_id]->artist_id)
-					. '">'
-					. \Nette\Utils\Strings::truncate($artists[$item->card_id]->name, 25)
-					. '</a>'
-					: '';
+				->setCustomRender(function ($item) use ($artistLink) {
+					return $item->art !== NULL
+							? \Nette\Utils\Html::el('a')
+								->href($artistLink->setParameter('id', $item->art->artist_id))
+								->setText(\Nette\Utils\Strings::truncate($item->art->artist->name, 25))
+							: '';
 				});
 		
 		$grido->addColumn('ready', '')
@@ -182,9 +179,6 @@ class CardControl extends Framework\Application\UI\BaseControl
 				})
 				->setConfirm(function ($item) use ($self) {
 					return "Opravdu chcete smazat kartu '" . $self->translator->translate('card.' . $item->card_id) . "'?";
-				})
-				->setDisable(function ($item) use ($self) {
-					return $self->locales->server != \Coraabia\ServerEnum::DEV;
 				});
 		
 		return $grido;
