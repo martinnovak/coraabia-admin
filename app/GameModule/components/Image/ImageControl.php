@@ -71,12 +71,17 @@ class ImageControl extends Framework\Application\UI\BaseControl
 					}
 				})
 				->setFilter();
-				
+		
+		$countries = array('' => '');
+		foreach ($this->game->getCountries()->order('value')->fetchAll() as $country) {
+			$countries[substr($country->key, -2)] = $country->value;
+		}
 		$grido->addColumn('country', 'Země')
 				->setSortable()
 				->setCustomRender(function ($item) use ($self) {
 					return $item->country ? $self->translator->translate('country.' . $item->country) : '';
-				});
+				})
+				->setFilter(\Grido\Components\Filters\Filter::TYPE_SELECT, $countries);
 				
 		$grido->addColumn('arts', 'Artů')
 				->setSortable();
