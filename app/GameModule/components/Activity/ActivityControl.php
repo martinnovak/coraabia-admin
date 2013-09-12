@@ -229,44 +229,15 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 		$row = NULL;
 		try {
 			$this->game->getSource()->beginTransaction();
-			//variables
-			$visibleVar = $this->game->update('variable', NULL, array(
-				'variable_id' => substr($values->activity_id . '_V', -20),
-				'default_val' => self::VAR_VISIBLE_DEFAULT,
-				'description' => ''
-			));
-			$playableVar = $this->game->update('variable', NULL, array(
-				'variable_id' => substr($values->activity_id . '_P', -20),
-				'default_val' => self::VAR_PLAYABLE_DEFAULT,
-				'description' => ''
-			));
 			
-			//filters
-			$visibleFilter = $this->game->update('variable', NULL, array(
-				'variable_id' => $visibleVar->variable_id,
-				'script' => ''
-			));
-			$playableFilter = $this->game->update('variable', NULL, array(
-				'variable_id' => $playableVar->variable_id,
-				'script' => ''
-			));
-			
-			//activity
-			//$activity = $this->game->update('activity', NULL, $values); //nope
-			
-			/*
-			//activity_filters
-			$this->game->getSource()->setSelectionFactory()->table('activity_filter_visible')->insert(array(
-				'activity_id' => $activity->activity_id,
-				'filter_id' => $visibleFilter->filter_id
-			));
-			$this->game->getSource()->setSelectionFactory()->table('activity_filter_playable')->insert(array(
-				'activity_id' => $activity->activity_id,
-				'filter_id' => $playableFilter->filter_id
-			));*/
+			//aktivita
+			//proměnné, filtry, observry a jejich napojení
+			//rodičovské aktivity orig vs new
+			//\Nette\Diagnostics\Debugger::dump($this->game->getParentActivities($values->activity_id));
+			//$this->updateActivityGamerooms($values->activity_id, explode('--', $values->gameroomList), array());
+			//$this->createActivityTexts($values->activity_id, $values);
 			
 			$this->game->getSource()->commit();
-			return $activity;
 		} catch (\Exception $e) {
 			$this->game->getSource()->rollBack();
 			$form->addError($e->getMessage());
@@ -278,31 +249,55 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 	}
 	
 	
-	/**
-	 * @param array $gamerooms
-	 * @return string
-	 */
-	protected function buildGameroomList(array $gamerooms)
+	protected function createActivityTexts($activityId, array $values)
 	{
-		return implode('--', array_map(function ($item) {
-			return $item->gameroom_id;
-		}, $gamerooms));
+		$keys = array(
+			'activity_name',
+			'activity_flavor',
+			'activity_task',
+			'activity_finish'
+		);
+		foreach ($values as $key => $value) {
+			if (preg_match('/^(' . implode('|', $keys) . ')_(' . implode('|', $this->locales->langs) . ')$/', $key, $matches)) {
+				$this->game->getTranslations()->insert(array(
+					'key' => str_replace('_', '-', $matches[1]) . '.' . $activityId,
+					'lang' => $matches[2],
+					'value' => $value
+				));
+			}
+		}
 	}
 	
 	
 	/**
-	 * @param string $list
-	 * @return array
-	 * @throws \LogicException
+	 * @todo call model, not directly
+	 * @todo optimize?
 	 */
-	protected function dissolveGameroomList($list)
+	protected function updateActivityGamerooms($activityId, array $new, array $original)
 	{
-		$arr = explode('--', $list);
-		$gamerooms = $this->game->getGamerooms()->where('gameroom_id IN ?', $arr)->fetchAll();
-		if (sizeof($gamerooms) != sizeof($arr)) {
-			throw new \LogicException("Cannot load some gamerooms from list '$list'.");
-		} else {
-			return $gamerooms;
+		$toRemove = array_diff($original, $new);
+		$toAdd = array_diff($new, $original);
+		
+		//remove
+		$removeIds = array_map(function ($item) {
+			list($gameroom, $ready) = explode('-', $item);
+			return $gameroom;
+		}, $toRemove);
+		foreach ($this->game->getActivityGamerooms()
+				->where('activity_id = ?', $activityId)
+				->where('gameroom_id IN ?', $removeIds)
+				->fetchAll() as $gameroom) {
+			$gameroom->delete();
+		}
+		
+		//add
+		foreach ($toAdd as $gr) {
+			list($gameroom, $ready) = explode('-', $gr);
+			$this->game->getActivityGamerooms()->insert(array(
+				'activity_id' => $activityId,
+				'gameroom_id' => $gameroom,
+				'ready' => (bool)$ready
+			));
 		}
 	}
 }
