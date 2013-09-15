@@ -3,13 +3,10 @@
 namespace Framework\Kapafaa\Effects;
 
 
-class AddRandomCard extends WorldEffect
+/**
+ * @kapafaa eff.world.addRandomCard
+ */
+class AddRandomCard extends Effect
 {
-	const ADD_RANDOM_CARD = 'addRandomCard';
 	
-	
-	public function __construct()
-	{
-		parent::__construct(self::ADD_RANDOM_CARD);
-	}
 }

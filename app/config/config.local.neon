@@ -24,6 +24,15 @@ nette:
 		audit.beta:
 			dsn: 'pgsql:host=localhost port=5433 dbname=audit'
 			lazy: TRUE
+		stats.dev:
+			dsn: 'pgsql:host=localhost port=5432 dbname=stats'
+			lazy: TRUE
+		stats.stage:
+			dsn: 'pgsql:host=localhost port=5438 dbname=stats'
+			lazy: TRUE
+		stats.beta:
+			dsn: 'pgsql:host=localhost port=5433 dbname=stats'
+			lazy: TRUE
 
 parameters:
 	secured: FALSE

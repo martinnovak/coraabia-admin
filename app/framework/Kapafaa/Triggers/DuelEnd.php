@@ -2,16 +2,23 @@
 
 namespace Framework\Kapafaa\Triggers;
 
+use Framework\Kapafaa\Targets\PlayerTarget;
 
-class DuelEnd extends GameTrigger
+
+/**
+ * @kapafaa trigger.gameplay.%target%.duel_end
+ */
+class DuelEnd extends Trigger
 {
-	const DUEL_END = 'duel_end';
+	/** @var \Framework\Kapafaa\Targets\PlayerTarget */
+	public $target;
 	
 	
 	/**
-	 * @param string $target
+	 * @param \Framework\Kapafaa\Targets\PlayerTarget $target
 	 */
-	public function __construct($target) {
-		parent::__construct(self::DUEL_END, $target);
+	public function __construct(PlayerTarget $target)
+	{
+		$this->target = $target;
 	}
 }

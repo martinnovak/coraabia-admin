@@ -2,16 +2,23 @@
 
 namespace Framework\Kapafaa\Triggers;
 
+use Framework\Kapafaa\Targets\PlayerTarget;
 
-class Berserk extends GameTrigger
+
+/**
+ * @kapafaa trigger.gameplay.%target%.berserk
+ */
+class Berserk extends Trigger
 {
-	const BERSERK = 'berserk';
+	/** @var \Framework\Kapafaa\Targets\PlayerTarget */
+	public $target;
 	
 	
 	/**
-	 * @param string $target
+	 * @param \Framework\Kapafaa\Targets\PlayerTarget $target
 	 */
-	public function __construct($target) {
-		parent::__construct(self::BERSERK, $target);
+	public function __construct(PlayerTarget $target)
+	{
+		$this->target = $target;
 	}
 }

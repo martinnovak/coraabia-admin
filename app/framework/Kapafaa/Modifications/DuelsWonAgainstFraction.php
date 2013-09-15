@@ -4,12 +4,15 @@ namespace Framework\Kapafaa\Modifications;
 
 
 /**
- * @method string getFraction()
+ * @kapafaa %operator% var.duelsWonAgainstFraction.%fraction%
  */
 class DuelsWonAgainstFraction extends Modification
 {
 	/** @var string */
-	private $fraction;
+	public $operator;
+	
+	/** @var string */
+	public $fraction;
 	
 	
 	/**
@@ -18,13 +21,7 @@ class DuelsWonAgainstFraction extends Modification
 	 */
 	public function __construct($operator, $fraction)
 	{
-		parent::__construct($operator);
+		$this->operator = $operator;
 		$this->fraction = $fraction;
-	}
-	
-	
-	public function __toString()
-	{
-		return $this->operator . ' var.duelsWonAgainstFraction.' . $this->fraction;
 	}
 }

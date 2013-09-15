@@ -2,22 +2,10 @@
 
 namespace Framework\Kapafaa\Effects;
 
-use Nette;
+use Framework\Kapafaa\Object;
 
 
-/**
- * @method string getType()
- */
-abstract class Effect extends Nette\Object
+abstract class Effect extends Object
 {
-	/** @var string */
-	private $type;
 	
-	
-	/**
-	 * @param string $type
-	 */
-	public function __construct($type) {
-		$this->type = $type;
-	}
 }

@@ -1,3 +1,6 @@
+includes:
+	- models.neon
+
 parameters:
 	langs: [cs, en]
 	resourcePath: '/images/resource'
@@ -30,30 +33,12 @@ services:
 	- Framework\Mapi\MapiRequestFactory(..., %bazaarUrls%)
 	- Framework\Grido\GridoFactory
 	- Framework\Application\FormFactory
+	- Framework\Kapafaa\KapafaaParser
 	xmlFactory: Framework\Xml\XmlFactory
 	- Model\GameXmlFactory
 	- Model\CoraabiaFactory
 	- Model\AuditFactory
-	source.game: Model\Datasource\DatabaseSource(@nette.database.game)
-	source.game.dev: Model\Datasource\XmlSource(@xmlFactory::createXml(%gameXmlUrls.dev%), %gameXmlUrls.dev%)
-	source.game.stage: Model\Datasource\XmlSource(@xmlFactory::createXml(%gameXmlUrls.stage%), %gameXmlUrls.stage%)
-	source.game.beta: Model\Datasource\XmlSource(@xmlFactory::createXml(%gameXmlUrls.beta%), %gameXmlUrls.beta%)
-	source.coraabia.dev: Model\Datasource\DatabaseSource(@nette.database.coraabia.dev)
-	source.coraabia.stage: Model\Datasource\DatabaseSource(@nette.database.coraabia.stage)
-	source.coraabia.beta: Model\Datasource\DatabaseSource(@nette.database.coraabia.beta)
-	source.audit.dev: Model\Datasource\DatabaseSource(@nette.database.audit.dev)
-	source.audit.stage: Model\Datasource\DatabaseSource(@nette.database.audit.stage)
-	source.audit.beta: Model\Datasource\DatabaseSource(@nette.database.audit.beta)
-	game: Model\Game(@source.game)
-	game.dev: Model\GameXml(@source.game.dev)
-	game.stage: Model\GameXml(@source.game.stage)
-	game.beta: Model\GameXml(@source.game.beta)
-	coraabia.dev: Model\Coraabia(@source.coraabia.dev)
-	coraabia.stage: Model\Coraabia(@source.coraabia.stage)
-	coraabia.beta: Model\Coraabia(@source.coraabia.beta)
-	audit.dev: Model\Coraabia(@source.audit.dev)
-	audit.stage: Model\Coraabia(@source.audit.stage)
-	audit.beta: Model\Coraabia(@source.audit.beta)
+	- Model\StatsFactory
 	authorizator:
 		class: Model\Authorizator(@game)
 		setup: [ setupPermissions ]

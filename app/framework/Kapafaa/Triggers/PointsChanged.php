@@ -2,16 +2,23 @@
 
 namespace Framework\Kapafaa\Triggers;
 
+use Framework\Kapafaa\Targets\PlayerTarget;
 
-class PointsChanged extends GameTrigger
+
+/**
+ * @kapafaa trigger.gameplay.%target%.pointsChanged
+ */
+class PointsChanged extends Trigger
 {
-	const POINTS_CHANGED = 'pointsChanged';
+	/** @var \Framework\Kapafaa\Targets\PlayerTarget */
+	public $target;
 	
 	
 	/**
-	 * @param string $target
+	 * @param \Framework\Kapafaa\Targets\PlayerTarget $target
 	 */
-	public function __construct($target) {
-		parent::__construct(self::POINTS_CHANGED, $target);
+	public function __construct(PlayerTarget $target)
+	{
+		$this->target = $target;
 	}
 }

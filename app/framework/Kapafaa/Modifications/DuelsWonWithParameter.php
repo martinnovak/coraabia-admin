@@ -4,12 +4,15 @@ namespace Framework\Kapafaa\Modifications;
 
 
 /**
- * @method string getParameter()
+ * @kapafaa %operator% var.duelsWonWithParameter.%parameter%
  */
 class DuelsWonWithParameter extends Modification
 {
 	/** @var string */
-	private $parameter;
+	public $operator;
+	
+	/** @var string */
+	public $parameter;
 	
 	
 	/**
@@ -18,13 +21,7 @@ class DuelsWonWithParameter extends Modification
 	 */
 	public function __construct($operator, $parameter)
 	{
-		parent::__construct($operator);
+		$this->operator = $operator;
 		$this->parameter = $parameter;
-	}
-	
-	
-	public function __toString()
-	{
-		return $this->operator . ' var.duelsWonWithParameter.' . $this->parameter;
 	}
 }

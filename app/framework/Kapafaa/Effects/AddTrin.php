@@ -4,12 +4,10 @@ namespace Framework\Kapafaa\Effects;
 
 
 /**
- * @method int getTrin()
+ * @kapafaa eff.world.addTrin %trin%
  */
-class AddTrin extends WorldEffect
+class AddTrin extends Effect
 {
-	const ADD_TRIN = 'addTrin';
-	
 	/** @var int */
 	private $trin;
 	
@@ -19,12 +17,6 @@ class AddTrin extends WorldEffect
 	 */
 	public function __construct($trin)
 	{
-		parent::__construct(self::ADD_TRIN);
 		$this->trin = $trin;
-	}
-	
-	
-	public function __toString() {
-		return parent::__toString() . ' ' . $this->trin;
 	}
 }

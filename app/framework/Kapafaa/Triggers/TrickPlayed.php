@@ -2,16 +2,23 @@
 
 namespace Framework\Kapafaa\Triggers;
 
+use Framework\Kapafaa\Targets\PlayerTarget;
 
-class TrickPlayed extends GameTrigger
+
+/**
+ * @kapafaa trigger.gameplay.%target%.trickPlayed
+ */
+class TrickPlayed extends Trigger
 {
-	const TRICK_PLAYED = 'trickPlayed';
+	/** @var \Framework\Kapafaa\Targets\PlayerTarget */
+	public $target;
 	
 	
 	/**
-	 * @param string $target
+	 * @param \Framework\Kapafaa\Targets\PlayerTarget $target
 	 */
-	public function __construct($target) {
-		parent::__construct(self::TRICK_PLAYED, $target);
+	public function __construct(PlayerTarget $target)
+	{
+		$this->target = $target;
 	}
 }

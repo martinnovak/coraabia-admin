@@ -2,16 +2,23 @@
 
 namespace Framework\Kapafaa\Triggers;
 
+use Framework\Kapafaa\Targets\PlayerTarget;
 
-class SacrificedCard extends GameTrigger
+
+/**
+ * @kapafaa trigger.gameplay.%target%.sacrificedCard
+ */
+class SacrificedCard extends Trigger
 {
-	const SACRIFICED_CARD = 'sacrificedCard';
+	/** @var \Framework\Kapafaa\Targets\PlayerTarget */
+	public $target;
 	
 	
 	/**
-	 * @param string $target
+	 * @param \Framework\Kapafaa\Targets\PlayerTarget $target
 	 */
-	public function __construct($target) {
-		parent::__construct(self::SACRIFICED_CARD, $target);
+	public function __construct(PlayerTarget $target)
+	{
+		$this->target = $target;
 	}
 }

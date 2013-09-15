@@ -4,12 +4,10 @@ namespace Framework\Kapafaa\Effects;
 
 
 /**
- * @method int getXot()
+ * @kapafaa eff.world.addXot %xot%
  */
-class AddXot extends WorldEffect
+class AddXot extends Effect
 {
-	const ADD_XOT = 'addXot';
-	
 	/** @var int */
 	private $xot;
 	
@@ -19,12 +17,6 @@ class AddXot extends WorldEffect
 	 */
 	public function __construct($xot)
 	{
-		parent::__construct(self::ADD_XOT);
 		$this->xot = $xot;
-	}
-	
-	
-	public function __toString() {
-		return parent::__toString() . ' ' . $this->xot;
 	}
 }

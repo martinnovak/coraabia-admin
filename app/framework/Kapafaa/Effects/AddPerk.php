@@ -4,12 +4,10 @@ namespace Framework\Kapafaa\Effects;
 
 
 /**
- * @method string getPerk()
+ * @kapafaa eff.world.addPerk #%perk%#
  */
-class AddPerk extends WorldEffect
+class AddPerk extends Effect
 {
-	const ADD_PERK = 'addPerk';
-	
 	/** @var string */
 	private $perk;
 	
@@ -19,12 +17,6 @@ class AddPerk extends WorldEffect
 	 */
 	public function __construct($perk)
 	{
-		parent::__construct(self::ADD_PERK);
 		$this->perk = $perk;
-	}
-	
-	
-	public function __toString() {
-		return parent::__toString() . ' @' . $this->perk . '@';
 	}
 }

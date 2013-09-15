@@ -2,29 +2,28 @@
 
 namespace Framework\Kapafaa\Modifications;
 
+use Framework\Kapafaa\Operators\Operator;
+
 
 /**
- * @method int|float getNumber()
+ * @kapafaa %operator% %number%
  */
 class Number extends Modification
 {
-	/** @var int|float */
-	private $number;
+	/** @var \Framework\Kapafaa\Operators\Operator */
+	public $operator;
+	
+	/** @var int */
+	public $number;
 	
 	
 	/**
-	 * @param string $operator
-	 * @param int|float $number
+	 * @param \Framework\Kapafaa\Operators\Operator $operator
+	 * @param int $number
 	 */
-	public function __construct($operator, $number)
+	public function __construct(Operator $operator, $number)
 	{
-		parent::__construct($operator);
+		$this->operator = $operator;
 		$this->number = $number;
-	}
-	
-	
-	public function __toString()
-	{
-		return $this->operator . ' ' . $this->number;
 	}
 }

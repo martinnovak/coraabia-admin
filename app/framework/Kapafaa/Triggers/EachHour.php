@@ -3,12 +3,10 @@
 namespace Framework\Kapafaa\Triggers;
 
 
-class EachHour extends WorldTrigger
+/**
+ * @kapafaa trigger.world.eachHour
+ */
+class EachHour extends Trigger
 {
-	const EACH_HOUR = 'eachHour';
 	
-	
-	public function __construct() {
-		parent::__construct(self::EACH_HOUR);
-	}
 }

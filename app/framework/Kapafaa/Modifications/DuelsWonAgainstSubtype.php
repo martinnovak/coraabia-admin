@@ -4,12 +4,15 @@ namespace Framework\Kapafaa\Modifications;
 
 
 /**
- * @method string getSubtype()
+ * @kapafaa %operator% var.duelsWonAgainstSubtype.%subtype%
  */
 class DuelsWonAgainstSubtype extends Modification
 {
 	/** @var string */
-	private $subtype;
+	public $operator;
+	
+	/** @var string */
+	public $subtype;
 	
 	
 	/**
@@ -18,13 +21,7 @@ class DuelsWonAgainstSubtype extends Modification
 	 */
 	public function __construct($operator, $subtype)
 	{
-		parent::__construct($operator);
+		$this->operator = $operator;
 		$this->subtype = $subtype;
-	}
-	
-	
-	public function __toString()
-	{
-		return $this->operator . ' var.duelsWonAgainstSubtype.' . $this->subtype;
 	}
 }

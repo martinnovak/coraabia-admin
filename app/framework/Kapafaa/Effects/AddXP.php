@@ -4,12 +4,10 @@ namespace Framework\Kapafaa\Effects;
 
 
 /**
- * @method int getXp()
+ * @kapafaa eff.world.addXP %xp%
  */
-class AddXP extends WorldEffect
+class AddXP extends Effect
 {
-	const ADD_XP = 'addXP';
-	
 	/** @var int */
 	private $xp;
 	
@@ -19,12 +17,6 @@ class AddXP extends WorldEffect
 	 */
 	public function __construct($xp)
 	{
-		parent::__construct(self::ADD_XP);
 		$this->xp = $xp;
-	}
-	
-	
-	public function __toString() {
-		return parent::__toString() . ' ' . $this->xp;
 	}
 }

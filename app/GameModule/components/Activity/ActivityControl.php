@@ -23,6 +23,9 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 	/** @var \Framework\Application\FormFactory @inject */
 	public $formFactory;
 	
+	/** @var \Framework\Kapafaa\KapafaaParser @inject */
+	public $kapafaaParser;
+	
 	/** @var string */
 	private $activityId;
 	
@@ -126,6 +129,16 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 			
 			$hook->addTemplate($tmpl);
 		});
+		
+		/* DEBUG */
+		$this->kapafaaParser->loadClassData(TRUE);
+		Framework\Diagnostics\TimerPanel::timer('parse');
+		$scripts = $this->kapafaaParser->parse("(\neff.gameplay(me.duelWin += 1, multiply.cardInDeck)\n)");
+		Framework\Diagnostics\TimerPanel::timer('parse');
+		Nette\Diagnostics\Debugger::dump($scripts[0]->objects);
+		Nette\Diagnostics\Debugger::dump((string)$scripts[0]);
+		/* DEBUG */
+		
 		$template->render();
 	}
 	

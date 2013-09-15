@@ -2,16 +2,23 @@
 
 namespace Framework\Kapafaa\Triggers;
 
+use Framework\Kapafaa\Targets\PlayerTarget;
 
-class CardRemovedFromHandByOpp extends GameTrigger
+
+/**
+ * @kapafaa trigger.gameplay.%target%.cardRemovedFromHandByOpp
+ */
+class CardRemovedFromHandByOpp extends Trigger
 {
-	const CARD_REMOVED_FROM_HAND_BY_OPP = 'cardRemovedFromHandByOpp';
+	/** @var \Framework\Kapafaa\Targets\PlayerTarget */
+	public $target;
 	
 	
 	/**
-	 * @param string $target
+	 * @param \Framework\Kapafaa\Targets\PlayerTarget $target
 	 */
-	public function __construct($target) {
-		parent::__construct(self::CARD_REMOVED_FROM_HAND_BY_OPP, $target);
+	public function __construct(PlayerTarget $target)
+	{
+		$this->target = $target;
 	}
 }

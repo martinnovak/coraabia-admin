@@ -43,6 +43,9 @@ class TimerPanel extends Panel
 	{
 		if (!isset(self::$running[$name])) {
 			self::$running[$name] = TRUE;
+			if (!isset(self::$times[$name])) {
+				self::$times[$name] = 0;
+			}
 			Nette\Diagnostics\Debugger::timer($name);
 		} else {
 			unset(self::$running[$name]);

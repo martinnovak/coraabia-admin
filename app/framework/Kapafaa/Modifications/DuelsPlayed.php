@@ -3,19 +3,20 @@
 namespace Framework\Kapafaa\Modifications;
 
 
+/**
+ * @kapafaa %operator% var.duelsPlayed
+ */
 class DuelsPlayed extends Modification
 {
+	/** @var string */
+	public $operator;
+	
+	
 	/**
 	 * @param string $operator
 	 */
 	public function __construct($operator)
 	{
-		parent::__construct($operator);
-	}
-	
-	
-	public function __toString()
-	{
-		return $this->operator . ' var.duelsPlayed';
+		$this->operator = $operator;
 	}
 }

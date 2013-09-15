@@ -2,23 +2,10 @@
 
 namespace Framework\Kapafaa\Modifications;
 
-use Nette;
+use Framework\Kapafaa\Object;
 
 
-/**
- * @method string getOperator()
- */
-abstract class Modification extends Nette\Object
+abstract class Modification extends Object
 {
-	/** @var string */
-	private $operator;
-	
-	
-	/**
-	 * @param string $operator
-	 */
-	public function __construct($operator)
-	{
-		$this->operator = $operator;
-	}
+	public static $regular = '((?:add|remove|\=\<|\=\>|\<|\>|\=|\*\=|\+\=|\-\=|\/\=) (?:[^\(\,]+))';
 }

@@ -4,12 +4,15 @@ namespace Framework\Kapafaa\Modifications;
 
 
 /**
- * @method string getVariable()
+ * @kapafaa %operator% #%variable%#
  */
 class LocalVariable extends Modification
 {
 	/** @var string */
-	private $variable;
+	public $operator;
+	
+	/** @var string */
+	public $variable;
 	
 	
 	/**
@@ -18,13 +21,7 @@ class LocalVariable extends Modification
 	 */
 	public function __construct($operator, $variable)
 	{
-		parent::__construct($operator);
+		$this->operator = $operator;
 		$this->variable = $variable;
-	}
-	
-	
-	public function __toString()
-	{
-		return $this->operator . ' @' . $this->variable . '@';
 	}
 }

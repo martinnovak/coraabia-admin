@@ -2,22 +2,10 @@
 
 namespace Framework\Kapafaa\Triggers;
 
-use Nette;
+use Framework\Kapafaa\Object;
 
 
-/**
- * @method string getType()
- */
-abstract class Trigger extends Nette\Object
+abstract class Trigger extends Object
 {
-	/** @var string */
-	private $type;
 	
-	
-	/**
-	 * @param string $type
-	 */
-	public function __construct($type) {
-		$this->type = $type;
-	}
 }

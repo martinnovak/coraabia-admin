@@ -4,27 +4,19 @@ namespace Framework\Kapafaa\Effects;
 
 
 /**
- * @method int getCardId()
+ * @kapafaa eff.world.addCardByAbstractionID %card%
  */
-class AddCardByAbstractionID extends WorldEffect
+class AddCardByAbstractionID extends Effect
 {
-	const ADD_CARD_BY_ABSTRACTION_ID = 'addCardByAbstractionID';
-	
 	/** @var int */
-	private $cardId;
+	private $card;
 	
 	
 	/**
-	 * @param int $cardId
+	 * @param int $card
 	 */
-	public function __construct($cardId)
+	public function __construct($card)
 	{
-		parent::__construct(self::ADD_CARD_BY_ABSTRACTION_ID);
-		$this->cardId = $cardId;
-	}
-	
-	
-	public function __toString() {
-		return parent::__toString() . ' ' . $this->cardId;
+		$this->card = $card;
 	}
 }

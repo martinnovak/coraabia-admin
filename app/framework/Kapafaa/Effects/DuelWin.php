@@ -2,37 +2,35 @@
 
 namespace Framework\Kapafaa\Effects;
 
-use Framework\Kapafaa\Modifications\Modification;
+use Framework\Kapafaa\Targets\PlayerTarget,
+	Framework\Kapafaa\Modifications\Modification,
+	Framework\Kapafaa\Multipliers\Multiplier;
 
 
 /**
- * @method string getModification()
+ * @kapafaa eff.gameplay(%target%.duelWin %modification%%multiply%)
  */
-class DuelWin extends GameEffect
+class DuelWin extends Effect
 {
-	const DUEL_WIN = 'duelWin';
+	/** @var \Framework\Kapafaa\Targets\PlayerTarget */
+	public $target;
 	
 	/** @var \Framework\Kapafaa\Modifications\Modification */
-	private $modification;
+	public $modification;
+	
+	/** @var \Framework\Kapafaa\Multipliers\Multiplier */
+	public $multiply;
 	
 	
 	/**
-	 * @param string $target
-	 * @param string $multiply
-	 * @param string $modification
+	 * @param \Framework\Kapafaa\Targets\PlayerTarget $target
+	 * @param \Framework\Kapafaa\Modifications\Modification $modification
+	 * @param \Framework\Kapafaa\Multipliers\Multiplier $multiply
 	 */
-	public function __construct($target, $multiply, Modification $modification)
+	public function __construct(PlayerTarget $target, Modification $modification, Multiplier $multiply = NULL)
 	{
-		parent::__construct(self::DUEL_WIN, $target, $multiply);
+		$this->target = $target;
 		$this->modification = $modification;
-	}
-	
-	
-	public function __toString() {
-		$result = self::PREFIX . '(' . $this->target . '.' . $this->type . ' ' . $this->modification;
-		if ($this->multiply) {
-			$result .= ', multiply.' . $this->multiply;
-		}
-		return $result .= ')';
+		$this->multiply = $multiply;
 	}
 }

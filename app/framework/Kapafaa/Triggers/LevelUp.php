@@ -3,12 +3,10 @@
 namespace Framework\Kapafaa\Triggers;
 
 
-class LevelUp extends WorldTrigger
+/**
+ * @kapafaa trigger.world.levelUp
+ */
+class LevelUp extends Trigger
 {
-	const LEVEL_UP = 'levelUp';
 	
-	
-	public function __construct() {
-		parent::__construct(self::LEVEL_UP);
-	}
 }

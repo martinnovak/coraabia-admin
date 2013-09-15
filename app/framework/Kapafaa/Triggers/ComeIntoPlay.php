@@ -2,16 +2,23 @@
 
 namespace Framework\Kapafaa\Triggers;
 
+use Framework\Kapafaa\Targets\PlayerTarget;
 
-class ComeIntoPlay extends GameTrigger
+
+/**
+ * @kapafaa trigger.gameplay.%target%.comeIntoPlay
+ */
+class ComeIntoPlay extends Trigger
 {
-	const COME_INTO_PLAY = 'comeIntoPlay';
+	/** @var \Framework\Kapafaa\Targets\PlayerTarget */
+	public $target;
 	
 	
 	/**
-	 * @param string $target
+	 * @param \Framework\Kapafaa\Targets\PlayerTarget $target
 	 */
-	public function __construct($target) {
-		parent::__construct(self::COME_INTO_PLAY, $target);
+	public function __construct(PlayerTarget $target)
+	{
+		$this->target = $target;
 	}
 }

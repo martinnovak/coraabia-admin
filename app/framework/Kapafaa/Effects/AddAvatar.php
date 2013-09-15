@@ -4,27 +4,19 @@ namespace Framework\Kapafaa\Effects;
 
 
 /**
- * @method int getAvatarId()
+ * @kapafaa eff.world.addAvatar %avatar%
  */
-class AddAvatar extends WorldEffect
+class AddAvatar extends Effect
 {
-	const ADD_AVATAR = 'addAvatar';
-	
 	/** @var int */
-	private $avatarId;
+	private $avatar;
 	
 	
 	/**
-	 * @param int $avatarId
+	 * @param int $avatar
 	 */
-	public function __construct($avatarId)
+	public function __construct($avatar)
 	{
-		parent::__construct(self::ADD_AVATAR);
-		$this->avatarId = $avatarId;
-	}
-	
-	
-	public function __toString() {
-		return parent::__toString() . ' ' . $this->avatarId;
+		$this->avatar = $avatar;
 	}
 }

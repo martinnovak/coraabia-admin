@@ -4,27 +4,19 @@ namespace Framework\Kapafaa\Effects;
 
 
 /**
- * @method string getEditionId()
+ * @kapafaa eff.world.addRandomCardFromUniformSelection #%edition%#
  */
-class AddRandomCardFromUniformSelection extends WorldEffect
+class AddRandomCardFromUniformSelection extends Effect
 {
-	const ADD_RANDOM_CARD_FROM_UNIFORM_SELECTION = 'addRandomCardFromUniformSelection';
-	
 	/** @var string */
-	private $editionId;
+	private $edition;
 	
 	
 	/**
-	 * @param string $editionId
+	 * @param string $edition
 	 */
-	public function __construct($editionId)
+	public function __construct($edition)
 	{
-		parent::__construct(self::ADD_RANDOM_CARD_FROM_UNIFORM_SELECTION);
-		$this->editionId = $editionId;
-	}
-	
-	
-	public function __toString() {
-		return parent::__toString() . ' ' . $this->editionId;
+		$this->edition = $edition;
 	}
 }

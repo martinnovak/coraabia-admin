@@ -2,23 +2,29 @@
 
 namespace Framework\Kapafaa\Effects;
 
+use Framework\Kapafaa\Targets\PlayerTarget,
+	Framework\Kapafaa\Multipliers\Multiplier;
 
-class CannotReduceCardParameters extends GameEffect
+
+/**
+ * @kapafaa eff.gameplay(%target%.cannotReduceCardParameters%multiply%)
+ */
+class CannotReduceCardParameters extends Effect
 {
-	const CANNOT_REDUCE_CARD_PARAMETERS = 'cannotReduceCardParameters';
+	/** @var \Framework\Kapafaa\Targets\PlayerTarget */
+	public $target;
+	
+	/** @var \Framework\Kapafaa\Multipliers\Multiplier */
+	public $multiply;
 	
 	
-	public function __construct($target, $multiply)
+	/**
+	 * @param \Framework\Kapafaa\Targets\PlayerTarget $target
+	 * @param \Framework\Kapafaa\Multipliers\Multiplier $multiply
+	 */
+	public function __construct(PlayerTarget $target, Multiplier $multiply = NULL)
 	{
-		parent::__construct(self::CANNOT_REDUCE_CARD_PARAMETERS, $target, $multiply);
-	}
-	
-	
-	public function __toString() {
-		$result = self::PREFIX . '(' . $this->target . '.' . $this->type;
-		if ($this->multiply) {
-			$result .= ', multiply.' . $this->multiply;
-		}
-		return $result .= ')';
+		$this->target = $target;
+		$this->multiply = $multiply;
 	}
 }

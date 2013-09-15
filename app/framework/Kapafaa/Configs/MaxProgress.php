@@ -3,24 +3,19 @@
 namespace Framework\Kapafaa\Configs;
 
 
+/**
+ * @kapafaa config.max_progress(%value%)
+ */
 class MaxProgress extends Config
 {
-	const MAX_PROGRESS = 'max_progress';
+	/** @var int */
+	public $value;
 	
 	
 	/**
-	 * @param int|string $value
+	 * @param int $value
 	 */
 	public function __construct($value) {
-		parent::__construct(self::MAX_PROGRESS, $value);
-	}
-	
-	
-	/**
-	 * @return string
-	 */
-	public function __toString()
-	{
-		return self::PREFIX . '.' . $this->type . '(' . $this->value . ')';
+		$this->value = $value;
 	}
 }
