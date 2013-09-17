@@ -5,11 +5,12 @@ namespace Framework\Kapafaa\Effects;
 
 /**
  * @kapafaa eff.world.addTrin %trin%
+ * @description Přidej triny
  */
 class AddTrin extends Effect
 {
 	/** @var int */
-	private $trin;
+	public $trin;
 	
 	
 	/**

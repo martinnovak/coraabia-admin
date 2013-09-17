@@ -7,6 +7,7 @@ use Framework\Kapafaa\Targets\PlayerTarget;
 
 /**
  * @kapafaa trigger.gameplay.%target%.sacrificedCard
+ * @description Obětování karty
  */
 class SacrificedCard extends Trigger
 {

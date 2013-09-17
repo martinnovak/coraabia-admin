@@ -7,6 +7,7 @@ use Framework\Kapafaa\Targets\PlayerTarget;
 
 /**
  * @kapafaa trigger.gameplay.%target%.game_won
+ * @description Výhra
  */
 class GameWon extends Trigger
 {

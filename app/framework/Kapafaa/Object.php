@@ -34,15 +34,4 @@ abstract class Object extends Nette\Object
 			return (string)$self->{$item[1]};
 		}, str_replace('#', '@', $rc->getAnnotation('kapafaa')));
 	}
-	
-	
-	/**
-	 * @param array $classes
-	 * @param array $args
-	 * @throws \Framework\Kapafaa\KapafaaException
-	 */
-	public static function findImplementation(array $classes, array $args)
-	{
-		throw new KapafaaException('Must be overriden in children.');
-	}
 }

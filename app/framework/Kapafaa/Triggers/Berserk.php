@@ -7,6 +7,7 @@ use Framework\Kapafaa\Targets\PlayerTarget;
 
 /**
  * @kapafaa trigger.gameplay.%target%.berserk
+ * @description Berserk
  */
 class Berserk extends Trigger
 {

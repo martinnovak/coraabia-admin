@@ -7,6 +7,7 @@ use Framework\Kapafaa\Targets\PlayerTarget;
 
 /**
  * @kapafaa trigger.gameplay.%target%.restart
+ * @description Restart
  */
 class Restart extends Trigger
 {

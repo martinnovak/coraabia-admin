@@ -9,6 +9,7 @@ use Framework\Kapafaa\Targets\PlayerTarget,
 
 /**
  * @kapafaa eff.gameplay(%target%.criticalPower %modification%%multiply%)
+ * @description Critical power (???)
  */
 class CriticalPower extends Effect
 {

@@ -65,16 +65,18 @@ class KapafaaParser extends Nette\Object
 	{
 		$classes = array();
 		foreach ($indexed as $name => $file) {
-			$rc = \Nette\Reflection\ClassType::from($name);
-			if (!($rc->hasAnnotation('kapafaa') && $rc->isSubclassOf('\Framework\Kapafaa\Object'))) {
+			$rc = Nette\Reflection\ClassType::from($name);
+			if (!$rc->hasAnnotation('kapafaa') || !$rc->isSubclassOf('\Framework\Kapafaa\Object')) {
 				continue;
 			}
 			
 			$kapafaa = $rc->getAnnotation('kapafaa');
+			$description = $rc->getAnnotation('description');
 			$parsed = $this->getRegular($rc, $kapafaa);
 			$parent = $rc->getParentClass();
 			
 			$classes[$name] = array(
+				'description' => $description ?: str_replace('#', '@', $kapafaa),
 				'kapafaa' => str_replace('#', '@', $kapafaa),
 				'regular' => $parsed[1],
 				'params' => $parsed[0],
@@ -155,7 +157,7 @@ class KapafaaParser extends Nette\Object
 	 */
 	protected function parseLine($line, array $classes)
 	{
-		$result = array(NULL, array());
+		$result = NULL;
 		foreach ($classes as $class => $data) {
 			if (preg_match('/' . $data['regular'] . '/', $line, $matches)) {
 				array_shift($matches);
@@ -188,14 +190,17 @@ class KapafaaParser extends Nette\Object
 					$args[] = array_shift($params);
 					break;
 				default: //class
-					list($object, ) = $this->parseLine(array_shift($params), $this->getImplementors($type));
-					$args[] = $object;
+					$args[] = $this->parseLine(array_shift($params), $this->getImplementors($type));
 			}
 		}
 		return Nette\Reflection\ClassType::from($class)->newInstanceArgs($args);
 	}
 	
 	
+	/**
+	 * @param string $class
+	 * @return array
+	 */
 	protected function getImplementors($class)
 	{
 		if (strpos($class, '\\') === 0) {

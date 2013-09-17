@@ -26,6 +26,9 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 	/** @var \Framework\Kapafaa\KapafaaParser @inject */
 	public $kapafaaParser;
 	
+	/** @var \Nette\Caching\IStorage @inject */
+	public $storage;
+	
 	/** @var string */
 	private $activityId;
 	
@@ -127,16 +130,39 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 				}, $self->game->getActivities()->fetchAll()))
 			);
 			
+			//@todo cache
+			$kapafaaDefinitions = array();
+			foreach ($self->kapafaaParser->loadClassData()->classes as $class => $data) {
+				$def = array(
+					'name' => $self->translator->translate($data['description']),
+					'type' => $class,
+					'kapafaa' => $data['kapafaa'],
+					'parent' => $data['parent']
+				);
+				preg_match_all('/%([a-z]+)%/i', $data['kapafaa'], $matches);
+				$params = array();
+				for ($i = 0; $i < count($matches[1]); $i++) {
+					$params[] = array(
+						'name' => $matches[1][$i],
+						'type' => $data['params'][$i],
+						'value' => NULL
+					);
+				}
+				$def['params'] = $params;
+				$kapafaaDefinitions[] = $def;
+			}
+			$tmpl->kapafaaDefinitions = $kapafaaDefinitions;
+			
 			$hook->addTemplate($tmpl);
 		});
 		
 		/* DEBUG */
-		$this->kapafaaParser->loadClassData(TRUE);
+		/*$this->kapafaaParser->loadClassData();
 		Framework\Diagnostics\TimerPanel::timer('parse');
-		$scripts = $this->kapafaaParser->parse("(\neff.gameplay(me.duelWin += 1, multiply.cardInDeck)\n)");
+		$scripts = $this->kapafaaParser->parse("(\ntrigger.gameplay.me.autowin\neff.gameplay(me.duelWin += 1, multiply.cardInDeck)\n)");
 		Framework\Diagnostics\TimerPanel::timer('parse');
 		Nette\Diagnostics\Debugger::dump($scripts[0]->objects);
-		Nette\Diagnostics\Debugger::dump((string)$scripts[0]);
+		Nette\Diagnostics\Debugger::dump((string)$scripts[0]);*/
 		/* DEBUG */
 		
 		$template->render();

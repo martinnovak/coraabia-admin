@@ -7,6 +7,7 @@ use Framework\Kapafaa\Targets\PlayerTarget;
 
 /**
  * @kapafaa trigger.gameplay.%target%.duel_drawn
+ * @description Remíza v duelu
  */
 class DuelDrawn extends Trigger
 {

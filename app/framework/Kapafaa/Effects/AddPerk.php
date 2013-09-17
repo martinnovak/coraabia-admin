@@ -5,11 +5,12 @@ namespace Framework\Kapafaa\Effects;
 
 /**
  * @kapafaa eff.world.addPerk #%perk%#
+ * @description Přidej konexi
  */
 class AddPerk extends Effect
 {
 	/** @var string */
-	private $perk;
+	public $perk;
 	
 	
 	/**

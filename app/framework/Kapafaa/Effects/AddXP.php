@@ -5,11 +5,12 @@ namespace Framework\Kapafaa\Effects;
 
 /**
  * @kapafaa eff.world.addXP %xp%
+ * @description Přidej XP
  */
 class AddXP extends Effect
 {
 	/** @var int */
-	private $xp;
+	public $xp;
 	
 	
 	/**

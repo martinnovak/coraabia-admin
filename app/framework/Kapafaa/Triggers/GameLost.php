@@ -7,6 +7,7 @@ use Framework\Kapafaa\Targets\PlayerTarget;
 
 /**
  * @kapafaa trigger.gameplay.%target%.game_lost
+ * @description Prohra
  */
 class GameLost extends Trigger
 {

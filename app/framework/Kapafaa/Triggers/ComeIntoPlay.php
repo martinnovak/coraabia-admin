@@ -7,6 +7,7 @@ use Framework\Kapafaa\Targets\PlayerTarget;
 
 /**
  * @kapafaa trigger.gameplay.%target%.comeIntoPlay
+ * @description Příchod karty do duelu
  */
 class ComeIntoPlay extends Trigger
 {

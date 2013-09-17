@@ -5,11 +5,12 @@ namespace Framework\Kapafaa\Effects;
 
 /**
  * @kapafaa eff.world.addAvatar %avatar%
+ * @description Přidej avatara
  */
 class AddAvatar extends Effect
 {
 	/** @var int */
-	private $avatar;
+	public $avatar;
 	
 	
 	/**

@@ -7,6 +7,7 @@ use Framework\Kapafaa\Targets\PlayerTarget;
 
 /**
  * @kapafaa trigger.gameplay.%target%.autowin
+ * @description Dominance
  */
 class Autowin extends Trigger
 {

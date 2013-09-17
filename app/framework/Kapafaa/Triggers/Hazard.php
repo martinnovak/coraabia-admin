@@ -7,6 +7,7 @@ use Framework\Kapafaa\Targets\PlayerTarget;
 
 /**
  * @kapafaa trigger.gameplay.%target%.hazard
+ * @description Hazard
  */
 class Hazard extends Trigger
 {

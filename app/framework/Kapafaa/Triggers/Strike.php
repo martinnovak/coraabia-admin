@@ -7,6 +7,7 @@ use Framework\Kapafaa\Targets\PlayerTarget;
 
 /**
  * @kapafaa trigger.gameplay.%target%.strike
+ * @description Strike (???)
  */
 class Strike extends Trigger
 {

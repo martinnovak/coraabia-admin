@@ -5,6 +5,7 @@ namespace Framework\Kapafaa\Configs;
 
 /**
  * @kapafaa config.progress_var_name(#%value%#)
+ * @description Proměnná maximálního progressu
  */
 class ProgressVarName extends Config
 {

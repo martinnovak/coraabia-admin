@@ -3,6 +3,7 @@
 <script type="text/javascript" src="{$basePath}/js/knockout-sortable.min.js"></script>
 <script type="text/javascript">
 	var activityData = {$activityData};
+	var kapafaaDefinitions = {$kapafaaDefinitions};
 </script>
 <script type="text/javascript">
 (function($, _, ko, undefined) {
@@ -74,7 +75,7 @@
 	 * @param array activities
 	 * @returns Model
 	 */
-	var Model = function(gamerooms, activities) {
+	var agModel = function(gamerooms, activities) {
 		var self = this;
 		
 		this.gamerooms = ko.observableArray(gamerooms);
@@ -113,6 +114,9 @@
 	};
 
 	ko.bindingHandlers.sortable.beforeMove = function(arg, event, ui) {
+		if (arg.sourceParent === undefined || arg.targetParent === undefined) {
+			return;
+		}
 		if (arg.sourceParent.id !== arg.targetParent.id) {
 			arg.cancelDrop = true;
 		} else if (typeof arg.item.dropped === 'function') {
@@ -128,7 +132,95 @@
 		return new Activity(item);
 	});
 	
-	var model = new Model(gamerooms, activities);
-	ko.applyBindings(model);
+	var agmodel = new agModel(gamerooms, activities);
+	ko.applyBindings(agmodel, document.getElementById('activity-connections'));
+})(jQuery, _, ko);
+</script>
+<script type="text/javascript">
+
+(function($, _, ko, undefined) {
+
+	var KapafaaObject = function(data) {
+		var self = this;
+		this.data = data;
+		
+		this.name = data.name;
+		this.type = data.type;
+		this.kapafaa = data.kapafaa;
+		this.parent = data.parent;
+		this.params = data.params;
+		
+		this.filtered = ko.observable(true);
+		this.searched = ko.observable(true);
+		
+		this.visible = ko.computed(function() {
+			return this.filtered() && this.searched();
+		}, this);
+		
+		this.getClass = function() {
+			var cl = 'btn';
+			switch (self.parent) {
+				case 'Framework\\Kapafaa\\Configs\\Config': cl += ' btn-info'; break;
+				case 'Framework\\Kapafaa\\Triggers\\Trigger': cl += ' btn-success'; break;
+				case 'Framework\\Kapafaa\\Conditions\\Condition': cl += ' btn-warning'; break;
+				case 'Framework\\Kapafaa\\Effects\\Effect': cl += ' btn-danger'; break;
+			}
+			return cl;
+		};
+	};
+	
+	var kModel = function(definitions) {
+		var self = this;
+		
+		this.definitions = ko.observableArray(definitions);
+		
+		this.kapafaa = ko.observableArray([]);
+		
+		this.filterObjects = ko.observable('');
+		this._filterObjects = ko.computed(function() {
+			var parents = this.filterObjects() === '' ? [
+				'Framework\\Kapafaa\\Configs\\Config',
+				'Framework\\Kapafaa\\Triggers\\Trigger',
+				'Framework\\Kapafaa\\Effects\\Effect',
+				'Framework\\Kapafaa\\Conditions\\Condition',
+			] : [this.filterObjects()];
+			_.each(this.definitions(), function(item) {
+				item.filtered(parents.indexOf(item.parent) > -1);
+			});
+		}, this);
+		
+		this.resetFilters = function() {
+			self.filterObjects('');
+		};
+		
+		this.test = function() {
+			self.filterObjects('Framework\\Kapafaa\\Modifications\\Modification');
+		};
+		
+		this.searchDefinitions = ko.observable('');
+		this._searchDefinitions = ko.computed(function() {
+			_.each(this.definitions(), function(item) {
+				item.searched(item.name.toLowerCase().indexOf(self.searchDefinitions().toLowerCase()) > -1);
+			});
+		}, this);
+		
+		this.dropped = function(item, event, ui) {
+			return new KapafaaObject(item);
+		};
+		
+		this.trash = ko.observableArray([]);
+		this.trashed = ko.computed(function() {
+			if (this.trash.length > 0) {
+				this.trash([]);
+			}
+		}, this);
+	};
+
+	var definitions = _.map(kapafaaDefinitions, function(item) {
+		return new KapafaaObject(item);
+	});
+
+	var kmodel = new kModel(definitions);
+	ko.applyBindings(kmodel, document.getElementById('activity-creation'));
 })(jQuery, _, ko);
 </script>

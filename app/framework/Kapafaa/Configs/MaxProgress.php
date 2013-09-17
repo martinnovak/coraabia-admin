@@ -5,6 +5,7 @@ namespace Framework\Kapafaa\Configs;
 
 /**
  * @kapafaa config.max_progress(%value%)
+ * @description Hodnota maximálního progressu
  */
 class MaxProgress extends Config
 {

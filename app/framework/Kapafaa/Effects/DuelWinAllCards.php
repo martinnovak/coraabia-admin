@@ -9,6 +9,7 @@ use Framework\Kapafaa\Targets\PlayerTarget,
 
 /**
  * @kapafaa eff.gameplay(%target%.duelWinAllCards %modification%%multiply%)
+ * @description Přidej duelwiny všem kartám
  */
 class DuelWinAllCards extends Effect
 {

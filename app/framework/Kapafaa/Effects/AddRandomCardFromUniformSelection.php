@@ -5,11 +5,12 @@ namespace Framework\Kapafaa\Effects;
 
 /**
  * @kapafaa eff.world.addRandomCardFromUniformSelection #%edition%#
+ * @description Přidej kartu z expanze
  */
 class AddRandomCardFromUniformSelection extends Effect
 {
 	/** @var string */
-	private $edition;
+	public $edition;
 	
 	
 	/**

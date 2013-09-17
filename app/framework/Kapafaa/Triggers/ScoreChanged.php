@@ -7,6 +7,7 @@ use Framework\Kapafaa\Targets\PlayerTarget;
 
 /**
  * @kapafaa trigger.gameplay.%target%.scoreChanged
+ * @description Změna skóre
  */
 class ScoreChanged extends Trigger
 {

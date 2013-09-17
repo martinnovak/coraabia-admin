@@ -9,6 +9,7 @@ use Framework\Kapafaa\Targets\PlayerTarget,
 
 /**
  * @kapafaa eff.gameplay(%target%.boostAll %modification%%multiply%)
+ * @description Boost All (???)
  */
 class BoostAll extends Effect
 {

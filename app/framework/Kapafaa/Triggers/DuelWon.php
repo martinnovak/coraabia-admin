@@ -7,6 +7,7 @@ use Framework\Kapafaa\Targets\PlayerTarget;
 
 /**
  * @kapafaa trigger.gameplay.%target%.duel_won
+ * @description Výhra v duelu
  */
 class DuelWon extends Trigger
 {

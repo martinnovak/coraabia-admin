@@ -5,11 +5,12 @@ namespace Framework\Kapafaa\Effects;
 
 /**
  * @kapafaa eff.world.addXot %xot%
+ * @description Přidej xot
  */
 class AddXot extends Effect
 {
 	/** @var int */
-	private $xot;
+	public $xot;
 	
 	
 	/**

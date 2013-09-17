@@ -7,6 +7,7 @@ use Framework\Kapafaa\Targets\PlayerTarget;
 
 /**
  * @kapafaa trigger.gameplay.%target%.game_ended
+ * @description Hra skončila (???)
  */
 class GameEnded extends Trigger
 {

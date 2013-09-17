@@ -7,6 +7,7 @@ use Framework\Kapafaa\Targets\PlayerTarget;
 
 /**
  * @kapafaa trigger.gameplay.%target%.duel_lost
+ * @description Prohra v duelu
  */
 class DuelLost extends Trigger
 {

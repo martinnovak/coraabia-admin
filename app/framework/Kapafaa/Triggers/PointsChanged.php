@@ -7,6 +7,7 @@ use Framework\Kapafaa\Targets\PlayerTarget;
 
 /**
  * @kapafaa trigger.gameplay.%target%.pointsChanged
+ * @description Změna bodů
  */
 class PointsChanged extends Trigger
 {

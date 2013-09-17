@@ -7,6 +7,7 @@ use Framework\Kapafaa\Targets\PlayerTarget;
 
 /**
  * @kapafaa trigger.gameplay.%target%.game_start
+ * @description Hra začíná
  */
 class GameStart extends Trigger
 {

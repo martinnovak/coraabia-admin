@@ -7,6 +7,7 @@ use Framework\Kapafaa\Targets\PlayerTarget;
 
 /**
  * @kapafaa trigger.gameplay.%target%.duel_start
+ * @description Začátek duelu
  */
 class DuelStart extends Trigger
 {

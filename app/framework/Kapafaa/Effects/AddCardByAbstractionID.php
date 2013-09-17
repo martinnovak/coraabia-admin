@@ -5,11 +5,12 @@ namespace Framework\Kapafaa\Effects;
 
 /**
  * @kapafaa eff.world.addCardByAbstractionID %card%
+ * @description Přidej kartu
  */
 class AddCardByAbstractionID extends Effect
 {
 	/** @var int */
-	private $card;
+	public $card;
 	
 	
 	/**

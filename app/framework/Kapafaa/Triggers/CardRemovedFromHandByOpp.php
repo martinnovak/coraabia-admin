@@ -7,6 +7,7 @@ use Framework\Kapafaa\Targets\PlayerTarget;
 
 /**
  * @kapafaa trigger.gameplay.%target%.cardRemovedFromHandByOpp
+ * @description Zahození karty z ruky oponentem
  */
 class CardRemovedFromHandByOpp extends Trigger
 {

@@ -8,6 +8,7 @@ use Framework\Kapafaa\Targets\PlayerTarget,
 
 /**
  * @kapafaa eff.gameplay(%target%.cannotReduceCardParameters%multiply%)
+ * @description Cannot reduce card parameters (???)
  */
 class CannotReduceCardParameters extends Effect
 {
