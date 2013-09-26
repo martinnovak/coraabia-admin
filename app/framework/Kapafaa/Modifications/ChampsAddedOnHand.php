@@ -7,6 +7,7 @@ use Framework\Kapafaa\Operators\Operator;
 
 /**
  * @kapafaa %operator% var.champsAddedOnHand
+ * @description Šampioni přidaní na ruku
  */
 class ChampsAddedOnHand extends Modification
 {

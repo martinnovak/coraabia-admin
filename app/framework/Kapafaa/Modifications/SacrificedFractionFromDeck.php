@@ -2,24 +2,28 @@
 
 namespace Framework\Kapafaa\Modifications;
 
+use Framework\Kapafaa\Operators\Operator,
+	Framework\Kapafaa\Fractions\Fraction;
+
 
 /**
  * @kapafaa %operator% var.sacrificedFractionFromDeck.%fraction%
+ * @description Obětované karty frakce
  */
 class SacrificedFractionFromDeck extends Modification
 {
-	/** @var string */
+	/** @var \Framework\Kapafaa\Operators\Operator */
 	public $operator;
 	
-	/** @var string */
+	/** @var \Framework\Kapafaa\Fractions\Fraction */
 	public $fraction;
 	
 	
 	/**
-	 * @param string $operator
-	 * @param string $fraction
+	 * @param \Framework\Kapafaa\Operators\Operator $operator
+	 * @param \Framework\Kapafaa\Fractions\Fraction $fraction
 	 */
-	public function __construct($operator, $fraction)
+	public function __construct(Operator $operator, Fraction $fraction)
 	{
 		$this->operator = $operator;
 		$this->fraction = $fraction;

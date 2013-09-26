@@ -31,12 +31,12 @@ class Script extends Nette\Object
 		return implode("\n", $script);
 	}
 
-	
-	/**
-	 * @param \Framework\Kapafaa\Object $object
-	 * @return \Framework\Kapafaa\Script
-	 */
-	public function addObject(Object $object)
+
+    /**
+     * @param \Framework\Kapafaa\Object $object
+     * @return \Framework\Kapafaa\Script
+     */
+    public function addObject(Object $object)
 	{
 		$this->objects[] = $object;
 		return $this;

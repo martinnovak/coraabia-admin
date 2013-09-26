@@ -155,16 +155,7 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 			
 			$hook->addTemplate($tmpl);
 		});
-		
-		/* DEBUG */
-		/*$this->kapafaaParser->loadClassData();
-		Framework\Diagnostics\TimerPanel::timer('parse');
-		$scripts = $this->kapafaaParser->parse("(\ntrigger.gameplay.me.autowin\neff.gameplay(me.duelWin += 1, multiply.cardInDeck)\n)");
-		Framework\Diagnostics\TimerPanel::timer('parse');
-		Nette\Diagnostics\Debugger::dump($scripts[0]->objects);
-		Nette\Diagnostics\Debugger::dump((string)$scripts[0]);*/
-		/* DEBUG */
-		
+				
 		$template->render();
 	}
 	
@@ -183,7 +174,7 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 		$form->addText('activity_id', 'ID')
 			->setRequired('Vyplňte ID aktivity.')
 			->addRule(Nette\Forms\Form::MAX_LENGTH, 'Maximální délka ID je %value znaků.', 20)
-			->addRule(Nette\Forms\Form::PATTERN, 'ID musí končit jednou z přípon _I, _II, _III, _IV a nesmí obsahovat pomlčku', '[^-]+_I([IV]?|II)');
+			->addRule(Nette\Forms\Form::PATTERN, 'ID musí končit jednou z přípon _C, _U, _R, _G a nesmí obsahovat pomlčku', '[^-]+_[CURG]');
 		
 		$fractions = $this->game->getFractions();
 		$fractions = array_combine(
@@ -209,6 +200,12 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 		$form->addSelect('start_type', 'Typ startu', $activityStartTypes)
 			->setRequired();
 		
+		$bots = array('' => '');
+		foreach ($this->game->getBots()->fetchAll() as $bot) {
+			$bots[$bot->bot_id] = $bot->name;
+		}
+		$form->addSelect('bot_id', 'Bot', $bots);
+		
 		$form->addGroup('Pozice');
 		
 		$form->addText('tree', 'Strom')
@@ -226,6 +223,20 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 			->addRule(Nette\Forms\Form::INTEGER, 'Hodnota musí být celé číslo.')
 			->setOption('description', '0 je kořen stromu.');
 		
+		$form->addGroup('Odměna');
+		
+		$rewardTypes = $this->game->getActivityRewardTypes();
+		$rewardTypes = array('' => '') + array_combine($rewardTypes, $rewardTypes);
+		$form->addSelect('reward_type', 'Typ odměny', $rewardTypes);
+		
+		$form->addText('reward_value', 'Hodnota');
+		
+		$form->addGroup('Obrázky');
+		
+		$form->addText('authority', 'Zadavatel');
+		
+		$form->addText('art_id', 'Art (todo)');
+		
 		foreach ($this->locales->langs as $lang) {
 			
 			$form->addGroup(strtoupper($lang));
@@ -240,6 +251,9 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 				->setAttribute('rows', 10);
 			
 			$form->addTextArea('activity_finish_' . $lang, 'Text splnění')
+				->setAttribute('rows', 10);
+			
+			$form->addTextArea('filter_condition_' . $lang, 'Text filtru')
 				->setAttribute('rows', 10);
 		}
 
@@ -269,12 +283,9 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 		try {
 			$this->game->getSource()->beginTransaction();
 			
-			//aktivita
-			//proměnné, filtry, observry a jejich napojení
-			//rodičovské aktivity orig vs new
-			//\Nette\Diagnostics\Debugger::dump($this->game->getParentActivities($values->activity_id));
-			//$this->updateActivityGamerooms($values->activity_id, explode('--', $values->gameroomList), array());
-			//$this->createActivityTexts($values->activity_id, $values);
+			$row = $this->game->createActivity((array)$values);
+			$this->createActivityTexts($values['activity_id'], (array)$values);
+			$this->updateActivityGamerooms($values['activity_id'], explode('--', $values['gameroomList']), array());
 			
 			$this->game->getSource()->commit();
 		} catch (\Exception $e) {
@@ -283,18 +294,23 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 		}
 		
 		if ($row) {
-			$this->getPresenter()->redirect('Activity:editActivity', array('id' => $row->activity_id));
+			$this->getPresenter()->redirect('Activity:editActivity', array('id' => $values['activity_id']));
 		}
 	}
 	
-	
+
+	/**
+	 * @param string $activityId
+	 * @param array $values
+	 */
 	protected function createActivityTexts($activityId, array $values)
 	{
 		$keys = array(
 			'activity_name',
 			'activity_flavor',
 			'activity_task',
-			'activity_finish'
+			'activity_finish',
+			'filter_condition'
 		);
 		foreach ($values as $key => $value) {
 			if (preg_match('/^(' . implode('|', $keys) . ')_(' . implode('|', $this->locales->langs) . ')$/', $key, $matches)) {
@@ -305,12 +321,14 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 				));
 			}
 		}
+		$this->translator->refreshTranslations();
 	}
 	
 	
 	/**
-	 * @todo call model, not directly
-	 * @todo optimize?
+	 * @param string $activityId
+	 * @param array $new
+	 * @param array $original
 	 */
 	protected function updateActivityGamerooms($activityId, array $new, array $original)
 	{
@@ -319,7 +337,7 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 		
 		//remove
 		$removeIds = array_map(function ($item) {
-			list($gameroom, $ready) = explode('-', $item);
+			list($gameroom, ) = explode('-', $item);
 			return $gameroom;
 		}, $toRemove);
 		foreach ($this->game->getActivityGamerooms()

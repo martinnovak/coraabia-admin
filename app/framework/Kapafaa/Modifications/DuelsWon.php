@@ -7,6 +7,7 @@ use Framework\Kapafaa\Operators\Operator;
 
 /**
  * @kapafaa %operator% var.duelsWon
+ * @description Vyhrané duely
  */
 class DuelsWon extends Modification
 {

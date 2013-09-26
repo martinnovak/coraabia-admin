@@ -893,4 +893,54 @@ class Game extends Model
 		return $this->getActivities()
 				->where(':activity_observer.observer_id IN ?', $observers);
 	}
+	
+	
+	/**
+	 * @return \Nette\Database\Table\Selection
+	 */
+	public function getBots()
+	{
+		return $this->getSource()->getSelectionFactory()->table('bot');
+	}
+	
+	
+	/**
+	 * @return array
+	 */
+	public function getActivityRewardTypes()
+	{
+		return array(
+			'CONNECTION',
+			'TRIN',
+			'CARD',
+			'EXP',
+			'XOT',
+			'AVATAR'
+		);
+	}
+	
+	
+	/**
+	 * @param array $values
+	 * @return \Nette\Database\ResultSet|NULL
+	 */
+	public function createActivity(array $values)
+	{
+		return $this->getSource()->query('INSERT INTO activity', array(
+						'activity_id' => $values['activity_id'],
+						'fraction' => $values['fraction'] ?: NULL,
+						'posx' => (int)$values['posx'],
+						'posy' => (int)$values['posy'],
+						'authority' => $values['authority'],
+						'art_id' => $values['art_id'] ? (int)$values['art_id'] : NULL,
+						'bot_id' => $values['bot_id'] ? (int)$values['bot_id'] : NULL,
+						'variant_type' => $values['variant_type'],
+						'activity_type' => $values['activity_type'],
+						'start_type' => $values['start_type'],
+						'reward_type' => $values['reward_type'] ?: NULL,
+						'reward_value' => $values['reward_type'] && $values['reward_value'] ? $values['reward_value'] : NULL,
+						'tree' => (int)$values['tree'],
+						'ready' => FALSE
+					));
+	}
 }

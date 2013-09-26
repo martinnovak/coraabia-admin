@@ -12,7 +12,7 @@
 				<div class="span4 well">
 					{input gameroomList}
 					<h5>{_'Gameroomy'}</h5>
-					<div class="gamerooms" data-bind="sortable: { data: activity_gamerooms }">
+					<div class="gamerooms" data-bind="sortable: { data: activity_gamerooms, beforeMove: $root.beforeMove }">
 						<a class="btn" data-bind="click: switchReady, attr: { class: getClass() }">
 							<i data-bind="visible: ready, attr: { class: activity_gameroom_ready() ? 'icon-ok' : 'icon-remove'}"></i>
 							<span data-bind="text: name"></span>
@@ -21,7 +21,7 @@
 				</div>
 				<div class="span8 well">
 					<input type="text" data-bind="value: searchGamerooms, valueUpdate: 'afterkeydown'" placeholder="{_'Hledej...'}" />
-					<div class="gamerooms" data-bind="sortable: { data: gamerooms }">
+					<div class="gamerooms" data-bind="sortable: { data: gamerooms, beforeMove: $root.beforeMove }">
 						<a class="btn" data-bind="visible: visible, attr: { class: ready ? 'btn' : 'btn disabled' }">
 							<span data-bind="text: name"></span>
 						</a>
@@ -34,7 +34,7 @@
 				<div class="span4 well">
 					{input parentList}
 					<h5>{_'Rodičovské aktivity'}</h5>
-					<div class="activities" data-bind="sortable: { data: parent_activities }">
+					<div class="activities" data-bind="sortable: { data: parent_activities, beforeMove: $root.beforeMove }">
 						<a class="btn" data-bind="attr: { class: ready ? 'btn' : 'btn disabled' }">
 							<span data-bind="text: name"></span>
 						</a>
@@ -42,7 +42,7 @@
 				</div>
 				<div class="span8 well">
 					<input type="text" data-bind="value: searchActivities, valueUpdate: 'afterkeydown'" placeholder="{_'Hledej...'}" />
-					<div class="activities" data-bind="sortable: { data: activities }">
+					<div class="activities" data-bind="sortable: { data: activities, beforeMove: $root.beforeMove }">
 						<a class="btn" data-bind="visible: visible, attr: { class: ready ? 'btn' : 'btn disabled' }">
 							<span data-bind="text: name"></span>
 						</a>
@@ -51,19 +51,21 @@
 			</div>
 		</div>
 	</div>
+	
+	<style type="text/css">
+		.object-wrapper {
+			margin-bottom: 5px;
+			padding: 3px;
+		}
+	</style>
+
 	<div id="activity-creation">
+		<pre class="well" data-bind="text: toKapafaa"></pre>
 		<div class="btn" style="position: relative;">
 			<i class="icon-trash"></i>
 			<div style="position: absolute; top: 0px; left: 0px; width: 38px; height: 28px;" data-bind="sortable: { data: trash }"></div>
 		</div>
-		<div class="well" data-bind="click: resetFilters, sortable: { data: kapafaa, dragged: dropped }">
-			<div data-bind="attr: { class: getClass() }">
-				<span data-bind="text: name"></span>
-				<div data-bind="foreach: params">
-					<div data-bind="text: name"></div>
-				</div>
-			</div>
-		</div>
+		<div class="well" data-bind="click: resetFilters, sortable: { template: 'objectTemplate', data: kapafaa, dragged: dropped, beforeMove: beforeMoveRoot }"></div>
 		<input type="text" data-bind="value: searchDefinitions, valueUpdate: 'afterkeydown'" placeholder="{_'Hledej...'}" />
 		<div data-bind="foreach: definitions">
 			<a data-bind="draggable: $data, visible: visible, attr: { class: getClass() }">
@@ -73,3 +75,19 @@
 	</div>
 	{$form->render('body')}
 {/form}
+
+<script id="objectTemplate" type="text/html">
+	<div data-bind="attr: { class: getClass() }">
+		<span data-bind="text: name"></span>
+		<div data-bind="foreach: params">
+			<div data-bind="attr: { class: type + ' parameter-wrapper' }">
+				<!-- ko if: type.indexOf('\\') > -1 -->
+				<div class="well object-wrapper" data-bind="click: $root.setFilters, sortable: { template: 'objectTemplate', data: value, dragged: $root.dropped, beforeMove: $root.beforeMove }"></div>
+				<!-- /ko -->
+				<!-- ko ifnot: type.indexOf('\\') > -1 -->
+				<input type="text" data-bind="value: value, valueUpdate: 'afterkeydown'">
+				<!-- /ko -->
+			</div>
+		</div>
+	</div>
+</script>

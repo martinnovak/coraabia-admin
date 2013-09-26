@@ -7,6 +7,7 @@ use Framework\Kapafaa\Operators\Operator;
 
 /**
  * @kapafaa %operator% %number%
+ * @description Číslo
  */
 class Number extends Modification
 {

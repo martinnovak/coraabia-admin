@@ -25,11 +25,11 @@ abstract class Object extends Nette\Object
 		$self = $this;
 		$rc = $this->getReflection();
 		if (!$rc->hasAnnotation('kapafaa')) {
-			throw new KapafaaException;
+			throw new KapafaaException("Object does not have annotation @kapafaa.");
 		}
 		return preg_replace_callback('/%([a-z]+)%/i', function ($item) use ($rc, $self) {
 			if (!$rc->hasProperty($item[1])) {
-				throw new KapafaaException;
+				throw new KapafaaException("Object does not have property '{$item[1]}'.");
 			}
 			return (string)$self->{$item[1]};
 		}, str_replace('#', '@', $rc->getAnnotation('kapafaa')));

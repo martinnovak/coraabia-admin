@@ -111,17 +111,17 @@
 				return item.id;
 			}).join('--');
 		}, this);
-	};
-
-	ko.bindingHandlers.sortable.beforeMove = function(arg, event, ui) {
-		if (arg.sourceParent === undefined || arg.targetParent === undefined) {
-			return;
-		}
-		if (arg.sourceParent.id !== arg.targetParent.id) {
-			arg.cancelDrop = true;
-		} else if (typeof arg.item.dropped === 'function') {
-			arg.item.dropped(arg, event, ui);
-		}
+		
+		this.beforeMove = function(arg, event, ui) {
+			if (arg.sourceParent === undefined || arg.targetParent === undefined) {
+				return;
+			}
+			if (arg.sourceParent.id !== arg.targetParent.id) {
+				arg.cancelDrop = true;
+			} else if (typeof arg.item.dropped === 'function') {
+				arg.item.dropped(arg, event, ui);
+			}
+		};
 	};
 	
 	var gamerooms = _.map(activityData.gamerooms, function(item) {
@@ -140,6 +140,14 @@
 
 (function($, _, ko, undefined) {
 
+	var Parameter = function(data, parent) {
+		this.name = data.name;
+		this.type = data.type.indexOf('\\') === 0 ? data.type.substring(1) : data.type;
+		this.value = data.type.indexOf('\\') > -1 ? ko.observableArray([]) : ko.observable(data.value);
+		this.value.parent = this;
+		this.parent = parent;
+	};
+
 	var KapafaaObject = function(data) {
 		var self = this;
 		this.data = data;
@@ -148,7 +156,9 @@
 		this.type = data.type;
 		this.kapafaa = data.kapafaa;
 		this.parent = data.parent;
-		this.params = data.params;
+		this.params = ko.observableArray(_.map(data.params, function(item) {
+			return new Parameter(item, self);
+		}));
 		
 		this.filtered = ko.observable(true);
 		this.searched = ko.observable(true);
@@ -167,6 +177,20 @@
 			}
 			return cl;
 		};
+		
+		//@TODO better
+		this.toKapafaa = ko.computed(function() {
+			var result = this.kapafaa;
+			_.each(this.params(), function(item) {
+				var re = new RegExp("%" + item.name + "%", "i");
+				if (item.type.indexOf('\\') > -1) {
+					result = result.replace(re, item.value().length && item.value()[0] !== undefined ? item.value()[0].toKapafaa() : '');
+				} else {
+					result = result.replace(re, item.value() ? item.value() : '');
+				}
+			});
+			return result;
+		}, this);
 	};
 	
 	var kModel = function(definitions) {
@@ -175,6 +199,15 @@
 		this.definitions = ko.observableArray(definitions);
 		
 		this.kapafaa = ko.observableArray([]);
+		
+		this.toKapafaa = ko.computed(function() {
+			var result = "(\n";
+			_.each(this.kapafaa(), function(item) {
+				result += item.toKapafaa() + "\n";
+			});
+			result += ")";
+			return result;
+		}, this);
 		
 		this.filterObjects = ko.observable('');
 		this._filterObjects = ko.computed(function() {
@@ -193,8 +226,8 @@
 			self.filterObjects('');
 		};
 		
-		this.test = function() {
-			self.filterObjects('Framework\\Kapafaa\\Modifications\\Modification');
+		this.setFilters = function(item, event) {
+			self.filterObjects(item.type);
 		};
 		
 		this.searchDefinitions = ko.observable('');
@@ -214,6 +247,23 @@
 				this.trash([]);
 			}
 		}, this);
+		
+		this.beforeMove = function(arg, event, ui) {
+			if (arg.item.parent !== arg.targetParent.parent.type) {
+				arg.cancelDrop = true;
+			}
+		};
+		
+		this.beforeMoveRoot = function(arg, event, ui) {
+			var parents = [
+				'Framework\\Kapafaa\\Configs\\Config',
+				'Framework\\Kapafaa\\Triggers\\Trigger',
+				'Framework\\Kapafaa\\Effects\\Effect',
+				'Framework\\Kapafaa\\Conditions\\Condition'];
+			if (parents.indexOf(arg.item.parent) < 0) {
+				arg.cancelDrop = true;
+			}
+		};
 	};
 
 	var definitions = _.map(kapafaaDefinitions, function(item) {

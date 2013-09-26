@@ -99,4 +99,11 @@ class Translator extends Nette\Object implements Nette\Localization\ITranslator
 			return '';
 		}
 	}
+	
+	
+	public function refreshTranslations()
+	{
+		$cache = new Nette\Caching\Cache($this->storage, str_replace('\\', '.', get_class($this)));
+		$cache->remove('translations');
+	}
 }
