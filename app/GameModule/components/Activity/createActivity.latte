@@ -6,51 +6,6 @@
 		{if $iterator->isEven()}</div>{/if}
 	{/foreach}
 	{if count($form->getGroups()) % 2}</div>{/if}
-	<div id="activity-connections">
-		<div class="row-fluid">
-			<div class="activity-gamerooms">
-				<div class="span4 well">
-					{input gameroomList}
-					<h5>{_'Gameroomy'}</h5>
-					<div class="gamerooms" data-bind="sortable: { data: activity_gamerooms, beforeMove: $root.beforeMove }">
-						<a class="btn" data-bind="click: switchReady, attr: { class: getClass() }">
-							<i data-bind="visible: ready, attr: { class: activity_gameroom_ready() ? 'icon-ok' : 'icon-remove'}"></i>
-							<span data-bind="text: name"></span>
-						</a>
-					</div>
-				</div>
-				<div class="span8 well">
-					<input type="text" data-bind="value: searchGamerooms, valueUpdate: 'afterkeydown'" placeholder="{_'Hledej...'}" />
-					<div class="gamerooms" data-bind="sortable: { data: gamerooms, beforeMove: $root.beforeMove }">
-						<a class="btn" data-bind="visible: visible, attr: { class: ready ? 'btn' : 'btn disabled' }">
-							<span data-bind="text: name"></span>
-						</a>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="row-fluid">
-			<div class="parent-activities">
-				<div class="span4 well">
-					{input parentList}
-					<h5>{_'Rodičovské aktivity'}</h5>
-					<div class="activities" data-bind="sortable: { data: parent_activities, beforeMove: $root.beforeMove }">
-						<a class="btn" data-bind="attr: { class: ready ? 'btn' : 'btn disabled' }">
-							<span data-bind="text: name"></span>
-						</a>
-					</div>
-				</div>
-				<div class="span8 well">
-					<input type="text" data-bind="value: searchActivities, valueUpdate: 'afterkeydown'" placeholder="{_'Hledej...'}" />
-					<div class="activities" data-bind="sortable: { data: activities, beforeMove: $root.beforeMove }">
-						<a class="btn" data-bind="visible: visible, attr: { class: ready ? 'btn' : 'btn disabled' }">
-							<span data-bind="text: name"></span>
-						</a>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
 	
 	<style type="text/css">
 		.object-wrapper {
@@ -60,24 +15,105 @@
 	</style>
 
 	<div id="activity-creation">
-		<textarea name="observer_scripts" readonly="readonly" rows="15" data-bind="value: toKapafaa"></textarea><br /><br />
-		{*<pre class="well" data-bind="text: toKapafaa"></pre>*}
-		<div class="btn" style="position: relative;">
-			<i class="icon-trash"></i>
-			<div style="position: absolute; top: 0px; left: 0px; width: 38px; height: 28px;" data-bind="sortable: { data: trash }"></div>
+		<div class="row-fluid">
+			<div class="span6">
+				<fieldset>
+					<legend>{_'Observer'}</legend>
+					<div id="activity-observer">
+						<textarea name="observer_scripts" readonly="readonly" rows="15" data-bind="value: toKapafaa"></textarea><br /><br />
+						<div class="btn" style="position: relative;">
+							<i class="icon-trash"></i>
+							<div style="position: absolute; top: 0px; left: 0px; width: 38px; height: 28px;" data-bind="sortable: { data: trash }"></div>
+						</div>
+						<div class="btn" data-bind="click: addScript"><i class="icon-plus"></i> {_'Přidat skript'}</div>
+						<div class="btn" data-bind="click: removeScript"><i class="icon-remove"></i> {_'Odebrat skript'}</div>
+						<!-- ko foreach: scripts -->
+						<div class="well" style="margin-top: 2px; margin-bottom: 2px;" data-bind="click: $root.resetFilters, sortable: { template: 'objectTemplate', data: kapafaa, dragged: $root.dropped, beforeMove: $root.beforeMoveRoot }"></div>
+						<!-- /ko -->
+					</div>
+				</fieldset>
+			</div>
+
+			<div class="span6">
+				<fieldset>
+					<legend>{_'Filter (hratelnost)'}</legend>
+					<div id="activity-filter-playable">
+						<textarea name="filter_scripts" readonly="readonly" rows="15" data-bind="value: filterToKapafaa"></textarea><br /><br />
+						<div class="btn" style="position: relative;">
+							<i class="icon-trash"></i>
+							<div style="position: absolute; top: 0px; left: 0px; width: 38px; height: 28px;" data-bind="sortable: { data: trash }"></div>
+						</div>
+						<div class="btn" data-bind="click: addFilterScript"><i class="icon-plus"></i> {_'Přidat skript'}</div>
+						<div class="btn" data-bind="click: removeFilterScript"><i class="icon-remove"></i> {_'Odebrat skript'}</div>
+						<!-- ko foreach: filterScripts -->
+						<div class="well" style="margin-top: 2px; margin-bottom: 2px;" data-bind="click: $root.resetFilters, sortable: { template: 'objectTemplate', data: kapafaa, dragged: $root.dropped, beforeMove: $root.beforeMoveRoot }"></div>
+						<!-- /ko -->
+					</div>
+				</fieldset>
+			</div>
 		</div>
-		<div class="btn" data-bind="click: addScript"><i class="icon-plus"></i> {_'Přidat skript'}</div>
-		<div class="btn" data-bind="click: removeScript"><i class="icon-remove"></i> {_'Odebrat skript'}</div>
-		<!-- ko foreach: scripts -->
-		<div class="well" style="margin-top: 2px; margin-bottom: 2px;" data-bind="click: $root.resetFilters, sortable: { template: 'objectTemplate', data: kapafaa, dragged: $root.dropped, beforeMove: $root.beforeMoveRoot }"></div>
-		<!-- /ko -->
-		<input type="text" data-bind="value: searchDefinitions, valueUpdate: 'afterkeydown'" placeholder="{_'Hledej...'}" />
-		<div data-bind="foreach: definitions">
-			<a data-bind="draggable: $data, visible: visible, attr: { class: getClass() }">
-				<span data-bind="text: name"></span>
-			</a>
+		<div class="row-fluid">
+			<div class="span12" style="height: 300px;">
+				<input type="text" data-bind="value: searchDefinitions, valueUpdate: 'afterkeydown'" placeholder="{_'Hledej...'}" />
+				<div data-bind="foreach: definitions">
+					<a data-bind="draggable: $data, visible: visible, attr: { class: getClass() }">
+						<span data-bind="text: name"></span>
+					</a>
+				</div>
+			</div>
 		</div>
 	</div>
+	
+	<div id="activity-connections">
+		<div class="row-fluid">
+			<fieldset>
+				<legend>{_'Rodičovské aktivity'}</legend>
+				<div class="parent-activities">
+					<div class="span4 well">
+						{input parentList}
+						<div class="activities" data-bind="sortable: { data: parent_activities, beforeMove: $root.beforeMove }">
+							<a class="btn" data-bind="attr: { class: ready ? 'btn' : 'btn disabled' }">
+								<span data-bind="text: name"></span>
+							</a>
+						</div>
+					</div>
+					<div class="span8 well">
+						<input type="text" data-bind="value: searchActivities, valueUpdate: 'afterkeydown'" placeholder="{_'Hledej...'}" />
+						<div class="activities" data-bind="sortable: { data: activities, beforeMove: $root.beforeMove }">
+							<a class="btn" data-bind="visible: visible, attr: { class: ready ? 'btn' : 'btn disabled' }">
+								<span data-bind="text: name"></span>
+							</a>
+						</div>
+					</div>
+				</div>
+			</fieldset>
+		</div>
+		<div class="row-fluid">
+			<fieldset>
+				<legend>{_'Gameroomy'}</legend>
+				<div class="activity-gamerooms">
+					<div class="span4 well">
+						{input gameroomList}
+						<div class="gamerooms" data-bind="sortable: { data: activity_gamerooms, beforeMove: $root.beforeMove }">
+							<a class="btn" data-bind="click: switchReady, attr: { class: getClass() }">
+								<i data-bind="visible: ready, attr: { class: activity_gameroom_ready() ? 'icon-ok' : 'icon-remove'}"></i>
+								<span data-bind="text: name"></span>
+							</a>
+						</div>
+					</div>
+					<div class="span8 well">
+						<input type="text" data-bind="value: searchGamerooms, valueUpdate: 'afterkeydown'" placeholder="{_'Hledej...'}" />
+						<div class="gamerooms" data-bind="sortable: { data: gamerooms, beforeMove: $root.beforeMove }">
+							<a class="btn" data-bind="visible: visible, attr: { class: ready ? 'btn' : 'btn disabled' }">
+								<span data-bind="text: name"></span>
+							</a>
+						</div>
+					</div>
+				</div>
+			</fieldset>
+		</div>
+	</div>
+	
 	{$form->render('body')}
 {/form}
 
@@ -87,7 +123,7 @@
 		<div data-bind="foreach: params">
 			<div data-bind="attr: { class: type + ' parameter-wrapper' }">
 				<!-- ko if: type === ':negation' -->
-				<input type="checkbox" data-bind="checked: value" />&nbsp;!
+				<input type="checkbox" data-bind="checked: value" />&nbsp;!negace
 				<!-- /ko -->
 				<!-- ko if: type.indexOf('\\') > -1 -->
 				<div class="well object-wrapper" data-bind="click: $root.setFilters, sortable: { template: 'objectTemplate', data: value, dragged: $root.dropped, beforeMove: $root.beforeMove }"></div>

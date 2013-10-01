@@ -212,19 +212,33 @@
 		this.definitions = ko.observableArray(definitions);
 		
 		this.scripts = ko.observableArray([new KapafaaScript()]);
+		this.filterScripts = ko.observableArray([new KapafaaScript()]);
 		
 		this.addScript = function() {
 			self.scripts.push(new KapafaaScript());
 		};
-		
 		this.removeScript = function() {
 			if (self.scripts().length > 1) {
 				self.scripts.pop();
 			}
 		};
 		
+		this.addFilterScript = function() {
+			self.filterScripts.push(new KapafaaScript());
+		};
+		this.removeFilterScript = function() {
+			if (self.filterScripts().length > 1) {
+				self.filterScripts.pop();
+			}
+		};
+		
 		this.toKapafaa = ko.computed(function() {
 			return _.map(this.scripts(), function(item) {
+				return item.toKapafaa();
+			}).join("\n\n");
+		}, this);
+		this.filterToKapafaa = ko.computed(function() {
+			return _.map(this.filterScripts(), function(item) {
 				return item.toKapafaa();
 			}).join("\n\n");
 		}, this);

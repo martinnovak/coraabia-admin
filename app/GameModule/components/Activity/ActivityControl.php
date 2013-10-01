@@ -338,4 +338,27 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 			));
 		}
 	}
+	
+	
+	/**
+	 * @param string $activityId
+	 * @param array $new
+	 * @param array $original
+	 */
+	protected function updateParentActivities($activityId, array $new, array $original)
+	{
+		$toRemove = array_diff($original, $new);
+		$toAdd = array_diff($new, $original);
+		
+		//remove old
+		//@todo
+		
+		//add new
+		//@todo
+		//přidat do skriptů nastavujících finished proměnnou daných aktivit v observrech daných aktivit řádek nastavující mojí playable proměnnou na 1
+		//
+		//SELECT observer.* FROM observer LEFT JOIN activity_observer WHERE activity_observer.activity_id IN ($toAdd)
+		//naparsovat jejich skripty, najít v nich finished proměnné = 1, přidat playable proměnnou, uložit
+		//eff.world.gen.local(@xxx_PL@ = 1)
+	}
 }
