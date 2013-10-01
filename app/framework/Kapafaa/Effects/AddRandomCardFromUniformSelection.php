@@ -2,6 +2,8 @@
 
 namespace Framework\Kapafaa\Effects;
 
+use Framework\Kapafaa\Editions\Edition;
+
 
 /**
  * @kapafaa eff.world.addRandomCardFromUniformSelection #%edition%#
@@ -9,14 +11,14 @@ namespace Framework\Kapafaa\Effects;
  */
 class AddRandomCardFromUniformSelection extends Effect
 {
-	/** @var string */
+	/** @var \Framework\Kapafaa\Editions\Edition */
 	public $edition;
 	
 	
 	/**
-	 * @param string $edition
+	 * @param \Framework\Kapafaa\Editions\Edition $edition
 	 */
-	public function __construct($edition)
+	public function __construct(Edition $edition)
 	{
 		$this->edition = $edition;
 	}

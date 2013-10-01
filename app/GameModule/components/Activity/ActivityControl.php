@@ -130,28 +130,7 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 				}, $self->game->getActivities()->fetchAll()))
 			);
 			
-			//@todo cache
-			$kapafaaDefinitions = array();
-			foreach ($self->kapafaaParser->loadClassData()->classes as $class => $data) {
-				$def = array(
-					'name' => $self->translator->translate($data['description']),
-					'type' => $class,
-					'kapafaa' => $data['kapafaa'],
-					'parent' => $data['parent']
-				);
-				preg_match_all('/%([a-z]+)%/i', $data['kapafaa'], $matches);
-				$params = array();
-				for ($i = 0; $i < count($matches[1]); $i++) {
-					$params[] = array(
-						'name' => $matches[1][$i],
-						'type' => $data['params'][$i],
-						'value' => NULL
-					);
-				}
-				$def['params'] = $params;
-				$kapafaaDefinitions[] = $def;
-			}
-			$tmpl->kapafaaDefinitions = $kapafaaDefinitions;
+			$tmpl->kapafaaDefinitions = $self->kapafaaParser->loadClassData()->classes;
 			
 			$hook->addTemplate($tmpl);
 		});
@@ -321,7 +300,9 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 				));
 			}
 		}
-		$this->translator->refreshTranslations();
+		if ($this->translator instanceof \Framework\Localization\ICachingTranslator) {
+			$this->translator->clean();
+		}
 	}
 	
 	

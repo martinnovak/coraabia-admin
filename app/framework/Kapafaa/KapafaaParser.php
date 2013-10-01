@@ -16,6 +16,9 @@ class KapafaaParser extends Nette\Object
 	/** @var \Nette\Caching\IStorage */
 	private $storage;
 	
+	/** @var \Nette\Localization\ITranslator */
+	private $translator;
+	
 	/** @var array */
 	private $classes;
 	
@@ -26,20 +29,24 @@ class KapafaaParser extends Nette\Object
 	/**
 	 * @param \Nette\DI\Container $container
 	 * @param \Nette\Caching\IStorage $storage
+	 * @param \Nette\Localization\ITranslator $translator
 	 */
-	public function __construct(Nette\DI\Container $container, Nette\Caching\IStorage $storage)
+	public function __construct(Nette\DI\Container $container, Nette\Caching\IStorage $storage, Nette\Localization\ITranslator $translator)
 	{
 		$this->container = $container;
 		$this->storage = $storage;
+		$this->translator = $translator;
 	}
 	
 	
 	/**
+	 * @todo Get rid of container and inject RobotLoader directly somehow.
 	 * @param boolean $rebuild
 	 * @return \Framework\Kapafaa\KapafaaParser
 	 */
 	public function loadClassData($rebuild = FALSE)
 	{
+		\Framework\Diagnostics\TimerPanel::timer(__METHOD__);
 		$cache = new Nette\Caching\Cache($this->storage, str_replace('\\', '.', get_class()));
 		$indexed = $this->container->getService('robotLoader')->getIndexedClasses();
 		if ($rebuild) {
@@ -53,6 +60,7 @@ class KapafaaParser extends Nette\Object
 				}, $this->classes)
 			));
 		}
+		\Framework\Diagnostics\TimerPanel::timer(__METHOD__);
 		return $this;
 	}
 	
@@ -63,6 +71,7 @@ class KapafaaParser extends Nette\Object
 	 */
 	protected function build(array $indexed)
 	{
+		\Framework\Diagnostics\TimerPanel::timer(__METHOD__);
 		$classes = array();
 		foreach ($indexed as $name => $file) {
 			$rc = Nette\Reflection\ClassType::from($name);
@@ -72,18 +81,31 @@ class KapafaaParser extends Nette\Object
 			
 			$kapafaa = $rc->getAnnotation('kapafaa');
 			$description = $rc->getAnnotation('description');
-			$parsed = $this->getRegular($rc, $kapafaa);
+			list($regular, $paramTypes) = $this->parseRegular($rc, $kapafaa);
 			$parent = $rc->getParentClass();
 			
-			$classes[$name] = array(
-				'description' => $description ?: str_replace('#', '@', $kapafaa),
+			$def = array(
+				'name' => $this->translator->translate($description ?: str_replace('#', '@', $kapafaa)),
+				'type' => ltrim($name, '\\'),
 				'kapafaa' => str_replace('#', '@', $kapafaa),
-				'regular' => $parsed[1],
-				'params' => $parsed[0],
-				'parent' => $parent ? $parent->getName() : '',
+				'regular' => $regular,
+				'parent' => ltrim($parent ? $parent->getName() : '', '\\'),
 				'file' => $file
 			);
+			
+			preg_match_all('/%([a-z]+)%/i', $def['kapafaa'], $matches);
+			$params = array();
+			for ($i = 0; $i < count($matches[1]); $i++) {
+				$params[] = array(
+					'name' => $matches[1][$i],
+					'type' => ltrim($paramTypes[$i], '\\'),
+					'value' => NULL
+				);
+			}
+			$def['params'] = $params;
+			$classes[] = $def;
 		}
+		\Framework\Diagnostics\TimerPanel::timer(__METHOD__);
 		return $classes;
 	}
 	
@@ -94,7 +116,7 @@ class KapafaaParser extends Nette\Object
 	 * @return array
 	 * @throws \Framework\Kapafaa\KapafaaException
 	 */
-	protected function getRegular(Nette\Reflection\ClassType $rc, $kapafaa)
+	protected function parseRegular(Nette\Reflection\ClassType $rc, $kapafaa)
 	{
 		$params = array();
 		$regular = preg_replace_callback('/%([a-z]+)%/i', function ($item) use ($rc, &$params) {
@@ -117,11 +139,14 @@ class KapafaaParser extends Nette\Object
 				case 'string':
 					return '(\w+)';
 					break;
+				case ':negation':
+					return '(\!?)';
+					break;
 				default:
 					return $type::$regular;
 			}
 		}, preg_quote($kapafaa, '/'));
-		return array($params, '^' . str_replace('#', '@', $regular) . '$');
+		return array('^' . str_replace('#', '@', $regular) . '$', $params);
 	}
 
 	
@@ -176,24 +201,27 @@ class KapafaaParser extends Nette\Object
 	 */
 	protected function createClass($class, array $params)
 	{
-		if (strpos($class, '\\') === 0) {
-			$class = substr($class, 1);
-		}
 		$data = $this->classes[$class];
+		if (strpos($data['type'], '\\') === 0) {
+			$data['type'] = substr($data['type'], 1);
+		}
 		$args = array();
 		while (count($data['params'])) {
 			$type = array_shift($data['params']);
-			switch ($type) {
+			switch ($type['type']) {
 				case 'int':
 				case 'float':
 				case 'string':
 					$args[] = array_shift($params);
 					break;
+				case ':negation':
+					$args[] = array_shift($params) ? new TruthValues\Negative() : new TruthValues\Positive();
+					break;
 				default: //class
-					$args[] = $this->parseLine(array_shift($params), $this->getImplementors($type));
+					$args[] = $this->parseLine(array_shift($params), $this->getImplementors($type['type']));
 			}
 		}
-		return Nette\Reflection\ClassType::from($class)->newInstanceArgs($args);
+		return Nette\Reflection\ClassType::from($data['type'])->newInstanceArgs($args);
 	}
 	
 	

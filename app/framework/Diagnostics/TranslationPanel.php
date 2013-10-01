@@ -24,10 +24,8 @@ class TranslationPanel extends Panel
 	 */
 	public function getPanel()
 	{
-		$template = new Nette\Templating\FileTemplate(__DIR__ . '/templates/translationPanel.latte');
-		$template->registerFilter($this->latte);
-		$template->registerHelperLoader('Nette\Templating\Helpers::loader');
-		$template->setTranslator($this->translator);
+		$template = $this->createTemplate()
+				->setFile(__DIR__ . '/templates/translationPanel.latte');
 		$template->translations = $this->translator->translations;
 		return $template;
 		

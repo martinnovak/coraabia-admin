@@ -60,12 +60,17 @@
 	</style>
 
 	<div id="activity-creation">
-		<pre class="well" data-bind="text: toKapafaa"></pre>
+		<textarea name="observer_scripts" readonly="readonly" rows="15" data-bind="value: toKapafaa"></textarea><br /><br />
+		{*<pre class="well" data-bind="text: toKapafaa"></pre>*}
 		<div class="btn" style="position: relative;">
 			<i class="icon-trash"></i>
 			<div style="position: absolute; top: 0px; left: 0px; width: 38px; height: 28px;" data-bind="sortable: { data: trash }"></div>
 		</div>
-		<div class="well" data-bind="click: resetFilters, sortable: { template: 'objectTemplate', data: kapafaa, dragged: dropped, beforeMove: beforeMoveRoot }"></div>
+		<div class="btn" data-bind="click: addScript"><i class="icon-plus"></i> {_'Přidat skript'}</div>
+		<div class="btn" data-bind="click: removeScript"><i class="icon-remove"></i> {_'Odebrat skript'}</div>
+		<!-- ko foreach: scripts -->
+		<div class="well" style="margin-top: 2px; margin-bottom: 2px;" data-bind="click: $root.resetFilters, sortable: { template: 'objectTemplate', data: kapafaa, dragged: $root.dropped, beforeMove: $root.beforeMoveRoot }"></div>
+		<!-- /ko -->
 		<input type="text" data-bind="value: searchDefinitions, valueUpdate: 'afterkeydown'" placeholder="{_'Hledej...'}" />
 		<div data-bind="foreach: definitions">
 			<a data-bind="draggable: $data, visible: visible, attr: { class: getClass() }">
@@ -81,10 +86,13 @@
 		<span data-bind="text: name"></span>
 		<div data-bind="foreach: params">
 			<div data-bind="attr: { class: type + ' parameter-wrapper' }">
+				<!-- ko if: type === ':negation' -->
+				<input type="checkbox" data-bind="checked: value" />&nbsp;!
+				<!-- /ko -->
 				<!-- ko if: type.indexOf('\\') > -1 -->
 				<div class="well object-wrapper" data-bind="click: $root.setFilters, sortable: { template: 'objectTemplate', data: value, dragged: $root.dropped, beforeMove: $root.beforeMove }"></div>
 				<!-- /ko -->
-				<!-- ko ifnot: type.indexOf('\\') > -1 -->
+				<!-- ko if: type.indexOf('\\') < 0 && type !== ':negation' -->
 				<input type="text" data-bind="value: value, valueUpdate: 'afterkeydown'">
 				<!-- /ko -->
 			</div>

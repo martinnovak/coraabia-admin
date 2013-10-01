@@ -2,10 +2,10 @@
 
 namespace Framework\Kapafaa\Conditions;
 
-use Nette;
+use Framework\Kapafaa\Object;
 
 
-abstract class Condition extends Nette\Object
+abstract class Condition extends Object
 {
 	
 }

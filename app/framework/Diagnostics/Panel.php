@@ -27,4 +27,19 @@ abstract class Panel extends Nette\Object implements Nette\Diagnostics\IBarPanel
 		$this->latte = $latte;
 		$this->translator = $translator;
 	}
+	
+	
+	/**
+	 * @param  string|NULL
+	 * @return \Nette\Templating\ITemplate
+	 */
+	protected function createTemplate($class = NULL)
+	{
+		$template = $class ? new $class : new Nette\Templating\FileTemplate;
+		$template->registerFilter($this->latte);
+		$template->registerHelperLoader('Nette\Templating\Helpers::loader');
+		$template->setTranslator($this->translator);
+
+		return $template;
+	}
 }

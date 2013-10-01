@@ -2,7 +2,8 @@
 
 namespace Model;
 
-use Nette;
+use Nette,
+	Framework;
 
 
 /**
@@ -10,7 +11,7 @@ use Nette;
  * @method \Nette\Caching\IStorage getStorage()
  * @method array getTranslations()
  */
-class Translator extends Nette\Object implements Nette\Localization\ITranslator
+class Translator extends Nette\Object implements Framework\Localization\ICachingTranslator
 {
 	/** @var \Model\Game */
 	private $game;
@@ -101,7 +102,7 @@ class Translator extends Nette\Object implements Nette\Localization\ITranslator
 	}
 	
 	
-	public function refreshTranslations()
+	public function clean()
 	{
 		$cache = new Nette\Caching\Cache($this->storage, str_replace('\\', '.', get_class($this)));
 		$cache->remove('translations');

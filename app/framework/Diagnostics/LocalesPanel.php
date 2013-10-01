@@ -8,7 +8,7 @@ use Nette,
 
 class LocalesPanel extends Panel
 {
-	const ICO = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAC60lEQVR42qWTe0hTURzHv3fe+UJFTUyagaaCQiY+CnzVrkGISn+kzq1U1LayBxSUSgVlwag0CqHA3FIsSZvOwrCMqOurhPJFC7LU1HChqKRWm7o717lTbFL91YEfl8M553M+53vuofCfjbLtFBcXC8bHx9MpipKRbhSpjaQmSXVbLJZaX1/fejJn+a8AuVzuTz6awMCgKDHDICAwCC6ubpibm8fQ0CDaWlmMDA92kzkStVo9sg6Qn5/vZ7HgrSQjw0ssFq/RY2Oi0dbZBbMFMJN929pa0dRQOy0QCLaXl5ePWgG8tl6vfyORyiIZMQMBQWbcY/Agi0UMAbQTgKyGQbWMhYmHEJPmxtoekUi0gz8OpVAoUv23BDScKiiyLuaL17KsGrTbGPCARQ4oL7sK/dhwmkql0vKA5lz54aSIiEhk3mdQm8muBRMXu/4I2WT8VhqLnu5uNN2veEIAyTxAf0FZssnD3R12/O42BrviosF2rAA43sAMLBCDyelZ3L5S+JUARFReXp6p9KaaVmgScHc/C8FqtAnx0X/c+cPnXTikYXA5hcX1Mwe5yspKIZWTkzN5TnnD29PDxoCU/vMAcnNzUVVVtQZw8gmGkRjMfJuFSnlyqrq62puSSqX9WUcKwsLCI3BMy0At+Z3B1JcBeG4OtuovEf3jZFyZzGLgfS8e3Sl9V1dXF0alpqaWBIRsKzhw9CxcHGnQgpUMeIvl1fC41RvgIT9JCI0VSox90pVqtdpC/j+g+/r6ZlKyT7iFRsUSiD2KHjMo3ctag+QBfP9SEosfhiV87H+FpzVl8+Hh4RvIWs5qm56eHrewuMgm7FPQwZHxcHZyhL29EBef7cb5PS+wsGSCwbiAwd4OvGxUcY4ODkx9fX3nurcgkUh2GgyGFncvH6etMYnw8QuBk6s7jN9nMTH6AbrXLZibnjA6OzsnajSa9n+9Rlqn010zmUxSjuO8zGazHWlmmqanhUJhXWho6Gle23bNL7k2RSBGzG3UAAAAAElFTkSuQmCC';
+	const ICO = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAnhJREFUeNp0U21Ik1EUft7cbAQprajMfgQauWaYOoclVCYJDZTMaEGomWFs9EWSEn2IIIgGff0wkCIyggJJ6Id9mKwiJeZHGtOpc5TYDCGXs7LpspP3jPdFdD5wuOec5znn3nPv+0pEhFCorq2nQCDAvlqtRpk1XwqlU80PKm/d426XzxZJfr8f5eeLOV9xvW4RL9dI8gkqb9ZRmjEZ2+O3ovp2sMByIo/XO3cf8lp2phjdjj70u9ywFBwONhENDuSdJFtbJ3l9U/Trj59NYHb2L5uAnBcaoc09ZhHp4AhhYcuQoNehsbkVxvhYbFwXiZGJn/gx6edNVkVosFIThq9jPtgdQ8jZl4ZFIxwqtNK18lL2hzyTaLG14HlTE8f7TSZkpGcgNjqC4wsVNWi4X8sjqC5W3qCZmQCioqLxe2oao+M+OAe/oKujHT1tzVyQbS5knv5twobVkeyXXK2h8HA1cO5SFcl48dpGrZ19lJtvoYUQOcEJjQxRq1LNzd8/PMY7TUz4sHmLDkth/VotRj4PKnpRKyWkZdL03JvHxsTgyMFsaNdo4f3uRWPTKzQ8qA3eT4EVOaZMhXv89BmG3G4s12ig6n7/ki8jy3yctiUmwW5vR/quVKVQQBSn7kiB7d0HGI0p3MDZ8VZSXkGXsoeePKqHNmIFvJNT+NjViZ1GA3ocvdwgIV6PNnsHEpOSFY35aD6c7W8k5VPud/YiTqfHiOcbCweHR5FkMDLnHHBxTnBAFGsViBMIizPsppIrVdQzMEx7s8xUdKqU3J5xNuGLnOCERmjlOqWB3EQmi0+X0SeXh034C3nZpKV+Z3Ev82MxbyjdfwEGACMrj5F1Og1oAAAAAElFTkSuQmCC';
 	
 	/** @var \Model\Locales */
 	protected $locales;
@@ -40,10 +40,8 @@ class LocalesPanel extends Panel
 	 */
 	public function getPanel()
 	{
-		$template = new Nette\Templating\FileTemplate(__DIR__ . '/templates/localesPanel.latte');
-		$template->registerFilter($this->latte);
-		$template->registerHelperLoader('Nette\Templating\Helpers::loader');
-		$template->setTranslator($this->translator);
+		$template = $this->createTemplate()
+				->setFile(__DIR__ . '/templates/localesPanel.latte');
 		$template->locales = $this->locales;
 		return $template;
 	}

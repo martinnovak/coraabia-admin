@@ -1,9 +1,21 @@
 <h1>{_'Časy'}</h1>
 <div class="nette-inner">
-	<table n:inner-foreach="$times as $name => $value">
+	<table>
 		<tr>
-			<th>{$name}</th>
-			<td>{$value} s</td>
+			<th>{_'Jméno'}</th>
+			<th>{_'Začátek'}</th>
+			<th>{_'Trvání'}</th>
+			<th>{_'Paměť'}</th>
 		</tr>
+		{foreach $timers as $name => $timer}
+			{foreach $timer as $data}
+				<tr>
+					{first}<td rowspan="{count($timer)}" style="background-color: #fff;">{$name}{/first}
+					<td>{1000 * round($data['time'][0] - $min, 5)} ms <span style="font-size: 0.8em;">({round(100 * ($data['time'][0] - $min)/($max - $min), 1)}%)</span></td>
+					<td>{1000 * round($data['time'][1] - $data['time'][0], 5)} ms <span style="font-size: 0.8em;">({round(100 * ($data['time'][1] - $data['time'][0])/($max - $min), 1)}%)</span></td>
+					<td>{ceil(($data['memory'][1] - $data['memory'][0]) / 1024)} kB</td>
+				</tr>
+			{/foreach}
+		{/foreach}
 	</table>
 </div>

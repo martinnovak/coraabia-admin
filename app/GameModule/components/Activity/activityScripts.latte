@@ -183,7 +183,10 @@
 			var result = this.kapafaa;
 			_.each(this.params(), function(item) {
 				var re = new RegExp("%" + item.name + "%", "i");
-				if (item.type.indexOf('\\') > -1) {
+				if (item.type === ':negation') {
+					result = result.replace(re, item.value() ? '!' : '');
+				}
+				else if (item.type.indexOf('\\') > -1) {
 					result = result.replace(re, item.value().length && item.value()[0] !== undefined ? item.value()[0].toKapafaa() : '');
 				} else {
 					result = result.replace(re, item.value() ? item.value() : '');
@@ -193,20 +196,44 @@
 		}, this);
 	};
 	
+	var KapafaaScript = function() {
+		this.kapafaa = ko.observableArray([]);
+		
+		this.toKapafaa = ko.computed(function() {
+			return "(\n" + _.map(this.kapafaa(), function(item) {
+				return item.toKapafaa() + "\n";
+			}).join() + ")";
+		}, this);
+	};
+	
 	var kModel = function(definitions) {
 		var self = this;
 		
 		this.definitions = ko.observableArray(definitions);
 		
-		this.kapafaa = ko.observableArray([]);
+		this.scripts = ko.observableArray([new KapafaaScript()]);
+		
+		this.addScript = function() {
+			self.scripts.push(new KapafaaScript());
+		};
+		
+		this.removeScript = function() {
+			if (self.scripts().length > 1) {
+				self.scripts.pop();
+			}
+		};
 		
 		this.toKapafaa = ko.computed(function() {
-			var result = "(\n";
-			_.each(this.kapafaa(), function(item) {
-				result += item.toKapafaa() + "\n";
+			return _.map(this.scripts(), function(item) {
+				return item.toKapafaa();
+			}).join("\n\n");
+		}, this);
+		
+		this.searchDefinitions = ko.observable('');
+		this._searchDefinitions = ko.computed(function() {
+			_.each(this.definitions(), function(item) {
+				item.searched(item.name.toLowerCase().indexOf(self.searchDefinitions().toLowerCase()) > -1);
 			});
-			result += ")";
-			return result;
 		}, this);
 		
 		this.filterObjects = ko.observable('');
@@ -223,19 +250,14 @@
 		}, this);
 		
 		this.resetFilters = function() {
+			self.searchDefinitions('');
 			self.filterObjects('');
 		};
 		
 		this.setFilters = function(item, event) {
+			self.searchDefinitions('');
 			self.filterObjects(item.type);
 		};
-		
-		this.searchDefinitions = ko.observable('');
-		this._searchDefinitions = ko.computed(function() {
-			_.each(this.definitions(), function(item) {
-				item.searched(item.name.toLowerCase().indexOf(self.searchDefinitions().toLowerCase()) > -1);
-			});
-		}, this);
 		
 		this.dropped = function(item, event, ui) {
 			return new KapafaaObject(item);
