@@ -954,4 +954,15 @@ class Game extends Model
 		return $this->getSource()->getSelectionFactory()->table('filter')
 				->insert($values);
 	}
+	
+	
+	/**
+	 * @param array $values
+	 * @return \Nette\Database\Table\Selection
+	 */
+	public function createObserver(array $values)
+	{
+		return $this->getSource()->getSelectionFactory()->table('observer')
+				->insert($values);
+	}
 }

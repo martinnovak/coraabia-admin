@@ -135,6 +135,8 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 			$hook->addTemplate($tmpl);
 		});
 		
+		$this->updateParentActivities('LALALA', array('TEST_I'), array());
+		
 		$template->render();
 	}
 	
@@ -297,12 +299,31 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 		try {
 			$this->game->getSource()->beginTransaction();
 			
+			//activity, texts, gamerooms
 			$row = $this->game->createActivity((array)$values);
 			$this->createActivityTexts($values->activity_id, (array)$values);
 			$this->updateActivityGamerooms($values->activity_id, explode('--', $values->gameroomList), array());
+			
+			//filter
 			$values->local_var = $this->createPlayableVar($values)->variable_id;
 			$this->kapafaaParser->parse($values->filter_scripts); //sanity check
 			$this->createAndConnectFilter($values);
+			
+			//observer
+			$observerScripts = $this->kapafaaParser->parse($values->observer_scripts); //sanity check
+			$finished = FALSE;
+			foreach ($observerScripts as $script) {
+				if ($this->kapafaaParser->find($script, $this->getFinishedKapafaaObject($values->activity_id))) {
+					$finished = TRUE;
+				}
+			}
+			if (!$finished) {
+				throw new Framework\Kapafaa\KapafaaException("Observer nenastavuje splňující proměnnou {$values->activity_id}_FI.");
+			}
+			$this->createAndConnectObserver($values);
+			
+			//parent activities
+			//@todo
 			
 			$this->game->getSource()->commit();
 		} catch (\Exception $e) {
@@ -418,6 +439,24 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 	}
 
 
+	/**
+	 * @param \Nette\ArrayHash|array $values
+	 */
+	protected function createAndConnectObserver($values)
+	{
+		$observer = $this->game->createObserver(array(
+			'description' => $values->activity_id,
+			'effect_data' => $values->observer_scripts,
+			'effect_desc' => ''
+		));
+		
+		$this->game->getSource()->query("INSERT INTO activity_observer", array(
+			'activity_id' => $values->activity_id,
+			'observer_id' => $observer->observer_id,
+			'ready' => FALSE
+		));
+	}
+	
 	
 	/**
 	 * @param string $activityId
@@ -437,7 +476,41 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 		//přidat do skriptů nastavujících finished proměnnou daných aktivit v observrech daných aktivit řádek nastavující mojí playable proměnnou na 1
 		//
 		//SELECT observer.* FROM observer LEFT JOIN activity_observer WHERE activity_observer.activity_id IN ($toAdd)
-		//naparsovat jejich skripty, najít v nich finished proměnné = 1, přidat playable proměnnou, uložit
+		//naparsovat jejich skripty, najít v nich finished proměnné = 1, přidat playable proměnnou = 1, uložit
 		//eff.world.gen.local(@xxx_PL@ = 1)
+		
+		$obj = new Framework\Kapafaa\Effects\GenericLocal(
+				substr($activityId . '_PL', -20)
+				, new Framework\Kapafaa\Modifications\Number(
+						new Framework\Kapafaa\Operators\Equals(),
+						1)
+				);
+		
+		foreach ($this->game->getObservers()
+				->select('observer.*, :activity_observer.activity_id')
+				->where(':activity_observer.activity_id', $toAdd)
+				->fetchAll() as $observer) {
+			foreach ($this->kapafaaParser->parse($observer->effect_data) as $script) {
+				if ($this->kapafaaParser->find($script, $this->getFinishedKapafaaObject(substr($observer->activity_id, -20)))) {
+					$script->addObject($obj);
+					//@todo ulozit, no break
+				}
+			}
+		}
+	}
+	
+	
+	/**
+	 * @param string $activityId
+	 */
+	protected function getFinishedKapafaaObject($activityId)
+	{
+		//eff.world.gen.local(@VARIABLE@ = 1)
+		return new Framework\Kapafaa\Effects\GenericLocal(
+				substr($activityId . '_FI', -20),
+				new Framework\Kapafaa\Modifications\Number(
+						new Framework\Kapafaa\Operators\Equals(),
+						1)
+				);
 	}
 }

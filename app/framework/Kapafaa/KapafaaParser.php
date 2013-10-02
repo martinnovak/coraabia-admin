@@ -184,15 +184,14 @@ class KapafaaParser extends Nette\Object
 	 */
 	protected function parseLine($line, array $classes)
 	{
-		$result = NULL;
 		foreach ($classes as $class => $data) {
 			if (preg_match('/' . $data['regular'] . '/', $line, $matches)) {
 				array_shift($matches);
-				$result = $this->createClass($class, $matches);
+				return $this->createClass($class, $matches);
 				break;
 			}
 		}
-		return $result;
+		throw new KapafaaException("Řádek '$line' se nepodařilo naparsovat.");
 	}
 	
 	
@@ -244,5 +243,16 @@ class KapafaaParser extends Nette\Object
 			}
 		}
 		return $this->implementors[$class];
+	}
+	
+	
+	/**
+	 * @param \Framework\Kapafaa\Script $script
+	 * @param \Framework\Kapafaa\Object $kapafaa
+	 * @return boolean
+	 */
+	public function find(Script $script, Object $kapafaa)
+	{
+		return strpos((string)$script, (string)$kapafaa) !== FALSE;
 	}
 }
