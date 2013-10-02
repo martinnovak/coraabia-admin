@@ -65,9 +65,13 @@ a[href~="error:"] { background: #f00 !important; color: #fff !important; }
 
 
 .activity-gamerooms .gamerooms { min-height: 36px; }
-.activity-gamerooms h5 { margin-top: 5px; margin-bottom: 5px; }
-.activity-gamerooms .gamerooms .btn { margin: 3px 3px 3px 0px; }
+.activity-gamerooms .gamerooms .btn { margin-top: 3px; margin-right: 3px; }
 
 .parent-activities .activities { min-height: 36px; }
-.parent-activities h5 { margin-top: 5px; margin-bottom: 5px; }
-.parent-activities .activities .btn { margin: 3px 3px 3px 0px; }
+.parent-activities .activities .btn { margin-top: 3px; margin-right: 3px; }
+
+.max-width { width: 97%; }
+.object-wrapper { margin-bottom: 5px; padding: 3px; }
+.kapafaaDefinitions .btn { margin-top: 3px; }
+
+	

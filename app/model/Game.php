@@ -943,4 +943,15 @@ class Game extends Model
 						'ready' => FALSE
 					));
 	}
+	
+	
+	/**
+	 * @param array $values
+	 * @return \Nette\Database\Table\Selection
+	 */
+	public function createFilter(array $values)
+	{
+		return $this->getSource()->getSelectionFactory()->table('filter')
+				->insert($values);
+	}
 }

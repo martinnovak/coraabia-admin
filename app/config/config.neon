@@ -33,7 +33,9 @@ services:
 	- Framework\Mapi\MapiRequestFactory(..., %bazaarUrls%)
 	- Framework\Grido\GridoFactory
 	- Framework\Application\FormFactory
-	- Framework\Kapafaa\KapafaaParser
+	kapafaaParser:
+		class: Framework\Kapafaa\KapafaaParser
+		setup: [ loadClassData ]
 	xmlFactory: Framework\Xml\XmlFactory
 	- Model\GameXmlFactory
 	- Model\CoraabiaFactory

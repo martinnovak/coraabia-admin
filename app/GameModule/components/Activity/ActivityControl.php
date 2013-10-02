@@ -130,11 +130,11 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 				}, $self->game->getActivities()->fetchAll()))
 			);
 			
-			$tmpl->kapafaaDefinitions = $self->kapafaaParser->loadClassData()->classes;
+			$tmpl->kapafaaDefinitions = $self->kapafaaParser->classes;
 			
 			$hook->addTemplate($tmpl);
 		});
-				
+		
 		$template->render();
 	}
 	
@@ -151,9 +151,10 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 		$form->addGroup('Nastavení');
 			
 		$form->addText('activity_id', 'ID')
-			->setRequired('Vyplňte ID aktivity.')
-			->addRule(Nette\Forms\Form::MAX_LENGTH, 'Maximální délka ID je %value znaků.', 20)
-			->addRule(Nette\Forms\Form::PATTERN, 'ID musí končit jednou z přípon _C, _U, _R, _G a nesmí obsahovat pomlčku', '[^-]+_[CURG]');
+				//->setAttribute('data-bind', 'value: activityId')
+				->setRequired('Vyplňte ID aktivity.')
+				->addRule(Nette\Forms\Form::MAX_LENGTH, 'Maximální délka ID je %value znaků.', 20)
+				->addRule(Nette\Forms\Form::PATTERN, 'ID musí končit jednou z přípon _C, _U, _R, _G a nesmí obsahovat pomlčku', '[^-]+_[CURG]');
 		
 		$fractions = $this->game->getFractions();
 		$fractions = array_combine(
@@ -167,17 +168,17 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 		$variantTypes = $this->game->getActivityVariants();
 		$variantTypes = array_combine($variantTypes, $variantTypes);
 		$form->addSelect('variant_type', 'Varianta', $variantTypes)
-			->setRequired();
+				->setRequired();
 		
 		$activityTypes = $this->game->getActivityTypes();
 		$activityTypes = array_combine($activityTypes, $activityTypes);
 		$form->addSelect('activity_type', 'Typ aktivity', $activityTypes)
-			->setRequired();
+				->setRequired();
 		
 		$activityStartTypes = $this->game->getActivityStartTypes();
 		$activityStartTypes = array_combine($activityStartTypes, $activityStartTypes);
 		$form->addSelect('start_type', 'Typ startu', $activityStartTypes)
-			->setRequired();
+				->setRequired();
 		
 		$bots = array('' => '');
 		foreach ($this->game->getBots()->fetchAll() as $bot) {
@@ -188,19 +189,19 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 		$form->addGroup('Pozice');
 		
 		$form->addText('tree', 'Strom')
-			->setRequired('Vyplňte strom.')
-			->addRule(Nette\Forms\Form::INTEGER, 'Hodnota musí být celé číslo.')
-			->setOption('description', 'Stromy 0-5 jsou frakční a obecný.');
+				->setRequired('Vyplňte strom.')
+				->addRule(Nette\Forms\Form::INTEGER, 'Hodnota musí být celé číslo.')
+				->setOption('description', 'Stromy 0-5 jsou frakční a obecný.');
 		
 		$form->addText('posx', 'Pozice X')
-			->setRequired('Vyplňte x-ovou pozici ve stromě.')
-			->addRule(Nette\Forms\Form::INTEGER, 'Hodnota musí být celé číslo.')
-			->setOption('description', '0 je hlavní linka stromu.');
+				->setRequired('Vyplňte x-ovou pozici ve stromě.')
+				->addRule(Nette\Forms\Form::INTEGER, 'Hodnota musí být celé číslo.')
+				->setOption('description', '0 je hlavní linka stromu.');
 		
 		$form->addText('posy', 'Pozice Y')
-			->setRequired('Vyplňte y-ovou pozici ve stromě.')
-			->addRule(Nette\Forms\Form::INTEGER, 'Hodnota musí být celé číslo.')
-			->setOption('description', '0 je kořen stromu.');
+				->setRequired('Vyplňte y-ovou pozici ve stromě.')
+				->addRule(Nette\Forms\Form::INTEGER, 'Hodnota musí být celé číslo.')
+				->setOption('description', '0 je kořen stromu.');
 		
 		$form->addGroup('Odměna');
 		
@@ -221,31 +222,65 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 			$form->addGroup(strtoupper($lang));
 			
 			$form->addText('activity_name_' . $lang, 'Jméno')
-				->setRequired('Vyplňte jméno ' . strtoupper($lang) . ' aktivity');
+					->setRequired('Vyplňte jméno ' . strtoupper($lang) . ' aktivity');
 			
 			$form->addTextArea('activity_flavor_' . $lang, 'Flavor')
-				->setAttribute('rows', 10);
-			
-			$form->addTextArea('activity_task_' . $lang, 'Text zadání')
-				->setAttribute('rows', 10);
+					->setAttribute('rows', 10);
 			
 			$form->addTextArea('activity_finish_' . $lang, 'Text splnění')
-				->setAttribute('rows', 10);
+					->setAttribute('rows', 10);
+			
+			$form->addTextArea('activity_task_' . $lang, 'Text zadání')
+					->setAttribute('rows', 2);
 			
 			$form->addTextArea('filter_condition_' . $lang, 'Text filtru')
-				->setAttribute('rows', 10);
+					->setAttribute('rows', 2);
 		}
 
 		$form->setCurrentGroup();
 		
 		$form->addHidden('gameroomList')
-			->getControlPrototype()
-			->addAttributes(array('data-bind' => 'value: gameroomList()'));
+			->setAttribute('data-bind', 'value: gameroomList()');
 		$form->addHidden('parentList')
-			->getControlPrototype()
-			->addAttributes(array('data-bind' => 'value: parentList()'));
+			->setAttribute('data-bind', 'value: parentList()');
+		
+		$form->addText('local_var', 'Lokální proměnná')
+				->setRequired()
+				->setAttribute('readonly', 'readonly')/*
+				->setAttribute('data-bind', 'value: playableVarId')*/;
+		$form->addText('global_var', 'Globální proměnná');
+		$form->addText('time_start', 'Začátek')
+				->setRequired()
+				->addRule(Nette\Forms\Form::PATTERN, 'Čas ve formátu YYYY-MM-DD HH:MM:SS.', '\d{4}-\d{2}-\d{2} \d{2}\:\d{2}\:\d{2}');
+		$form->addText('time_end', 'Konec')
+				->addRule(Nette\Forms\Form::PATTERN, 'Čas ve formátu YYYY-MM-DD HH:MM:SS.', '|\d{4}-\d{2}-\d{2} \d{2}\:\d{2}\:\d{2}');
+		$form->addText('level_min', 'Min. level')
+				->setRequired()
+				->addRule(Nette\Forms\Form::INTEGER);
+		$form->addText('level_max', 'Max. level')
+				->addRule(Nette\Forms\Form::INTEGER);
+		$form->addText('influence_min', 'Min. vliv')
+				->setRequired()
+				->addRule(Nette\Forms\Form::INTEGER);
+		$form->addText('influence_max', 'Max. vliv')
+				->addRule(Nette\Forms\Form::INTEGER);
+		$form->addTextArea('filter_scripts', '')
+				->setAttribute('class', 'max-width')
+				->setAttribute('rows', 15)
+				->setAttribute('readonly', 'readonly')
+				->setAttribute('data-bind', 'value: filterToKapafaa');
+		
 		
 		$form->addSubmit('submit', 'Uložit');
+		
+		$form->setDefaults(array(
+			'activity_id' => '_C',
+			'local_var' => '_C_PL',
+			'time_start' => $this->locales->timestamp,
+			'level_min' => 1,
+			'influence_min' => 15,
+			'filter_scripts' => "(\n)\n"
+		));
 		
 		$form->onSuccess[] = $this->activityCreateFormSuccess;
 		return $form;
@@ -263,8 +298,11 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 			$this->game->getSource()->beginTransaction();
 			
 			$row = $this->game->createActivity((array)$values);
-			$this->createActivityTexts($values['activity_id'], (array)$values);
-			$this->updateActivityGamerooms($values['activity_id'], explode('--', $values['gameroomList']), array());
+			$this->createActivityTexts($values->activity_id, (array)$values);
+			$this->updateActivityGamerooms($values->activity_id, explode('--', $values->gameroomList), array());
+			$values->local_var = $this->createPlayableVar($values)->variable_id;
+			$this->kapafaaParser->parse($values->filter_scripts); //sanity check
+			$this->createAndConnectFilter($values);
 			
 			$this->game->getSource()->commit();
 		} catch (\Exception $e) {
@@ -339,6 +377,47 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 		}
 	}
 	
+	
+	/**
+	 * @param \Nette\ArrayHash|array $values
+	 */
+	protected function createPlayableVar($values)
+	{
+		return $this->game->getSource()->query("INSERT INTO variable", array(
+			'variable_id' => substr($values->activity_id . '_PL', -20),
+			'default_val' => '0',
+			'description' => $values->activity_id . ' PLAYABLE',
+			'ready' => FALSE
+		));
+	}
+	
+	
+	/**
+	 * @param \Nette\ArrayHash|array $values
+	 */
+	protected function createAndConnectFilter($values)
+	{
+		$filter = $this->game->createFilter(array(
+			'variable_id' => $values->local_var,
+			'global_var' => $values->global_var ?: NULL,
+			'time_start' => $values->time_start,
+			'time_end' => $values->time_end ?: NULL,
+			'level_min' => $values->level_min,
+			'level_max' => $values->level_max ?: NULL,
+			'influence_min' => $values->influence_min,
+			'influence_max' => $values->influence_max ?: NULL,
+			'script' => $values->filter_scripts,
+			'ready' => FALSE
+		));
+		
+		$this->game->getSource()->query("INSERT INTO activity_filter_playable", array(
+			'activity_id' => $values->activity_id,
+			'filter_id' => $filter->filter_id,
+			'ready' => FALSE
+		));
+	}
+
+
 	
 	/**
 	 * @param string $activityId

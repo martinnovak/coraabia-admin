@@ -156,6 +156,7 @@ class KapafaaParser extends Nette\Object
 	 */
 	public function parse($text)
 	{
+		\Framework\Diagnostics\TimerPanel::timer(__METHOD__);
 		$cache = new Nette\Caching\Cache($this->storage, str_replace('\\', '.', get_class()));
 		if (($scripts = $cache->load($text)) === NULL) {
 			$scripts = array();
@@ -171,6 +172,7 @@ class KapafaaParser extends Nette\Object
 			}
 			$cache->save($text, $scripts);
 		}
+		\Framework\Diagnostics\TimerPanel::timer(__METHOD__);
 		return $scripts;
 	}
 	

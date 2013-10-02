@@ -137,7 +137,6 @@
 })(jQuery, _, ko);
 </script>
 <script type="text/javascript">
-
 (function($, _, ko, undefined) {
 
 	var Parameter = function(data, parent) {
@@ -310,3 +309,19 @@
 	ko.applyBindings(kmodel, document.getElementById('activity-creation'));
 })(jQuery, _, ko);
 </script>
+{*<script type="text/javascript">
+(function($, _, ko, undefined) {
+
+	var aModel = function() {
+		
+		this.activityId = ko.observable($('[name="activity_id"]').val());
+		
+		this.playableVarId = ko.computed(function() {
+			return (this.activityId + '_PL').substring(-20);
+		}, this);
+	};
+
+	var amodel = new aModel();
+	ko.applyBindings(amodel);
+})(jQuery, _, ko);
+</script>*}
