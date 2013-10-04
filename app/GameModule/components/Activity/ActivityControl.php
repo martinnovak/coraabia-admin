@@ -476,7 +476,7 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 		//remove old
 		foreach ($this->game->getObservers()
 				->select('observer.*, :activity_observer.activity_id')
-				->where(':activity_observer.activity_id', $toRemove)
+				->where(':activity_observer.activity_id IN ?', $toRemove)
 				->fetchAll() as $observer) {
 			$removed = FALSE;
 			$scripts = $this->kapafaaParser->parse($observer->effect_data);
@@ -502,7 +502,7 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 		//add new
 		foreach ($this->game->getObservers()
 				->select('observer.*, :activity_observer.activity_id')
-				->where(':activity_observer.activity_id', $toAdd)
+				->where(':activity_observer.activity_id IN ?', $toAdd)
 				->fetchAll() as $observer) {
 			$added = FALSE;
 			$scripts = $this->kapafaaParser->parse($observer->effect_data);

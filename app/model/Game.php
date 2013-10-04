@@ -882,12 +882,7 @@ class Game extends Model
 	 */
 	public function getParentActivities($activityId)
 	{
-		$obj = new Framework\Kapafaa\Effects\GenericLocal(
-				substr($activityId . '_PL', -20)
-				, new Framework\Kapafaa\Modifications\Number(
-						new Framework\Kapafaa\Operators\Equals(),
-						1)
-				);
+		$obj = Framework\Kapafaa\ObjectFactory::getActivityPlayableSetter($activityId);
 		
 		//All observers that set my playable variable to TRUE.
 		$observers = $this->getObservers()
