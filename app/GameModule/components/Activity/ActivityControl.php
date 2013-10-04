@@ -480,8 +480,9 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 				->fetchAll() as $observer) {
 			$removed = FALSE;
 			$scripts = $this->kapafaaParser->parse($observer->effect_data);
+			$fin = Framework\Kapafaa\ObjectFactory::getActivityFinishedSetter($observer->activity_id);
 			foreach ($scripts as $script) {
-				if ($this->kapafaaParser->find($script, $this->getFinishedKapafaaObject($observer->activity_id))) {
+				if ($this->kapafaaParser->find($script, $fin)) {
 					$removed = TRUE;
 					//@todo better. much better
 					foreach ($script->objects as $id => $object) {
@@ -505,8 +506,9 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 				->fetchAll() as $observer) {
 			$added = FALSE;
 			$scripts = $this->kapafaaParser->parse($observer->effect_data);
+			$fin = Framework\Kapafaa\ObjectFactory::getActivityFinishedSetter($observer->activity_id);
 			foreach ($scripts as $script) {
-				if ($this->kapafaaParser->find($script, $this->getFinishedKapafaaObject($observer->activity_id))) {
+				if ($this->kapafaaParser->find($script, $fin)) {
 					$added = TRUE;
 					$script->addObject($obj);
 				}
