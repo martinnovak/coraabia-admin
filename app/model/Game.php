@@ -2,6 +2,9 @@
 
 namespace Model;
 
+use Framework;
+
+
 class Game extends Model
 {
 	/**
@@ -873,23 +876,23 @@ class Game extends Model
 	
 	
 	/**
+	 * @todo optimize
 	 * @param string $activityId
 	 * @return \Nette\Database\Table\Selection
 	 */
 	public function getParentActivities($activityId)
 	{
-		$r = array(
-			'eff\.world\.gen\.local',
-			'\(',
-			'@' . substr($activityId . '_P', -20) . '@',
-			'=',
-			'1',
-			'\)'
-		);
+		$obj = new Framework\Kapafaa\Effects\GenericLocal(
+				substr($activityId . '_PL', -20)
+				, new Framework\Kapafaa\Modifications\Number(
+						new Framework\Kapafaa\Operators\Equals(),
+						1)
+				);
+		
 		//All observers that set my playable variable to TRUE.
 		$observers = $this->getObservers()
 				->select('observer_id')
-				->where('effect_data ~ ?', implode('\s*', $r));
+				->where('effect_data ~ ?', (string)$obj);
 		return $this->getActivities()
 				->where(':activity_observer.observer_id IN ?', $observers);
 	}
@@ -964,5 +967,23 @@ class Game extends Model
 	{
 		return $this->getSource()->getSelectionFactory()->table('observer')
 				->insert($values);
+	}
+	
+	
+	/**
+	 * @return \Nette\Database\Table\Selection
+	 */
+	public function getActivityObservers()
+	{
+		return $this->getSource()->getSelectionFactory()->table('activity_observer');
+	}
+	
+	
+	/**
+	 * @return \Nette\Database\Table\Selection
+	 */
+	public function getActivityPlayableFilters()
+	{
+		return $this->getSource()->getSelectionFactory()->table('activity_filter_playable');
 	}
 }

@@ -41,4 +41,15 @@ class Script extends Nette\Object
 		$this->objects[] = $object;
 		return $this;
 	}
+	
+	
+	/**
+	 * @param int $id
+	 * @return \Framework\Kapafaa\Script
+	 */
+	public function removeObject($id)
+	{
+		unset($this->objects[$id]);
+		return $this;
+	}
 }

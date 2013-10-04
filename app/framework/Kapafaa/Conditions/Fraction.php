@@ -6,7 +6,7 @@ use Framework\Kapafaa\TruthValues\TruthValue;
 
 
 /**
- * @kapafaa %negation%con.card %fraction%
+ * @kapafaa %negation%con.card(%fraction%)
  * @description Frakce
  */
 class Fraction extends Condition

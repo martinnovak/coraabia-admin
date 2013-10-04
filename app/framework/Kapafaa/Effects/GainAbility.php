@@ -7,7 +7,7 @@ use Framework\Kapafaa\Targets\PlayerTarget,
 
 
 /**
- * @kapafaa eff.gameplay(%target%.gainAbility (#%ability%#)%multiply%)
+ * @kapafaa eff.gameplay(%target%.gainAbility(#%ability%#)%multiply%)
  * @description Získej schopnost
  */
 class GainAbility extends Effect

@@ -137,7 +137,7 @@ class KapafaaParser extends Nette\Object
 					return '((?:0|[1-9]\d*)(?:\.\d+)?f?)';
 					break;
 				case 'string':
-					return '(\w+)';
+					return '([^@]+)';
 					break;
 				case ':negation':
 					return '(\!?)';
@@ -219,7 +219,7 @@ class KapafaaParser extends Nette\Object
 					$args[] = array_shift($params) ? new TruthValues\Negative() : new TruthValues\Positive();
 					break;
 				default: //class
-					$args[] = $this->parseLine(array_shift($params), $this->getImplementors($type['type']));
+					$args[] = empty($params) ? NULL : $this->parseLine(array_shift($params), $this->getImplementors($type['type']));
 			}
 		}
 		return Nette\Reflection\ClassType::from($data['type'])->newInstanceArgs($args);

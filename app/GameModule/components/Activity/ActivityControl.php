@@ -3,6 +3,7 @@
 namespace App\GameModule;
 
 use Framework,
+	Framework\Kapafaa\KapafaaException,
 	Nette;
 
 
@@ -134,8 +135,6 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 			
 			$hook->addTemplate($tmpl);
 		});
-		
-		$this->updateParentActivities('LALALA', array('TEST_I'), array());
 		
 		$template->render();
 	}
@@ -312,23 +311,25 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 			//observer
 			$observerScripts = $this->kapafaaParser->parse($values->observer_scripts); //sanity check
 			$finished = FALSE;
+			$obj = Framework\Kapafaa\ObjectFactory::getActivityFinishedSetter($values->activity_id);
 			foreach ($observerScripts as $script) {
-				if ($this->kapafaaParser->find($script, $this->getFinishedKapafaaObject($values->activity_id))) {
+				if ($this->kapafaaParser->find($script, $obj)) {
 					$finished = TRUE;
 				}
 			}
 			if (!$finished) {
-				throw new Framework\Kapafaa\KapafaaException("Observer nenastavuje splňující proměnnou {$values->activity_id}_FI.");
+				throw new KapafaaException("Observer nenastavuje splňující proměnnou '{$values->activity_id}_FI'.");
 			}
 			$this->createAndConnectObserver($values);
 			
 			//parent activities
-			//@todo
+			$this->updateParentActivities($values->activity_id, explode('--', $values->parentList), array());
 			
 			$this->game->getSource()->commit();
 		} catch (\Exception $e) {
 			$this->game->getSource()->rollBack();
 			$form->addError($e->getMessage());
+			$row = NULL;
 		}
 		
 		if ($row) {
@@ -350,6 +351,7 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 			'activity_finish',
 			'filter_condition'
 		);
+		//@todo optimize
 		foreach ($values as $key => $value) {
 			if (preg_match('/^(' . implode('|', $keys) . ')_(' . implode('|', $this->locales->langs) . ')$/', $key, $matches)) {
 				$this->game->getTranslations()->insert(array(
@@ -388,6 +390,7 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 		}
 		
 		//add
+		//@todo optimize
 		foreach ($toAdd as $gr) {
 			list($gameroom, $ready) = explode('-', $gr);
 			$this->game->getActivityGamerooms()->insert(array(
@@ -431,7 +434,7 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 			'ready' => FALSE
 		));
 		
-		$this->game->getSource()->query("INSERT INTO activity_filter_playable", array(
+		$this->game->getActivityPlayableFilters()->insert(array(
 			'activity_id' => $values->activity_id,
 			'filter_id' => $filter->filter_id,
 			'ready' => FALSE
@@ -450,7 +453,7 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 			'effect_desc' => ''
 		));
 		
-		$this->game->getSource()->query("INSERT INTO activity_observer", array(
+		$this->game->getActivityObservers()->insert(array(
 			'activity_id' => $values->activity_id,
 			'observer_id' => $observer->observer_id,
 			'ready' => FALSE
@@ -468,49 +471,53 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 		$toRemove = array_diff($original, $new);
 		$toAdd = array_diff($new, $original);
 		
+		$obj = Framework\Kapafaa\ObjectFactory::getActivityPlayableSetter($activityId);
+		
 		//remove old
-		//@todo
+		foreach ($this->game->getObservers()
+				->select('observer.*, :activity_observer.activity_id')
+				->where(':activity_observer.activity_id', $toRemove)
+				->fetchAll() as $observer) {
+			$removed = FALSE;
+			$scripts = $this->kapafaaParser->parse($observer->effect_data);
+			foreach ($scripts as $script) {
+				if ($this->kapafaaParser->find($script, $this->getFinishedKapafaaObject($observer->activity_id))) {
+					$removed = TRUE;
+					//@todo better. much better
+					foreach ($script->objects as $id => $object) {
+						if (trim((string)$object) == trim((string)$obj)) {
+							$script->removeObject($id);
+						}
+					}
+				}
+			}
+			if ($removed) {
+				$this->game->getObservers()
+						->where('observer_id = ?', $observer->observer_id)
+						->update('effect_data', implode("\n", $scripts));
+			}
+		}
 		
 		//add new
-		//@todo
-		//přidat do skriptů nastavujících finished proměnnou daných aktivit v observrech daných aktivit řádek nastavující mojí playable proměnnou na 1
-		//
-		//SELECT observer.* FROM observer LEFT JOIN activity_observer WHERE activity_observer.activity_id IN ($toAdd)
-		//naparsovat jejich skripty, najít v nich finished proměnné = 1, přidat playable proměnnou = 1, uložit
-		//eff.world.gen.local(@xxx_PL@ = 1)
-		
-		$obj = new Framework\Kapafaa\Effects\GenericLocal(
-				substr($activityId . '_PL', -20)
-				, new Framework\Kapafaa\Modifications\Number(
-						new Framework\Kapafaa\Operators\Equals(),
-						1)
-				);
-		
 		foreach ($this->game->getObservers()
 				->select('observer.*, :activity_observer.activity_id')
 				->where(':activity_observer.activity_id', $toAdd)
 				->fetchAll() as $observer) {
-			foreach ($this->kapafaaParser->parse($observer->effect_data) as $script) {
-				if ($this->kapafaaParser->find($script, $this->getFinishedKapafaaObject(substr($observer->activity_id, -20)))) {
+			$added = FALSE;
+			$scripts = $this->kapafaaParser->parse($observer->effect_data);
+			foreach ($scripts as $script) {
+				if ($this->kapafaaParser->find($script, $this->getFinishedKapafaaObject($observer->activity_id))) {
+					$added = TRUE;
 					$script->addObject($obj);
-					//@todo ulozit, no break
 				}
 			}
+			if ($added) {
+				$this->game->getObservers()
+						->where('observer_id = ?', $observer->observer_id)
+						->update('effect_data', implode("\n", $scripts));
+			} else {
+				throw new KapafaaException("Nepodařilo se uložit rodičovskou aktivitu '" . $this->translator->translate('activity-name.' . $observer->activity_id) . "', protože nenastavuje splňující proměnnou '" . substr($observer->activity_id . '_FI', -20) . "'.");
+			}
 		}
-	}
-	
-	
-	/**
-	 * @param string $activityId
-	 */
-	protected function getFinishedKapafaaObject($activityId)
-	{
-		//eff.world.gen.local(@VARIABLE@ = 1)
-		return new Framework\Kapafaa\Effects\GenericLocal(
-				substr($activityId . '_FI', -20),
-				new Framework\Kapafaa\Modifications\Number(
-						new Framework\Kapafaa\Operators\Equals(),
-						1)
-				);
 	}
 }

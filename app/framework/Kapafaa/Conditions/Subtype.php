@@ -6,7 +6,7 @@ use Framework\Kapafaa\TruthValues\TruthValue;
 
 
 /**
- * @kapafaa %negation%con.card %subtype%
+ * @kapafaa %negation%con.card(%subtype%)
  * @description Subtyp
  */
 class Subtype extends Condition
@@ -22,7 +22,7 @@ class Subtype extends Condition
 	 * @param \Framework\Kapafaa\TruthValues\TruthValue $negation
 	 * @param \Framework\Kapafaa\Subtypes\Subtype $subtype
 	 */
-	public function __construct(TruthValue $negation, \Framework\Kapafaa\Fractions\Fraction $subtype) {
+	public function __construct(TruthValue $negation, \Framework\Kapafaa\Subtypes\Subtype $subtype) {
 		$this->negation = $negation;
 		$this->subtype = $subtype;
 	}
