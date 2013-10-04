@@ -15,7 +15,7 @@ class ObjectFactory extends Nette\Object
 	
 	/**
 	 * @param string $activityId
-	 * @return \Framework\Kapafaa\Effects\GenericLocal
+	 * @return \Framework\Kapafaa\Object
 	 */
 	public static function getActivityPlayableSetter($activityId)
 	{
@@ -30,7 +30,7 @@ class ObjectFactory extends Nette\Object
 	
 	/**
 	 * @param string $activityId
-	 * @return \Framework\Kapafaa\Effects\GenericLocal
+	 * @return \Framework\Kapafaa\Object
 	 */
 	public static function getActivityFinishedSetter($activityId)
 	{
