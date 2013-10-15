@@ -201,7 +201,7 @@
 		this.toKapafaa = ko.computed(function() {
 			return "(\n" + _.map(this.kapafaa(), function(item) {
 				return item.toKapafaa() + "\n";
-			}).join() + ")";
+			}).join('') + ")";
 		}, this);
 	};
 	
@@ -309,19 +309,25 @@
 	ko.applyBindings(kmodel, document.getElementById('activity-creation'));
 })(jQuery, _, ko);
 </script>
-{*<script type="text/javascript">
+<script type="text/javascript">
+function setLocalVariableName(name) {
+	$('.local_var').val(name);
+}
+</script>
+<script type="text/javascript">
 (function($, _, ko, undefined) {
 
-	var aModel = function() {
+	var sModel = function() {
+		var self = this;
 		
-		this.activityId = ko.observable($('[name="activity_id"]').val());
+		this.activityId = ko.observable('_C');
 		
-		this.playableVarId = ko.computed(function() {
-			return (this.activityId + '_PL').substring(-20);
+		this.setLocalVariableName = ko.computed(function() {
+			setLocalVariableName(this.activityId() + '_PL');
 		}, this);
 	};
-
-	var amodel = new aModel();
-	ko.applyBindings(amodel);
+	
+	var smodel = new sModel();
+	ko.applyBindings(smodel, document.getElementById('activity-settings'));
 })(jQuery, _, ko);
-</script>*}
+</script>

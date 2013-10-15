@@ -1,11 +1,14 @@
 {form activityCreateForm}
 	{$form->render('errors')}
-	{foreach $form->getGroups() as $group}
-		{if $iterator->isOdd()}<div class="row-fluid">{/if}
-		<div class="span6">{$form->render($group)}</div>
-		{if $iterator->isEven()}</div>{/if}
-	{/foreach}
-	{if count($form->getGroups()) % 2}</div>{/if}
+	
+	<div id="activity-settings">
+		{foreach $form->getGroups() as $group}
+			{if $iterator->isOdd()}<div class="row-fluid">{/if}
+			<div class="span6">{$form->render($group)}</div>
+			{if $iterator->isEven()}</div>{/if}
+		{/foreach}
+		{if count($form->getGroups()) % 2}</div>{/if}
+	</div>
 	
 	<div id="activity-creation">
 		<div class="row-fluid">
@@ -13,7 +16,7 @@
 				<fieldset>
 					<legend>{_'Observer'}</legend>
 					<div id="activity-observer">
-						<textarea name="observer_scripts" readonly="readonly" rows="15" data-bind="value: toKapafaa"></textarea><br /><br />
+						{input observer_scripts}<br /><br />
 						<div class="btn" style="position: relative;">
 							<i class="icon-trash"></i>
 							<div style="position: absolute; top: 0px; left: 0px; width: 38px; height: 28px;" data-bind="sortable: { data: trash }"></div>

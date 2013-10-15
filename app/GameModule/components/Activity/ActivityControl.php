@@ -152,7 +152,7 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 		$form->addGroup('Nastavení');
 			
 		$form->addText('activity_id', 'ID')
-				//->setAttribute('data-bind', 'value: activityId')
+				->setAttribute('data-bind', "value: activityId, valueUpdate: 'afterkeydown'")
 				->setRequired('Vyplňte ID aktivity.')
 				->addRule(Nette\Forms\Form::MAX_LENGTH, 'Maximální délka ID je %value znaků.', 20)
 				->addRule(Nette\Forms\Form::PATTERN, 'ID musí končit jednou z přípon _C, _U, _R, _G a nesmí obsahovat pomlčku', '[^-]+_[CURG]');
@@ -245,10 +245,16 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 		$form->addHidden('parentList')
 			->setAttribute('data-bind', 'value: parentList()');
 		
+		$form->addTextArea('observer_scripts', '')
+				->setAttribute('class', 'max-width')
+				->setAttribute('rows', 15)
+				->setAttribute('readonly', 'readonly')
+				->setAttribute('data-bind', 'value: toKapafaa');
+		
 		$form->addText('local_var', 'Lokální proměnná')
 				->setRequired()
-				->setAttribute('readonly', 'readonly')/*
-				->setAttribute('data-bind', 'value: playableVarId')*/;
+				->setAttribute('readonly', 'readonly')
+				->setAttribute('class', 'local_var');
 		$form->addText('global_var', 'Globální proměnná');
 		$form->addText('time_start', 'Začátek')
 				->setRequired()
@@ -259,12 +265,12 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 				->setRequired()
 				->addRule(Nette\Forms\Form::INTEGER);
 		$form->addText('level_max', 'Max. level')
-				->addRule(Nette\Forms\Form::INTEGER);
+				->addRule(Nette\Forms\Form::PATTERN, 'Zadejte celé kladné číslo.', '|0|[1-9]\d*');
 		$form->addText('influence_min', 'Min. vliv')
 				->setRequired()
 				->addRule(Nette\Forms\Form::INTEGER);
 		$form->addText('influence_max', 'Max. vliv')
-				->addRule(Nette\Forms\Form::INTEGER);
+				->addRule(Nette\Forms\Form::PATTERN, 'Zadejte celé kladné číslo.', '|0|[1-9]\d*');
 		$form->addTextArea('filter_scripts', '')
 				->setAttribute('class', 'max-width')
 				->setAttribute('rows', 15)
@@ -301,10 +307,10 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 			//activity, texts, gamerooms
 			$row = $this->game->createActivity((array)$values);
 			$this->createActivityTexts($values->activity_id, (array)$values);
-			$this->updateActivityGamerooms($values->activity_id, explode('--', $values->gameroomList), array());
+			$this->updateActivityGamerooms($values->activity_id, array_filter(explode('--', $values->gameroomList)), array());
 			
 			//filter
-			$values->local_var = $this->createPlayableVar($values)->variable_id;
+			$values->local_var = $this->createPlayableVar($values);
 			$this->kapafaaParser->parse($values->filter_scripts); //sanity check
 			$this->createAndConnectFilter($values);
 			
@@ -323,7 +329,7 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 			$this->createAndConnectObserver($values);
 			
 			//parent activities
-			$this->updateParentActivities($values->activity_id, explode('--', $values->parentList), array());
+			$this->updateParentActivities($values->activity_id, array_filter(explode('--', $values->parentList)), array());
 			
 			$this->game->getSource()->commit();
 		} catch (\Exception $e) {
@@ -407,12 +413,14 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 	 */
 	protected function createPlayableVar($values)
 	{
-		return $this->game->getSource()->query("INSERT INTO variable", array(
-			'variable_id' => substr($values->activity_id . '_PL', -20),
+		$variableId = substr($values->activity_id . '_PL', -20);
+		$result = $this->game->getSource()->query("INSERT INTO variable", array(
+			'variable_id' => $variableId,
 			'default_val' => '0',
 			'description' => $values->activity_id . ' PLAYABLE',
 			'ready' => FALSE
 		));
+		return $variableId;
 	}
 	
 	
