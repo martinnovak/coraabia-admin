@@ -21,7 +21,7 @@
 							<i class="icon-trash"></i>
 							<div style="position: absolute; top: 0px; left: 0px; width: 38px; height: 28px;" data-bind="sortable: { data: trash }"></div>
 						</div>
-						<div class="btn" data-bind="click: addScript"><i class="icon-plus"></i> {_'Přidat skript'}</div>
+						<div class="btn" data-bind="click: addEmptyScript"><i class="icon-plus"></i> {_'Přidat skript'}</div>
 						<div class="btn" data-bind="click: removeScript"><i class="icon-remove"></i> {_'Odebrat skript'}</div>
 						<!-- ko foreach: scripts -->
 						<div class="well" style="margin-top: 2px; margin-bottom: 2px;" data-bind="click: $root.resetFilters, sortable: { template: 'objectTemplate', data: kapafaa, dragged: $root.dropped, beforeMove: $root.beforeMoveRoot }"></div>
@@ -49,7 +49,7 @@
 							<i class="icon-trash"></i>
 							<div style="position: absolute; top: 0px; left: 0px; width: 38px; height: 28px;" data-bind="sortable: { data: trash }"></div>
 						</div>
-						<div class="btn" data-bind="click: addFilterScript"><i class="icon-plus"></i> {_'Přidat skript'}</div>
+						<div class="btn" data-bind="click: addEmptyFilterScript"><i class="icon-plus"></i> {_'Přidat skript'}</div>
 						<div class="btn" data-bind="click: removeFilterScript"><i class="icon-remove"></i> {_'Odebrat skript'}</div>
 						<!-- ko foreach: filterScripts -->
 						<div class="well" style="margin-top: 2px; margin-bottom: 2px;" data-bind="click: $root.resetFilters, sortable: { template: 'objectTemplate', data: kapafaa, dragged: $root.dropped, beforeMove: $root.beforeMoveRoot }"></div>

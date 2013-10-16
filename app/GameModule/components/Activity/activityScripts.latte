@@ -142,7 +142,15 @@
 	var Parameter = function(data, parent) {
 		this.name = data.name;
 		this.type = data.type.indexOf('\\') === 0 ? data.type.substring(1) : data.type;
-		this.value = data.type.indexOf('\\') > -1 ? ko.observableArray([]) : ko.observable(data.value);
+		if (data.type.indexOf('\\') > -1 || data.type.indexOf(':') === 0) {
+			if (data.value) {
+				this.value = ko.observableArray([new KapafaaObject(data.value)]);
+			} else {
+				this.value = ko.observableArray([]);
+			}
+		} else {
+			this.value = ko.observable(data.value);
+		}
 		this.value.parent = this;
 		this.parent = parent;
 	};
@@ -195,8 +203,8 @@
 		}, this);
 	};
 	
-	var KapafaaScript = function() {
-		this.kapafaa = ko.observableArray([]);
+	var KapafaaScript = function(data) {
+		this.kapafaa = ko.observableArray(data);
 		
 		this.toKapafaa = ko.computed(function() {
 			return "(\n" + _.map(this.kapafaa(), function(item) {
@@ -205,16 +213,51 @@
 		}, this);
 	};
 	
-	var kModel = function(definitions) {
+	var kModel = function(definitions, observerScript, filterScript) {
 		var self = this;
 		
 		this.definitions = ko.observableArray(definitions);
 		
-		this.scripts = ko.observableArray([new KapafaaScript()]);
-		this.filterScripts = ko.observableArray([new KapafaaScript()]);
+		this.scripts = ko.observableArray([new KapafaaScript([])]);
+		this.filterScripts = ko.observableArray([new KapafaaScript([])]);
 		
-		this.addScript = function() {
-			self.scripts.push(new KapafaaScript());
+		$.get(
+			{$parserLink},
+			{
+				"activity-observerScript": observerScript,
+				"activity-filterScript": filterScript
+			},
+			function(data) {
+				self.scripts([]);
+				_.each(data.observer, function(item) {
+					var content = [];
+					_.each(item, function(obj) {
+						content.push(new KapafaaObject(obj));
+					});
+					self.addScript(new KapafaaScript(content));
+				});
+				if (!self.scripts().length) {
+					self.addEmptyScript();
+				}
+				self.filterScripts([]);
+				_.each(data.filter, function(item) {
+					var content = [];
+					_.each(item, function(obj) {
+						content.push(new KapafaaObject(obj));
+					});
+					self.addFilterScript(new KapafaaScript(content));
+				});
+				if (!self.filterScripts().length) {
+					self.addEmptyFilterScript();
+				}
+			}
+		);
+		
+		this.addScript = function(script) {
+			self.scripts.push(script);
+		};
+		this.addEmptyScript = function() {
+			self.addScript(new KapafaaScript([]));
 		};
 		this.removeScript = function() {
 			if (self.scripts().length > 1) {
@@ -222,8 +265,11 @@
 			}
 		};
 		
-		this.addFilterScript = function() {
-			self.filterScripts.push(new KapafaaScript());
+		this.addFilterScript = function(script) {
+			self.filterScripts.push(script);
+		};
+		this.addEmptyFilterScript = function() {
+			self.addFilterScript(new KapafaaScript([]));
 		};
 		this.removeFilterScript = function() {
 			if (self.filterScripts().length > 1) {
@@ -300,12 +346,13 @@
 			}
 		};
 	};
-
+	
 	var definitions = _.map(kapafaaDefinitions, function(item) {
 		return new KapafaaObject(item);
 	});
-
-	var kmodel = new kModel(definitions);
+	
+	var kmodel = new kModel(definitions, $('.observerScripts').val(), $('.filterScripts').val());
+	window.kModel = kmodel;
 	ko.applyBindings(kmodel, document.getElementById('activity-creation'));
 })(jQuery, _, ko);
 </script>
@@ -320,7 +367,7 @@ function setLocalVariableName(name) {
 	var sModel = function() {
 		var self = this;
 		
-		this.activityId = ko.observable('_C');
+		this.activityId = ko.observable($('.activityId').val());
 		
 		this.setLocalVariableName = ko.computed(function() {
 			setLocalVariableName(this.activityId() + '_PL');

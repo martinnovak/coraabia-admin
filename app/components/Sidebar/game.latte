@@ -1,5 +1,8 @@
 <div class="sidebar well">
 	<ul class="nav nav-list">
+		<li class="nav-header">{_'Aktivity'}</li>
+		<li{ifCurrent Activity:activityList} class="active"{/ifCurrent}><a href="{plink Activity:activityList}">{_'Aktivity'}</a></li>
+		<li class="divider"></li>
 		<li class="nav-header">{_'Karty'}</li>
 		<li{ifCurrent Card:spoiler} class="active"{/ifCurrent}><a href="{plink Card:spoiler}">{_'Spoiler'}</a></li>
 		<li{ifCurrent Card:timeLine} class="active"{/ifCurrent}><a href="{plink Card:timeLine}">{_'Timeline'}</a></li>

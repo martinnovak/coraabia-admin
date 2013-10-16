@@ -73,5 +73,5 @@ a[href~="error:"] { background: #f00 !important; color: #fff !important; }
 .max-width { width: 97%; }
 .object-wrapper { margin-bottom: 5px; padding: 3px; }
 .kapafaaDefinitions .btn { margin-top: 3px; }
-
+.parameter-wrapper > input { margin-bottom: 3px; }
 	

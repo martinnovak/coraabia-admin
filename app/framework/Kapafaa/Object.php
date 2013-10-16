@@ -34,4 +34,57 @@ abstract class Object extends Nette\Object
 			return (string)$self->{$item[1]};
 		}, str_replace('#', '@', $rc->getAnnotation('kapafaa')));
 	}
+	
+	
+	/**
+	 * @return object
+	 */
+	final public function toJson()
+	{
+		$rc = $this->getReflection();
+		if (!$rc->hasAnnotation('kapafaa')) {
+			throw new KapafaaException("Object does not have annotation @kapafaa.");
+		}
+		$kapafaa = $rc->getAnnotation('kapafaa');
+		if ($kapafaa === TRUE) {
+			$kapafaa = "";
+		}
+		$description = $rc->getAnnotation('description');
+		$def = array(
+			'name' => $description ?: str_replace('#', '@', $kapafaa),
+			'type' => ltrim($rc->getName(), '\\'),
+			'kapafaa' => str_replace('#', '@', $kapafaa),
+			'parent' => ltrim($rc->getParentClass(), '\\')
+		);
+		preg_match_all('/%([a-z]+)%/i', $def['kapafaa'], $matches);
+		$params = array();
+		for ($i = 0; $i < count($matches[1]); $i++) {
+			$p = array();
+			$p['name'] = $matches[1][$i];
+			$p['type'] = ltrim($rc->getProperty($matches[1][$i])->getAnnotation('var'), '\\');
+			switch ($p['type']) {
+				case 'int':
+				case 'float':
+				case 'string':
+					$value = $rc->getProperty($matches[1][$i])->getValue($this);
+					break;
+				default:
+					$value = $rc->getProperty($matches[1][$i])->getValue($this)->toJson();
+			}
+			$p['value'] = $value;
+			$params[] = $p;
+		}
+		$def['params'] = $params;
+		return (object)$def;
+	}
+	
+	/*name; //jméno
+	type; //classa
+	kapafaa; //kapafaa
+	parent; //parent
+	params; //array of params
+				name; //variable name
+				type; //variable type
+				value; //value - if scalar value, else array of object
+	*/
 }

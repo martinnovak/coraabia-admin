@@ -85,7 +85,7 @@ class KapafaaParser extends Nette\Object
 			$parent = $rc->getParentClass();
 			
 			$def = array(
-				'name' => $this->translator->translate($description ?: str_replace('#', '@', $kapafaa)),
+				'name' => $description ?: str_replace('#', '@', $kapafaa),
 				'type' => ltrim($name, '\\'),
 				'kapafaa' => str_replace('#', '@', $kapafaa),
 				'regular' => $regular,

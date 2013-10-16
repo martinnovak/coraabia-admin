@@ -12,9 +12,6 @@ use Framework,
  */
 class ActivityControl extends Framework\Application\UI\BaseControl
 {
-	const VAR_VISIBLE_DEFAULT = '1';
-	const VAR_PLAYABLE_DEFAULT = '0';
-	
 	/** @var \Model\Game @inject */
 	public $game;
 	
@@ -58,7 +55,7 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 				->setPrimaryKey('activity_id')
 				->setDefaultSort(array('fraction' => 'ASC', 'activity_id' => 'ASC'));
 		
-		$grido->addColumnNumber('activity_id', 'ID')
+		$grido->addColumnText('activity_id', 'ID')
 				->setSortable();
 		
 		$grido->addColumn('translated_name', 'Jméno')
@@ -104,6 +101,17 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 	}
 	
 	
+	public function renderEditActivity()
+	{
+		$template = $this->template;
+		$template->setFile(__DIR__ . '/editActivity.latte');
+		
+		$template->activityId = $this->activityId;
+		
+		$template->render();
+	}
+	
+	
 	public function renderCreateActivity()
 	{
 		$self = $this;
@@ -133,6 +141,8 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 			
 			$tmpl->kapafaaDefinitions = $self->kapafaaParser->classes;
 			
+			$tmpl->parserLink = $self->link('parseScript');
+			
 			$hook->addTemplate($tmpl);
 		});
 		
@@ -153,6 +163,7 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 			
 		$form->addText('activity_id', 'ID')
 				->setAttribute('data-bind', "value: activityId, valueUpdate: 'afterkeydown'")
+				->setAttribute('class', 'activityId')
 				->setRequired('Vyplňte ID aktivity.')
 				->addRule(Nette\Forms\Form::MAX_LENGTH, 'Maximální délka ID je %value znaků.', 20)
 				->addRule(Nette\Forms\Form::PATTERN, 'ID musí končit jednou z přípon _C, _U, _R, _G a nesmí obsahovat pomlčku', '[^-]+_[CURG]');
@@ -246,7 +257,7 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 			->setAttribute('data-bind', 'value: parentList()');
 		
 		$form->addTextArea('observer_scripts', '')
-				->setAttribute('class', 'max-width')
+				->setAttribute('class', 'max-width observerScripts')
 				->setAttribute('rows', 15)
 				->setAttribute('readonly', 'readonly')
 				->setAttribute('data-bind', 'value: toKapafaa');
@@ -272,7 +283,7 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 		$form->addText('influence_max', 'Max. vliv')
 				->addRule(Nette\Forms\Form::PATTERN, 'Zadejte celé kladné číslo.', '|0|[1-9]\d*');
 		$form->addTextArea('filter_scripts', '')
-				->setAttribute('class', 'max-width')
+				->setAttribute('class', 'max-width filterScripts')
 				->setAttribute('rows', 15)
 				->setAttribute('readonly', 'readonly')
 				->setAttribute('data-bind', 'value: filterToKapafaa');
@@ -282,11 +293,9 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 		
 		$form->setDefaults(array(
 			'activity_id' => '_C',
-			'local_var' => '_C_PL',
 			'time_start' => $this->locales->timestamp,
 			'level_min' => 1,
-			'influence_min' => 15,
-			'filter_scripts' => "(\n)\n"
+			'influence_min' => 15
 		));
 		
 		$form->onSuccess[] = $this->activityCreateFormSuccess;
@@ -529,5 +538,28 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 				throw new KapafaaException("Nepodařilo se uložit rodičovskou aktivitu '" . $this->translator->translate('activity-name.' . $observer->activity_id) . "', protože nenastavuje splňující proměnnou '" . substr($observer->activity_id . '_FI', -20) . "'.");
 			}
 		}
+	}
+	
+	
+	/**
+	 * @todo
+	 * @param string $observerScript
+	 * @param string $filterScript
+	 */
+	public function handleParseScript($observerScript, $filterScript)
+	{
+		$observer = array_map(function ($item) {
+			return array_map(function ($d) {
+				return $d->toJson();
+			}, $item->objects);
+		}, $this->kapafaaParser->parse($observerScript));
+		
+		$filter = array_map(function ($item) {
+			return array_map(function ($d) {
+				return $d->toJson();
+			}, $item->objects);
+		}, $this->kapafaaParser->parse($filterScript));
+		
+		$this->getPresenter()->sendJson(array('observer' => $observer, 'filter' => $filter));
 	}
 }
