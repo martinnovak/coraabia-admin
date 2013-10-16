@@ -75,12 +75,12 @@
 	 * @param array activities
 	 * @returns Model
 	 */
-	var agModel = function(gamerooms, activities) {
+	var agModel = function(gamerooms, activities, ag, pa) {
 		var self = this;
 		
 		this.gamerooms = ko.observableArray(gamerooms);
 		this.gamerooms.id = 'gamerooms';
-		this.activity_gamerooms = ko.observableArray([]);
+		this.activity_gamerooms = ko.observableArray(ag);
 		this.activity_gamerooms.id = 'gamerooms';
 		this.searchGamerooms = ko.observable('');
 		
@@ -97,7 +97,7 @@
 		
 		this.activities = ko.observableArray(activities);
 		this.activities.id = 'activities';
-		this.parent_activities = ko.observableArray([]);
+		this.parent_activities = ko.observableArray(pa);
 		this.parent_activities.id = 'activities';
 		this.searchActivities = ko.observable('');
 		
@@ -127,12 +127,39 @@
 	var gamerooms = _.map(activityData.gamerooms, function(item) {
 		return new Gameroom(item);
 	});
+	var ga = [];
+	_.each($('.gameroomList').val().split('--'), function(item) {
+		if (item === "") {
+			return;
+		}
+		item = item.split('-');
+		var g = _.find(gamerooms, function(i) {
+			return i.id === item[0];
+		});
+		g.activity_gameroom_ready(item[1] === "1");
+		ga.push(g);
+		gamerooms = _.filter(gamerooms, function(i) {
+			return i.id !== item[0];
+		})
+	});
 	
 	var activities = _.map(activityData.activities, function(item) {
 		return new Activity(item);
 	});
+	var pa = [];
+	_.each($('.parentList').val().split('--'), function(item) {
+		if (item === "") {
+			return;
+		}
+		pa.push(_.find(activities, function(i) {
+			return i.id === item;
+		}));
+		activities = _.filter(activities, function(i) {
+			return i.id !== item;
+		})
+	});
 	
-	var agmodel = new agModel(gamerooms, activities);
+	var agmodel = new agModel(gamerooms, activities, ga, pa);
 	ko.applyBindings(agmodel, document.getElementById('activity-connections'));
 })(jQuery, _, ko);
 </script>

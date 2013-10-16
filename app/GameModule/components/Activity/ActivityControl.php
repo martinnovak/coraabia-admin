@@ -252,9 +252,11 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 		$form->setCurrentGroup();
 		
 		$form->addHidden('gameroomList')
-			->setAttribute('data-bind', 'value: gameroomList()');
+			->setAttribute('data-bind', 'value: gameroomList()')
+			->setAttribute('class', 'gameroomList');
 		$form->addHidden('parentList')
-			->setAttribute('data-bind', 'value: parentList()');
+			->setAttribute('data-bind', 'value: parentList()')
+			->setAttribute('class', 'parentList');
 		
 		$form->addTextArea('observer_scripts', '')
 				->setAttribute('class', 'max-width observerScripts')
