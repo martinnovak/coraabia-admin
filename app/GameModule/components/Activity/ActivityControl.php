@@ -512,7 +512,7 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 			if ($removed) {
 				$this->game->getObservers()
 						->where('observer_id = ?', $observer->observer_id)
-						->update('effect_data', implode("\n", $scripts));
+						->update(array('effect_data' => implode("\n", $scripts)));
 			}
 		}
 		
@@ -533,7 +533,7 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 			if ($added) {
 				$this->game->getObservers()
 						->where('observer_id = ?', $observer->observer_id)
-						->update('effect_data', implode("\n", $scripts));
+						->update(array('effect_data' => implode("\n", $scripts)));
 			} else {
 				throw new KapafaaException("Nepodařilo se uložit rodičovskou aktivitu '" . $this->translator->translate('activity-name.' . $observer->activity_id) . "', protože nenastavuje splňující proměnnou '" . substr($observer->activity_id . '_FI', -20) . "'.");
 			}
