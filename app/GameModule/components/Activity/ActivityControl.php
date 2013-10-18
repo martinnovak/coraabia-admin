@@ -12,6 +12,15 @@ use Framework,
  */
 class ActivityControl extends Framework\Application\UI\BaseControl
 {
+	/** @var array */
+	private $textKeys = array(
+		'activity_name',
+		'activity_flavor',
+		'activity_task',
+		'activity_finish',
+		'filter_condition'
+	);
+	
 	/** @var \Model\Game @inject */
 	public $game;
 	
@@ -56,14 +65,17 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 				->setDefaultSort(array('fraction' => 'ASC', 'activity_id' => 'ASC'));
 		
 		$grido->addColumnText('activity_id', 'ID')
-				->setSortable();
+				->setSortable()
+				->setCustomRender(function ($item) use ($self, $editLink) {
+					return '<a href="' . $editLink->setParameter('id', $item->activity_id) . '" class="' . strtolower($item->fraction) . '">' . $item->activity_id . '</a>';
+				});
 		
 		$grido->addColumn('translated_name', 'Jméno')
 				->setCustomRender(function ($item) use ($self, $editLink) {
 					return '<a href="' . $editLink->setParameter('id', $item->activity_id) . '" class="' . strtolower($item->fraction) . '">' . trim($self->translator->translate('activity-name.' . $item->activity_id)) . '</a>';
 				});
 				
-		$grido->addColumn('fraction', 'F')
+		$grido->addColumn('fraction', 'Frakce')
 				->setSortable()
 				->setCustomRender(function ($item) use ($baseUri) {
 					return \Nette\Utils\Html::el('img')->src("$baseUri/images/abilities/" .
@@ -103,10 +115,11 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 	
 	public function renderEditActivity()
 	{
+		$self = $this;
 		$template = $this->template;
-		$template->setFile(__DIR__ . '/editActivity.latte');
+		$template->setFile(__DIR__ . '/activityForm.latte');
 		
-		$template->activityId = $this->activityId;
+		//@todo scripts
 		
 		$template->render();
 	}
@@ -116,7 +129,7 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 	{
 		$self = $this;
 		$template = $this->template;
-		$template->setFile(__DIR__ . '/createActivity.latte');
+		$template->setFile(__DIR__ . '/activityForm.latte');
 		$this->hookManager->listen('scripts', function (\Framework\Hooks\TemplateHook $hook) use ($self) {
 			$tmpl = $self->createTemplate();
 			$tmpl->setFile(__DIR__ . '/activityScripts.latte');
@@ -154,7 +167,7 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 	 * @param string $name
 	 * @return \Nette\ComponentModel\IComponent
 	 */
-	public function createComponentActivityCreateForm($name)
+	public function createComponentActivityForm($name)
 	{
 		$self = $this;
 		$form = $this->formFactory->create($this, $name);
@@ -292,15 +305,33 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 		
 		
 		$form->addSubmit('submit', 'Uložit');
+
+		if ($this->activityId === NULL) {
+			$form->setDefaults(array(
+				'activity_id' => '_C',
+				'time_start' => $this->locales->timestamp,
+				'level_min' => 1,
+				'influence_min' => 15
+			));
+			$form->onSuccess[] = $this->activityCreateFormSuccess;
+		} else {
+			$activity = $this->game->getActivities()
+					->where('activity_id = ?', $this->activityId)
+					->fetch();
+			
+			$texts = array();
+			foreach ($this->locales->getLangs() as $lang) {
+				foreach ($this->textKeys as $key) {
+					$texts[$key . '_' . $lang] = $this->translator->getTranslation(str_replace('_', '-', $key) . '.' . $this->activityId, $lang);
+				}
+			}
+			
+			//@todo ostatni
+			
+			$form->setDefaults(array_merge($activity->toArray(), $texts));
+			$form->onSuccess[] = $this->activityEditFormSuccess;
+		}
 		
-		$form->setDefaults(array(
-			'activity_id' => '_C',
-			'time_start' => $this->locales->timestamp,
-			'level_min' => 1,
-			'influence_min' => 15
-		));
-		
-		$form->onSuccess[] = $this->activityCreateFormSuccess;
 		return $form;
 	}
 	
@@ -354,6 +385,15 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 		}
 	}
 	
+	
+	/**
+	 * @param \Nette\Application\UI\Form $form
+	 */
+	public function activityEditFormSuccess(Nette\Application\UI\Form $form)
+	{
+		$values = $form->getValues();
+	}
+	
 
 	/**
 	 * @param string $activityId
@@ -361,16 +401,9 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 	 */
 	protected function createActivityTexts($activityId, array $values)
 	{
-		$keys = array(
-			'activity_name',
-			'activity_flavor',
-			'activity_task',
-			'activity_finish',
-			'filter_condition'
-		);
 		//@todo optimize
 		foreach ($values as $key => $value) {
-			if (preg_match('/^(' . implode('|', $keys) . ')_(' . implode('|', $this->locales->langs) . ')$/', $key, $matches)) {
+			if (preg_match('/^(' . implode('|', $this->textKeys) . ')_(' . implode('|', $this->locales->langs) . ')$/', $key, $matches)) {
 				$this->game->getTranslations()->insert(array(
 					'key' => str_replace('_', '-', $matches[1]) . '.' . $activityId,
 					'lang' => $matches[2],
