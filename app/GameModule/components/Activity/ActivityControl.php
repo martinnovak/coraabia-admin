@@ -359,16 +359,22 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 					->toArray();
 			$filter['local_var'] = $filter['variable_id'];
 			$filter['filter_scripts'] = $filter['script'];
-			//@todo observer
+			$observer = array('observer_scripts' => $this->game->getObservers()
+					->where(':activity_observer.activity_id = ?', $this->activityId)
+					->fetch()
+					->effect_data);
 			$gamerooms = array('gameroomList' => implode('--', array_map(function ($gr) {
 				return $gr->gameroom_id . '-' . ($gr->ag_ready ? '1' : '0');
 			}, $this->game->getGamerooms()
 					->select('gameroom.*, :activity_gameroom.ready AS ag_ready')
 					->where(':activity_gameroom.activity_id = ?', $this->activityId)
 					->fetchAll())));
-			//@todo parent activities
+			$parents = array('parentList' => implode('--', array_map(function ($item) {
+				return $item->activity_id;
+			}, $this->game->getParentActivities($this->activityId)
+					->fetchAll())));
 			
-			$form->setDefaults(array_merge($activity->toArray(), $texts, $filter, $gamerooms));
+			$form->setDefaults(array_merge($activity->toArray(), $texts, $filter, $observer, $gamerooms, $parents));
 			$form->onSuccess[] = $this->activityEditFormSuccess;
 		}
 		

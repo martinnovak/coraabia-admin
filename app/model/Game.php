@@ -896,7 +896,7 @@ class Game extends Model
 		//All observers that set my playable variable to TRUE.
 		$observers = $this->getObservers()
 				->select('observer_id')
-				->where('effect_data ~ ?', (string)$obj);
+				->where('effect_data LIKE ?', "%$obj%");
 		return $this->getActivities()
 				->where(':activity_observer.observer_id IN ?', $observers);
 	}
