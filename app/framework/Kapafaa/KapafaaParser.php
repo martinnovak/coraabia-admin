@@ -2,7 +2,8 @@
 
 namespace Framework\Kapafaa;
 
-use Nette;
+use Nette,
+	Model;
 
 
 /**
@@ -19,6 +20,9 @@ class KapafaaParser extends Nette\Object
 	/** @var \Nette\Localization\ITranslator */
 	private $translator;
 	
+	/** @var \Model\Locales */
+	private $locales;
+	
 	/** @var array */
 	private $classes;
 	
@@ -30,12 +34,14 @@ class KapafaaParser extends Nette\Object
 	 * @param \Nette\DI\Container $container
 	 * @param \Nette\Caching\IStorage $storage
 	 * @param \Nette\Localization\ITranslator $translator
+	 * @param \Model\Locales $locales
 	 */
-	public function __construct(Nette\DI\Container $container, Nette\Caching\IStorage $storage, Nette\Localization\ITranslator $translator)
+	public function __construct(Nette\DI\Container $container, Nette\Caching\IStorage $storage, Nette\Localization\ITranslator $translator, Model\Locales $locales)
 	{
 		$this->container = $container;
 		$this->storage = $storage;
 		$this->translator = $translator;
+		$this->locales = $locales;
 	}
 	
 	
@@ -50,11 +56,11 @@ class KapafaaParser extends Nette\Object
 		$cache = new Nette\Caching\Cache($this->storage, str_replace('\\', '.', get_class()));
 		$indexed = $this->container->getService('robotLoader')->getIndexedClasses();
 		if ($rebuild) {
-			$cache->remove($indexed);
+			$cache->remove(array($indexed, $this->locales->getLang()));
 		}
-		if (($this->classes = $cache->load($indexed)) === NULL) {
+		if (($this->classes = $cache->load(array($indexed, $this->locales->getLang()))) === NULL) {
 			$this->classes = $this->build($indexed);
-			$cache->save($indexed, $this->classes, array(
+			$cache->save(array($indexed, $this->locales->getLang()), $this->classes, array(
 				Nette\Caching\Cache::FILES => array_map(function ($item) {
 					return $item['file'];
 				}, $this->classes)
@@ -85,7 +91,7 @@ class KapafaaParser extends Nette\Object
 			$parent = $rc->getParentClass();
 			
 			$def = array(
-				'name' => $description ?: str_replace('#', '@', $kapafaa),
+				'name' => $this->translator->translate($description ?: str_replace('#', '@', $kapafaa)),
 				'type' => ltrim($name, '\\'),
 				'kapafaa' => str_replace('#', '@', $kapafaa),
 				'regular' => $regular,
