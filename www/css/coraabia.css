@@ -28,6 +28,8 @@
 input, textarea, .uneditable-input { width: 309px; }
 select { width: 323px; }
 label.control-label.required { font-weight: bold; }
+.form-horizontal .control-group { margin-bottom: 10px; }
+legend + .control-group { margin-top: 5px; }
 
 /* gallery */
 .gallery .images img { display: inline-block; }
@@ -74,4 +76,3 @@ a[href~="error:"] { background: #f00 !important; color: #fff !important; }
 .object-wrapper { margin-bottom: 5px; padding: 3px; }
 .kapafaaDefinitions .btn { margin-top: 3px; }
 .parameter-wrapper > input { margin-bottom: 3px; }
-	
