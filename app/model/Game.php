@@ -775,6 +775,15 @@ class Game extends Model
 	
 	
 	/**
+	 * @return \Nette\Database\Table\Selection
+	 */
+	public function getFilters()
+	{
+		return $this->getSource()->getSelectionFactory()->table('filter');
+	}
+	
+	
+	/**
 	 * @return array
 	 */
 	public function getFractions()

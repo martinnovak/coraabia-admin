@@ -140,7 +140,7 @@
 		ga.push(g);
 		gamerooms = _.filter(gamerooms, function(i) {
 			return i.id !== item[0];
-		})
+		});
 	});
 	
 	var activities = _.map(activityData.activities, function(item) {
@@ -156,7 +156,7 @@
 		}));
 		activities = _.filter(activities, function(i) {
 			return i.id !== item;
-		})
+		});
 	});
 	
 	var agmodel = new agModel(gamerooms, activities, ga, pa);

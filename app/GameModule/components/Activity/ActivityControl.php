@@ -118,8 +118,34 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 		$self = $this;
 		$template = $this->template;
 		$template->setFile(__DIR__ . '/activityForm.latte');
-		
-		//@todo scripts
+		$this->hookManager->listen('scripts', function (\Framework\Hooks\TemplateHook $hook) use ($self) {
+			$tmpl = $self->createTemplate();
+			$tmpl->setFile(__DIR__ . '/activityScripts.latte');
+			
+			$tmpl->activityData = array(
+				'gamerooms' => array_values(array_map(function ($item) use ($self) {
+					return array(
+						'id' => $item->gameroom_id,
+						'name' => $self->translator->translate('gameroom.' . $item->gameroom_id),
+						'ready' => $item->ready,
+						'ag_ready' => FALSE
+					);
+				}, $self->game->getGamerooms()->fetchAll())),
+				'activities' => array_values(array_map(function ($item) use ($self) {
+					return array(
+						'id' => $item->activity_id,
+						'name' => $self->translator->translate('activity-name.' . $item->activity_id),
+						'ready' => $item->ready
+					);
+				}, $self->game->getActivities()->fetchAll()))
+			);
+			
+			$tmpl->kapafaaDefinitions = $self->kapafaaParser->classes;
+			
+			$tmpl->parserLink = $self->link('parseScript');
+			
+			$hook->addTemplate($tmpl);
+		});
 		
 		$template->render();
 	}
@@ -315,20 +341,34 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 			));
 			$form->onSuccess[] = $this->activityCreateFormSuccess;
 		} else {
+			//activity
 			$activity = $this->game->getActivities()
 					->where('activity_id = ?', $this->activityId)
 					->fetch();
-			
+			//texts
 			$texts = array();
 			foreach ($this->locales->getLangs() as $lang) {
 				foreach ($this->textKeys as $key) {
 					$texts[$key . '_' . $lang] = $this->translator->getTranslation(str_replace('_', '-', $key) . '.' . $this->activityId, $lang);
 				}
 			}
+			//filter
+			$filter = $this->game->getFilters()
+					->where(':activity_filter_playable.activity_id = ?', $this->activityId)
+					->fetch()
+					->toArray();
+			$filter['local_var'] = $filter['variable_id'];
+			$filter['filter_scripts'] = $filter['script'];
+			//@todo observer
+			$gamerooms = array('gameroomList' => implode('--', array_map(function ($gr) {
+				return $gr->gameroom_id . '-' . ($gr->ag_ready ? '1' : '0');
+			}, $this->game->getGamerooms()
+					->select('gameroom.*, :activity_gameroom.ready AS ag_ready')
+					->where(':activity_gameroom.activity_id = ?', $this->activityId)
+					->fetchAll())));
+			//@todo parent activities
 			
-			//@todo ostatni
-			
-			$form->setDefaults(array_merge($activity->toArray(), $texts));
+			$form->setDefaults(array_merge($activity->toArray(), $texts, $filter, $gamerooms));
 			$form->onSuccess[] = $this->activityEditFormSuccess;
 		}
 		
