@@ -88,7 +88,6 @@ class Authorizator extends Nette\Security\Permission
 	
 	/**
 	 * Missing roles or resources do not throw exception and act as not allowed instead.
-	 * 
 	 * @param string|Permission::ALL|IRole $role
 	 * @param string|Permission::ALL|IResource $resource
 	 * @param string|Permission::ALL $privilege

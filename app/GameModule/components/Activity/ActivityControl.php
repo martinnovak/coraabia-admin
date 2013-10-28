@@ -110,6 +110,7 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 	public function handleDeleteActivity()
 	{
 		$this->getPresenter()->flashMessage('Aktivita byla smazána.', 'success');
+		$this->getPresenter()->flashMessage('NOT IMPLEMENTED', 'warning');
 	}
 	
 	
@@ -430,6 +431,7 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 			$this->updateParentActivities($values->activity_id, array_filter(explode('--', $values->parentList)), array());
 			
 			$this->game->getSource()->commit();
+			$this->getPresenter()->flashMessage('Aktivita byla uložena', 'success');
 		} catch (\Exception $e) {
 			$this->game->getSource()->rollBack();
 			$form->addError($e->getMessage());
@@ -443,6 +445,7 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 	
 	
 	/**
+	 * @todo
 	 * @param \Nette\Application\UI\Form $form
 	 */
 	public function activityEditFormSuccess(Nette\Application\UI\Form $form)

@@ -5,6 +5,22 @@ parameters:
 	langs: [cs, en]
 	resourcePath: '/images/resource'
 	resourceDir: '%wwwDir%/%resourcePath%'
+	bazaarUrls:
+		dev: 'http://localhost:8081/bazaar'
+		stage: 'http://localhost:8088/bazaar'
+		beta: 'http://localhost:8082/bazaar'
+	staticUrls:
+		dev: 'http://dev.static.coraabia.cz'
+		stage: 'http://stage.static.coraabia.cz'
+		beta: 'http://static.coraabia.com'
+	gameXmlUrls:
+		dev: '%staticUrls.dev%/flash-data/game.xml'
+		stage: '%staticUrls.stage%/flash-data/game.xml'
+		beta: '%staticUrls.beta%/flash-data/game.xml'
+	registerUrls:
+		dev: 'http://dev.coraabia.cz/register-rest'
+		stage: 'http://stage.coraabia.cz/register-rest'
+		beta: 'http://beta.coraabia.com/register-rest'
 	
 php:
 	date.timezone: Europe/Prague

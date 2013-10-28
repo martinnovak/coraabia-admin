@@ -46,15 +46,8 @@ class MapiRequest extends Nette\Object
 	 */
 	public function load()
 	{
-		$data = json_encode((object)$this->args);
+		$result = RestApi::call($this->url, json_encode((object)$this->args));
 		
-		$context = stream_context_create(array('http' => array(
-			'method'  => 'POST',
-			'header'  => 'Content-type: application/json',
-			'content' => $data
-		)));
-		
-		$result = json_decode(file_get_contents($this->url, FALSE, $context));
 		if (!isset($result->status)) {
 			$result->status = 'ERROR';
 		}

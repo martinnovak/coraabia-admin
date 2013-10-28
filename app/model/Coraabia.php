@@ -7,6 +7,15 @@ class Coraabia extends Model
 	/**
 	 * @return \Nette\Database\Table\Selection
 	 */
+	public function getPlayers()
+	{
+		return $this->getSource()->getSelectionFactory()->table('userdata');
+	}
+	
+	
+	/**
+	 * @return \Nette\Database\Table\Selection
+	 */
 	public function getDecks()
 	{
 		return $this->getSource()->getSelectionFactory()->table('deck')

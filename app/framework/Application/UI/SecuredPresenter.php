@@ -6,7 +6,7 @@ use Nette;
 
 
 /**
- * Secure presenter.
+ * Secured presenter.
  */
 abstract class SecuredPresenter extends BasePresenter
 {
@@ -23,8 +23,7 @@ abstract class SecuredPresenter extends BasePresenter
 		}
 		
 		//@todo THIS IS UGLY
-		$secured = $this->getContext()->parameters['secured'];
-		if (isset($secured) && !$secured) {
+		if (isset($this->getContext()->parameters['secured']) && !$this->getContext()->parameters['secured']) {
 			return;
 		}
 		
