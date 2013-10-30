@@ -61,13 +61,18 @@ class MapiRequest extends Nette\Object
 			throw new \LogicException("Požadavek selhal se statusem '$result->status' a zprávou '$result->message'.");
 			return $result;
 		}
+		$origResult = $result;
 		
-		if (!isset($result->{$this->retColumn})) {
-			throw new \LogicException("Výsledek neobsahuje sloupec '$this->retColumn'.");
-			return $result;
+		$retColumn = explode('.', $this->retColumn);
+		while ($tmp = array_shift($retColumn)) {
+			if (!isset($result->$tmp)) {
+				throw new \LogicException("Výsledek neobsahuje sloupec '$this->retColumn'.");
+				return $origResult;
+			}
+			$result = $result->$tmp;
 		}
 		
-		return $result->{$this->retColumn};
+		return $result;
 	}
 	
 	

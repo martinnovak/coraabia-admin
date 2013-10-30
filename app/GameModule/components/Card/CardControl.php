@@ -151,7 +151,9 @@ class CardControl extends Framework\Application\UI\BaseControl
 
 		//Cache artists, otherwise it's very slow.
 		$artists = array();
-		foreach ($this->game->getArts()->select(':card.card_id, artist.artist_id, artist.name')->fetchAll() as $art) {
+		foreach ($this->game->getArts()
+				->select(':card.card_id, artist.artist_id, artist.name')
+				->fetchAll() as $art) {
 			$artists[$art->card_id] = $art;
 		}
 		$grido->addColumn('artist', 'A')
@@ -193,5 +195,6 @@ class CardControl extends Framework\Application\UI\BaseControl
 	public function handleDeleteCard()
 	{
 		$this->getPresenter()->flashMessage('Karta byla smazána.', 'success');
+		$this->redirect('this');
 	}
 }

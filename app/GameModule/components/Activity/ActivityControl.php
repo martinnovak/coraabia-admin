@@ -111,6 +111,7 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 	{
 		$this->getPresenter()->flashMessage('Aktivita byla smazána.', 'success');
 		$this->getPresenter()->flashMessage('NOT IMPLEMENTED', 'warning');
+		$this->redirect('this');
 	}
 	
 	

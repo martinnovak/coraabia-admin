@@ -9,15 +9,15 @@ use Nette,
 class MapiSource extends Nette\Object implements ISource
 {
 	/** @var \Framework\Mapi\MapiRequestFactory */
-	private $factory;
+	private $mapiRequestFactory;
 	
 	
 	/**
-	 * @param \Framework\Mapi\MapiRequestFactory $factory
+	 * @param \Framework\Mapi\MapiRequestFactory $mapiRequestFactory
 	 */
-	public function __construct(Framework\Mapi\MapiRequestFactory $factory)
+	public function __construct(Framework\Mapi\MapiRequestFactory $mapiRequestFactory)
 	{
-		$this->factory = $factory;
+		$this->mapiRequestFactory = $mapiRequestFactory;
 	}
 	
 	
@@ -26,6 +26,6 @@ class MapiSource extends Nette\Object implements ISource
 	 */
 	public function getSource()
 	{
-		return $this->factory;
+		return $this->mapiRequestFactory;
 	}
 }

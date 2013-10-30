@@ -22,7 +22,7 @@ class RestApi extends Nette\Object
 	{
 		$json = json_encode((object)$data);
 		
-		Nette\Diagnostics\Debugger::dump($json);
+		//Nette\Diagnostics\Debugger::dump($json);
 		
 		$context = stream_context_create(array('http' => array(
 			'method'  => 'POST',
@@ -32,7 +32,7 @@ class RestApi extends Nette\Object
 		
 		$result = file_get_contents($url, FALSE, $context);
 		
-		Nette\Diagnostics\Debugger::dump($result);
+		//Nette\Diagnostics\Debugger::dump($result);
 		
 		return json_decode($result);
 	}
