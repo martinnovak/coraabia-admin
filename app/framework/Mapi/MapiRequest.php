@@ -33,10 +33,12 @@ class MapiRequest extends Nette\Object
 	/**
 	 * @param string $name
 	 * @param string $value 
+	 * @return $this
 	 */
 	public function setParam($name, $value)
 	{
 		$this->args[$name] = $value;
+		return $this;
 	}
 	
 	
@@ -46,7 +48,7 @@ class MapiRequest extends Nette\Object
 	 */
 	public function load()
 	{
-		$result = RestApi::call($this->url, json_encode((object)$this->args));
+		$result = RestApi::call($this->url, $this->args);
 		
 		if (!isset($result->status)) {
 			$result->status = 'ERROR';
@@ -54,7 +56,7 @@ class MapiRequest extends Nette\Object
 		
 		if ($result->status != 'OK') {
 			if (!isset($result->message)) {
-				$result->message = '';
+				$result->message = isset($result->errorMessage) ? $result->errorMessage : '';
 			}
 			throw new \LogicException("Požadavek selhal se statusem '$result->status' a zprávou '$result->message'.");
 			return $result;

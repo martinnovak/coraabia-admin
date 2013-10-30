@@ -12,6 +12,7 @@ services:
 	source.stats.dev: Model\Datasource\DatabaseSource(@nette.database.stats.dev)
 	source.stats.stage: Model\Datasource\DatabaseSource(@nette.database.stats.stage)
 	source.stats.beta: Model\Datasource\DatabaseSource(@nette.database.stats.beta)
+	source.bazaar: Model\Datasource\MapiSource(@mapiRequestFactory)
 	game: Model\Game(@source.game)
 	game.dev: Model\GameXml(@source.game.dev)
 	game.stage: Model\GameXml(@source.game.stage)
@@ -25,3 +26,4 @@ services:
 	stats.dev: Model\Coraabia(@source.stats.dev)
 	stats.stage: Model\Coraabia(@source.stats.stage)
 	stats.beta: Model\Coraabia(@source.stats.beta)
+	bazaar: Model\Bazaar(@source.bazaar)

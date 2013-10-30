@@ -46,7 +46,7 @@ services:
 	- Framework\Hooks\HookManager
 	locales: Model\Locales(%staticUrls%, %langs%)
 	- Model\Authenticator(@game, %applicationSecret%, %hashAlgorithm%)
-	- Framework\Mapi\MapiRequestFactory(..., %bazaarUrls%)
+	mapiRequestFactory: Framework\Mapi\MapiRequestFactory(..., %bazaarUrls%)
 	- Framework\Grido\GridoFactory
 	- Framework\Application\FormFactory
 	kapafaaParser:

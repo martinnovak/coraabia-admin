@@ -41,9 +41,9 @@ class XotControl extends Framework\Application\UI\BaseControl
 		
 		$grido = $this->gridoFactory->create($this, $name);
 		
-		$grido->setModel(new Framework\Mapi\MapiDataSource($request))
+		$grido->setModel(new Framework\Grido\DataSources\MapiDataSource($request))
 				->setPrimaryKey('refillOfferId')
-				->setPropertyAccessor(new Framework\Mapi\MapiPropertyAccessor);
+				->setPropertyAccessor(new Framework\Grido\PropertyAccessors\MapiPropertyAccessor);
 		
 		$grido->addColumnText('title', 'Název')
 				->setCustomRender(function ($item) use ($self) {

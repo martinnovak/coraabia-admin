@@ -17,6 +17,9 @@ class SignPresenter extends Framework\Application\UI\BasePresenter
 	/** @var \Model\Game @inject */
 	public $game;
 	
+	/** @var \Nette\Http\Request @inject */
+	public $httpRequest;
+	
 		
 	/**
 	 * Sign-in form factory.
@@ -89,7 +92,7 @@ class SignPresenter extends Framework\Application\UI\BasePresenter
 	{
 		$currentUser = $this->getUser();
 		$last_login = $this->locales->timestamp;
-		$last_login_ip = ip2long($_SERVER['REMOTE_ADDR']);
+		$last_login_ip = ip2long($this->httpRequest->getRemoteAddress());
 		
 		$this->game->getUserdata()->where('user_id = ?', $currentUser->getId())
 				->fetch()

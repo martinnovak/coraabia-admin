@@ -1,8 +1,9 @@
 <?php
 
-namespace Framework\Mapi;
+namespace Framework\Grido\DataSources;
 
-use Nette;
+use Nette,
+	Framework;
 
 
 class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSource
@@ -23,7 +24,7 @@ class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSou
 	/**
 	 * @param \Framework\Mapi\MapiRequest $request 
 	 */
-	public function __construct(MapiRequest $request)
+	public function __construct(Framework\Mapi\MapiRequest $request)
 	{
 		$this->request = $request;
 		$this->dirty = TRUE;
@@ -57,7 +58,7 @@ class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSou
     public function getData()
     {
 		if ($this->dirty) {
-			$this->data = new MapiResult($this->request->load());
+			$this->data = new Framework\Mapi\MapiResult($this->request->load());
 			$this->dirty = FALSE;
 			if (is_array($this->sorting)) {
 				$this->sort($this->sorting);
@@ -132,7 +133,7 @@ class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSou
 						$newData[] = $item;
 					}
 				}
-				$this->data = new MapiResult($newData);
+				$this->data = new Framework\Mapi\MapiResult($newData);
 			}
 		} else {
 			$this->sorting = $sorting;

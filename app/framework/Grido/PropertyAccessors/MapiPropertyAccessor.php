@@ -1,6 +1,6 @@
 <?php
 
-namespace Framework\Mapi;
+namespace Framework\Grido\PropertyAccessors;
 
 use Grido;
 

@@ -21,7 +21,8 @@ class MapiObject implements \ArrayAccess {
 			throw new Nette\InvalidArgumentException("Argument musí být objekt.");
 		}
 		if ($obj instanceof MapiObject) {
-			throw new Nette\InvalidArgumentException("MapiObject nelze zabalit do sebe.");
+			//throw new Nette\InvalidArgumentException("MapiObject nelze zabalit do sebe.");
+			$obj = $obj->obj;
 		}
 		$this->obj = $obj;
 	}
@@ -41,6 +42,15 @@ class MapiObject implements \ArrayAccess {
 			}, $obj);
 		}
 		return $obj;
+	}
+	
+	
+	/**
+	 * @return object
+	 */
+	public function getObj()
+	{
+		return $this->obj;
 	}
 	
 	

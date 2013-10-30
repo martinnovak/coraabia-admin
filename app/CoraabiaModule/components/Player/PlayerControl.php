@@ -85,7 +85,8 @@ class PlayerControl extends Framework\Application\UI\BaseControl
 		
 		$form->addGroup('Registrace');
 		
-		$form->addText('username', 'Jméno');
+		$form->addText('username', 'Jméno')
+				->addRule(Nette\Application\UI\Form::PATTERN, 'Jméno má špatný formát.', '[a-zA-Z][a-zA-Z0-9\._-]+');
 		
 		$form->addPassword('password', 'Heslo')
 				->addRule(Nette\Application\UI\Form::MIN_LENGTH, 'Heslo musí být alespoň %d znaků dlouhé.', 6);
