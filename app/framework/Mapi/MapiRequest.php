@@ -50,6 +50,10 @@ class MapiRequest extends Nette\Object
 	{
 		$result = RestApi::call($this->url, $this->args);
 		
+		if (empty($this->retColumn)) {
+			return $result;
+		}
+		
 		if (!isset($result->status)) {
 			$result->status = 'ERROR';
 		}

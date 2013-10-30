@@ -7,6 +7,7 @@ use Nette;
 
 class RestApi extends Nette\Object
 {
+	
 	public function __construct()
 	{
 		throw new Nette\StaticClassException;
