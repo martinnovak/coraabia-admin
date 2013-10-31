@@ -131,25 +131,24 @@ class OfferControl extends Framework\Application\UI\BaseControl
 	public function handleRevalidateOffer()
 	{
 		$offerId = (int)$this->getParameter('id');
-		$offer = $this->bazaar->getShopOffers()
+		try {
+			$offer = $this->bazaar->getShopOffers()
 				->setParam('findOfferFilter', array(
 					'offerId' => $offerId,
 					'type' => array('SHOP')
 				))
 				->load();
-		if (empty($offer) || count($offer) > 1) {
-			$this->getPresenter()->flashMessage("Nabídka '$offerId' nebyla nalezena.", 'error');
-		} else {
-			$offer = $offer[0];
-			$offer->valid = !$offer->valid;
-			try {
-				$this->bazaar->saveOffer((array)$offer);
-				$this->getPresenter()->flashMessage($offer->valid ?
-						"Nabídka '$offerId' byla povolena." :
-						"Nabídka '$offerId' byla zakázána.", 'success');
-			} catch (\Exception $e) {
-				$this->getPresenter()->flashMessage($e->getMessage(), 'error');
+			if (empty($offer) || count($offer) > 1) {
+				throw new \Exception("Nabídka '$offerId' nebyla nalezena.");
+			} else {
+				$offer = $offer[0];
 			}
+			
+			$offer->valid = !$offer->valid;
+			$this->bazaar->saveOffer((array)$offer);
+			$this->getPresenter()->flashMessage("Nabídka '$offerId' byla " . ($offer->valid ? "povolena." : "zakázána."), 'success');
+		} catch (\Exception $e) {
+			$this->getPresenter()->flashMessage($e->getMessage(), 'error');
 		}
 		
 		$this->redirect('this');
@@ -218,16 +217,20 @@ class OfferControl extends Framework\Application\UI\BaseControl
 		$values = $form->getValues();
 		$offerId = NULL;
 		
-		$items = array();
-		foreach ($this->bazaar->getShopItems()->load() as $item) {
-			$items[$item->itemId] = $item;
-		}
-		
 		try {
-			if (!isset($items[(int)$values->itemId])) {
+			$item = $this->bazaar->getShopItems()
+				->setParam('findItemFilter', array(
+					'itemId' => array((int)$values->itemId),
+					'includeShopOffers' => TRUE,
+					'includeMarketOffers' => FALSE
+				))
+				->load();
+			if (empty($item) || count($item) > 1) {
 				throw new \Exception("Položka '{$values->itemId}' nebyla nalezena.");
+			} else {
+				$item = $item[0];
 			}
-
+			
 			$offer = array(
 				'type' => 'SHOP',
 				'itemId' => (int)$values->itemId,
@@ -236,8 +239,8 @@ class OfferControl extends Framework\Application\UI\BaseControl
 				'valid' => (bool)$values->valid,
 				'quantity' => (int)$values->initialQuantity,
 				'initialQuantity' => (int)$values->initialQuantity,
-				'itemCustomId' => $items[(int)$values->itemId]->customId,
-				'itemType' => $items[(int)$values->itemId]->type
+				'itemCustomId' => $item->customId,
+				'itemType' => $item->type
 			);
 			if ($values->from) {
 				$offer['from'] = 1000 * strtotime($values->from);
