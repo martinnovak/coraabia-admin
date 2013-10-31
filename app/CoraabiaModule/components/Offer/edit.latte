@@ -1,0 +1,12 @@
+{form offerEditForm}
+	{$form->render('errors')}
+	
+	{foreach $form->getGroups() as $group}
+		{if $iterator->isOdd()}<div class="row-fluid">{/if}
+		<div class="span6">{$form->render($group)}</div>
+		{if $iterator->isEven()}</div>{/if}
+	{/foreach}
+	{if count($form->getGroups()) % 2}</div>{/if}
+	
+	{$form->render('body')}
+{/form}

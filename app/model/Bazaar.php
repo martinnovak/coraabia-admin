@@ -18,6 +18,7 @@ class Bazaar extends Model
 	
 	
 	/**
+	 * @param array $offer
 	 * @return int
 	 */
 	public function saveOffer(array $offer)
@@ -30,6 +31,10 @@ class Bazaar extends Model
 	}
 	
 	
+	/**
+	 * 
+	 * @param int $offerId
+	 */
 	public function deleteOffer($offerId)
 	{
 		return $this->getSource()->create('DELETE_OFFER', '')

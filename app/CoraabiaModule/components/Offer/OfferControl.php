@@ -64,7 +64,7 @@ class OfferControl extends Framework\Application\UI\BaseControl
 						default:
 							$result = Nette\Utils\Html::el('a')
 									->href($editLink->setParameter('id', $item->offerId))
-									->setText($item->itemType);
+									->setText($item->itemType . ' ' . $item->itemCustomId);
 					}
 					return $result;
 				});
@@ -175,16 +175,28 @@ class OfferControl extends Framework\Application\UI\BaseControl
 	 * @param string $name
 	 * @return \Nette\Application\UI\Form
 	 */
-	public function createComponentCreateOfferForm($name)
+	public function createComponentOfferForm($name)
 	{
 		$form = $this->formFactory->create($this, $name);
 		
 		$form->addGroup('Nabídka');
 		
 		$items = array();
-		foreach ($this->bazaar->getShopItems()->load() as $item) {
-			$items[$item->itemId] = $item->itemId; //@todo
+		try {
+			foreach ($this->bazaar->getShopItems()->load() as $item) {
+				switch ($item->type) {
+					case 'CARD':
+						$items[$item->itemId] = $this->translator->translate('card.' . $item->customId);
+						break;
+					default:
+						$items[$item->itemId] = $item->type . ' ' . $item->customId;
+				}
+
+			}
+		} catch (\Exception $e) {
+			$form->addError($e->getMessage());
 		}
+		asort($items);
 		$form->addSelect('itemId', 'Položka', $items);
 		
 		$form->addText('basePrice', 'Cena')
@@ -192,12 +204,12 @@ class OfferControl extends Framework\Application\UI\BaseControl
 		
 		$form->addSelect('currency', 'Měna', array('XOT' => 'XOT', 'TRIN' => 'TRIN')); //@todo vytáhnout z modelu
 		
-		$form->addText('initialQuantity', 'Množství')
-				->addRule(Nette\Forms\Form::INTEGER, 'Množství musí být celé nezáporné číslo.');
+		$form->addText('initialQuantity', 'Počáteční množství')
+				->addRule(Nette\Forms\Form::INTEGER, 'Počáteční množství musí být celé nezáporné číslo.');
 		
 		$form->addGroup('Nastavení');
 		
-		$form->addSelect('valid', 'Povoleno', array(TRUE => 'Ano', FALSE => 'Ne'));
+		$form->addSelect('valid', 'Povoleno', array(1 => 'Ano', 0 => 'Ne'));
 		
 		$form->addText('from', 'Od'); //@todo rules
 		
@@ -206,13 +218,13 @@ class OfferControl extends Framework\Application\UI\BaseControl
 		$form->setCurrentGroup();
 		$form->addSubmit('submit', 'Vytvořit');
 		
-		$form->onSuccess[] = $this->createOfferSuccess;
+		$form->onSuccess[] = $this->offerFormSuccess;
 		
 		return $form;
 	}
 	
 	
-	public function createOfferSuccess(Nette\Application\UI\Form $form)
+	public function offerFormSuccess(Nette\Application\UI\Form $form)
 	{
 		$values = $form->getValues();
 		$offerId = NULL;
@@ -257,6 +269,96 @@ class OfferControl extends Framework\Application\UI\BaseControl
 		
 		if ($offerId) {
 			$this->getPresenter()->redirect('Offer:editOffer', array('id' => $offerId));
+		}
+	}
+	
+	
+	public function createComponentOfferEditForm($name)
+	{
+		$form = $this->createComponentOfferForm($name);
+		unset($form['submit']);
+		
+		$form->setCurrentGroup($form->getGroup('Nabídka'));
+		
+		$form->addText('quantity', 'Množství')
+				->addRule(Nette\Forms\Form::INTEGER, 'Množství musí být celé nezáporné číslo.');
+		
+		$form->setCurrentGroup();
+		
+		$form->addSubmit('submit', 'Změnit');
+		
+		$form->onSuccess = array($this->offerEditFormSuccess);
+		
+		try {
+			$offer = $this->bazaar->getShopOffers()
+					->setParam('findOfferFilter', array(
+						'offerId' => $this->offerId,
+						'type' => array('SHOP')
+					))
+					->load();
+			if (empty($offer) || count($offer) > 1) {
+				throw new \Exception("Nabídka '{$this->offerId}' nebyla nalezena.");
+			} else {
+				$offer = $offer[0];
+				$offer->valid = $offer->valid ? 1 : 0;
+				if (isset($offer->from)) {
+					$offer->from = Nette\DateTime::from($offer->from / 1000);
+				}
+				if (isset($offer->to)) {
+					$offer->to = Nette\DateTime::from($offer->to / 1000);
+				}
+				
+				$form->setDefaults((array)$offer);
+			}
+		} catch (\Exception $e) {
+			$form->addError($e->getMessage());
+		}
+		
+		return $form;
+	}
+	
+	
+	public function offerEditFormSuccess(Nette\Application\UI\Form $form)
+	{
+		$values = $form->getValues();
+		
+		try {
+			$item = $this->bazaar->getShopItems()
+				->setParam('findItemFilter', array(
+					'itemId' => array((int)$values->itemId),
+					'includeShopOffers' => TRUE,
+					'includeMarketOffers' => FALSE
+				))
+				->load();
+			if (empty($item) || count($item) > 1) {
+				throw new \Exception("Položka '{$values->itemId}' nebyla nalezena.");
+			} else {
+				$item = $item[0];
+			}
+			
+			$offer = array(
+				'offerId' => $this->offerId,
+				'type' => 'SHOP',
+				'itemId' => (int)$values->itemId,
+				'basePrice' => (int)$values->basePrice,
+				'currency' => $values->currency,
+				'valid' => (bool)$values->valid,
+				'quantity' => (int)$values->quantity,
+				'initialQuantity' => (int)$values->initialQuantity,
+				'itemCustomId' => $item->customId,
+				'itemType' => $item->type
+			);
+			if ($values->from) {
+				$offer['from'] = 1000 * strtotime($values->from);
+			}
+			if ($values->to) {
+				$offer['to'] = 1000 * strtotime($values->to);
+			}
+			
+			$this->bazaar->saveOffer($offer);
+			$this->getPresenter()->flashMessage("Nabídka byla změněna.", 'success');
+		} catch (\Exception $e) {
+			$this->getPresenter()->flashMessage($e->getMessage(), 'error');
 		}
 	}
 }
