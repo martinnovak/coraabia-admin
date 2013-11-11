@@ -6,19 +6,13 @@ use Nette,
 	Framework;
 
 
-/**
- * @method setId(int) 
- */
 class XotControl extends Framework\Application\UI\BaseControl
 {
-	/** @var \Framework\Mapi\MapiRequestFactory @inject */
-	public $mapiRequestFactory;
+	/** @var \Model\Bazaar @inject */
+	public $bazaar;
 	
 	/** @var \Framework\Grido\GridoFactory @inject */
 	public $gridoFactory;
-	
-	/** @var int */
-	private $id;
 	
 	
 	public function renderList()
@@ -33,58 +27,19 @@ class XotControl extends Framework\Application\UI\BaseControl
 	 * @param string $name
 	 * @return \Grido\Grid 
 	 */
-	public function createComponentXotlist($name)
+	public function createComponentRefillList($name)
 	{
-		$self = $this;
-		$editLink = $this->getPresenter()->lazyLink('doBazaarEditRefill');
-		$request = $this->mapiRequestFactory->create('all-refill-offers', 'refillOffers');
-		
 		$grido = $this->gridoFactory->create($this, $name);
-		
-		$grido->setModel(new Framework\Grido\DataSources\MapiDataSource($request))
-				->setPrimaryKey('refillOfferId')
+		$grido->setModel(new Framework\Grido\DataSources\MapiDataSource($this->bazaar->getRefills()))
+				->setPrimaryKey('refillId')
+				->setDefaultSort(array('refillId' => 'DESC'))
 				->setPropertyAccessor(new Framework\Grido\PropertyAccessors\MapiPropertyAccessor);
 		
-		$grido->addColumnText('title', 'Název')
-				->setCustomRender(function ($item) use ($self) {
-					return (string)$item->titles->{$self->locales->lang};
-				});
-				
-		$grido->addColumnText('price', 'Cena')
-				->setCustomRender(function ($item) use ($self) {
-					return $item->price . ' ' . $item->currencyExt;
-				});
-				
-		$grido->addColumnText('currency', 'Měna')
-				->setCustomRender(function ($item) use ($self) {
-					return $item->amount . ' ' . $item->currencyInt;
-				});
-				
-		$grido->addColumnText('paymentService', 'Služby')
-				->setCustomRender(function ($item) use ($self) {
-					return implode(', ', $item->paymentService);
-				});
-				
-		$grido->addColumn('valid', 'Aktivní')
-				->setCustomRender(function ($item) use ($self) {
-					return $item->valid ? '<i class="icon-ok"></i>' : '';
-				});
-				
-		$grido->addAction('edit', 'Změnit')
-				->setIcon('edit')
-				->setCustomHref(function ($item) use ($editLink) {
-					return $editLink->setParameter('id', $item->refillOfferId);
-				});
+		$grido->addColumn('refillId', 'ID')
+				->setSortable();
 		
 		return $grido;
 	}
 	
 	
-	public function renderEdit()
-	{
-		throw new Nette\Application\ForbiddenRequestException;
-		$template = $this->template;
-		$template->setFile(__DIR__ . '/refillForm.latte');
-		$template->render();
-	}
 }

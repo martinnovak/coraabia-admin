@@ -58,4 +58,28 @@ class Bazaar extends Model
 					'includeMarketOffers' => FALSE
 				));
 	}
+	
+	
+	/**
+	 * @return \Framework\Mapi\MapiRequest
+	 */
+	public function getRefills()
+	{
+		return $this->getSource()->create('FIND_REFILL', 'findRefillResponse.refill')
+				->setParam('timestamp', 0)
+				->setParam('counter', 0)
+				->setParam('findRefillFilter', new \stdClass());
+	}
+	
+	
+	/**
+	 * @return array
+	 */
+	public function getCurrencies()
+	{
+		return array(
+			'XOT' => 'Xot',
+			'TRI' => 'Trin'
+		);
+	}
 }

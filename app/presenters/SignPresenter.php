@@ -3,7 +3,8 @@
 namespace App;
 
 use Nette,
-	Framework;
+	Framework,
+	Coraabia;
 
 
 /**
@@ -50,19 +51,26 @@ class SignPresenter extends Framework\Application\UI\BasePresenter
 	public function signInFormSucceeded($form)
 	{
 		$values = $form->getValues();
+		$currentUser = $this->getUser();
 
 		if ($values->remember) {
-			$this->getUser()->setExpiration('14 days', FALSE);
+			$currentUser->setExpiration('14 days', FALSE);
 		} else {
-			$this->getUser()->setExpiration('20 minutes', TRUE);
+			$currentUser->setExpiration('20 minutes', TRUE);
 		}
 
 		try {
-			$this->getUser()->login($values->username, $values->password);
+			$currentUser->login($values->username, $values->password);
 			$this->updateUserLogin();
 			$this->flashMessage('Byl jste úspěšně přihlášen.', 'success');
 			$this->restoreRequest($this->backlink);
-			$this->redirect(':Game:User:profile', array('lang' => $this->getUser()->getIdentity()->lang));
+			$this->redirect(
+					':' . ($currentUser->getIdentity()->module == Coraabia\ModuleEnum::CORAABIA ? 'Coraabia' : 'Game') . ':User:profile',
+					array(
+						'lang' => $currentUser->getIdentity()->lang,
+						'server' => $currentUser->getIdentity()->module == Coraabia\ModuleEnum::CORAABIA ? $currentUser->getIdentity()->server : ''
+					)
+			);
 		} catch (Nette\Security\AuthenticationException $e) {
 			$form->addError($e->getMessage());
 		}

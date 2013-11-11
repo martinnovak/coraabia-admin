@@ -71,3 +71,7 @@ a:hover {
     border-left: 1px solid #7B3B00;
     border-right: 1px solid #7B3B00;
 }
+
+#header .navbar-inverse .nav .active > a {
+    background-color: #7B3B00;
+}

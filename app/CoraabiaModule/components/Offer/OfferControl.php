@@ -95,6 +95,12 @@ class OfferControl extends Framework\Application\UI\BaseControl
 					return $item->valid ? '<i class="icon-ok"></i>' : '';
 				});
 				
+		$grido->addAction('revalidate', 'Povolit/Zakázat')
+				->setIcon('refresh')
+				->setCustomHref(function ($item) use ($revalidateLink) {
+					return $revalidateLink->setParameter('id', $item->offerId);
+				});
+				
 		$grido->addAction('remove', 'Smazat')
 				->setIcon('remove')
 				->setCustomHref(function ($item) use ($removeLink) {
@@ -102,12 +108,6 @@ class OfferControl extends Framework\Application\UI\BaseControl
 				})
 				->setConfirm(function ($item) use ($self) {
 					return "Opravdu chcete smazat nabídku '{$item->offerId}'?";
-				});
-		
-		$grido->addAction('revalidate', 'Povolit/Zakázat')
-				->setIcon('refresh')
-				->setCustomHref(function ($item) use ($revalidateLink) {
-					return $revalidateLink->setParameter('id', $item->offerId);
 				});
 		
 		return $grido;
@@ -202,7 +202,7 @@ class OfferControl extends Framework\Application\UI\BaseControl
 		$form->addText('basePrice', 'Cena')
 				->addRule(Nette\Forms\Form::INTEGER, 'Cena musí být celé nezáporné číslo.');
 		
-		$form->addSelect('currency', 'Měna', array('XOT' => 'XOT', 'TRIN' => 'TRIN')); //@todo vytáhnout z modelu
+		$form->addSelect('currency', 'Měna', $this->bazaar->getCurrencies());
 		
 		$form->addText('initialQuantity', 'Počáteční množství')
 				->addRule(Nette\Forms\Form::INTEGER, 'Počáteční množství musí být celé nezáporné číslo.');

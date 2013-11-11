@@ -39,6 +39,7 @@ nette:
 			- Framework\Diagnostics\LocalesPanel(@nette.latte)
 			- Framework\Diagnostics\TranslationPanel(@nette.latte)
 			- Framework\Diagnostics\GitPanel(@nette.latte, ..., %appDir%)
+			- Framework\Diagnostics\RestPanel(@nette.latte)
 
 services:
 	- App\RouterFactory

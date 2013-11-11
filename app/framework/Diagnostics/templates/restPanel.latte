@@ -1,0 +1,13 @@
+<h1>{_'Rest API'}</h1>
+<div class="nette-inner">
+	<table>
+		{foreach $calls as $request => $result}
+			<tr>
+				<th>{$request}</th>
+			</tr>
+			<tr>
+				<td>{$result}</td>
+			</tr>
+		{/foreach}
+	</table>
+</div>

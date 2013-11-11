@@ -100,7 +100,7 @@ class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSou
      */
     public function limit($offset, $limit)
 	{
-		$this->request->setParam('start', $offset);
+		$this->request->setParam('firstResult', $offset);
 		$this->request->setParam('count', $limit);
 		$this->dirty = TRUE;
 	}

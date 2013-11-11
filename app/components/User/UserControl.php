@@ -2,7 +2,8 @@
 
 namespace App;
 
-use Framework;
+use Framework,
+	Coraabia;
 
 
 class UserControl extends Framework\Application\UI\BaseControl
@@ -31,6 +32,9 @@ class UserControl extends Framework\Application\UI\BaseControl
 	{
 		try {
 			$server = $this->getParameter('server');
+			$user = $this->game->getUserdata()->where('user_id = ?', $this->getPresenter()->getUser()->getId())->fetch();
+			$user->update(array('server' => $server));
+			$this->getPresenter()->getUser()->getIdentity()->server = $server;
 			$this->getPresenter()->flashMessage("Nyní jste na serveru '" . strtoupper($server) . "'.", 'info');
 		} catch (\Exception $e) {
 			$this->getPresenter()->flashMessage($e->getMessage(), 'error');
@@ -46,5 +50,27 @@ class UserControl extends Framework\Application\UI\BaseControl
 		$template->setFile(__DIR__ . '/profile.latte');
 		$template->user = $this->getPresenter()->getUser();
 		$template->render();
+	}
+	
+	
+	public function handleChangeModule()
+	{
+		$currentUser = $this->getPresenter()->getUser();
+		try {
+			$module = $this->getParameter('mdl');
+			$user = $this->game->getUserdata()->where('user_id = ?', $currentUser->getId())->fetch();
+			$user->update(array('module' => $module));
+			$currentUser->getIdentity()->module = $module;
+			$this->getPresenter()->flashMessage("Nyní jste v modulu '" . strtoupper($module) . "'.", 'info');
+		} catch (\Exception $e) {
+			$this->getPresenter()->flashMessage($e->getMessage(), 'error');
+		}
+		
+		$this->getPresenter()->redirect(
+			':' . ($currentUser->getIdentity()->module == Coraabia\ModuleEnum::CORAABIA ? 'Coraabia' : 'Game') . ':User:profile',
+			array(
+				'server' => $currentUser->getIdentity()->module == Coraabia\ModuleEnum::CORAABIA ? $currentUser->getIdentity()->server : ''
+			)
+		);
 	}
 }
