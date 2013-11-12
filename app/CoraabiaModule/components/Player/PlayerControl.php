@@ -39,6 +39,7 @@ class PlayerControl extends Framework\Application\UI\BaseControl
 	public function createComponentPlayerlist($name)
 	{
 		$editLink = $this->getPresenter()->lazyLink('editPlayer');
+		$revalidateLink = $this->lazyLink('revalidatePlayer');
 		
 		$grido = $this->gridoFactory->create($this, $name);
 		$grido->setModel($this->coraabiaFactory->access()->getPlayers())
@@ -62,8 +63,36 @@ class PlayerControl extends Framework\Application\UI\BaseControl
 							->setText($item->username);
 				})
 				->setFilterText();
+				
+		$grido->addColumn('enabled', '')
+				->setCustomRender(function ($item) {
+					return $item->enabled ? '<i class="icon-ok"></i>' : '';
+				});
+				
+		$grido->addAction('revalidate', 'Povolit/Zakázat')
+				->setIcon('refresh')
+				->setCustomHref(function ($item) use ($revalidateLink) {
+					return $revalidateLink->setParameter('id', $item->user_id);
+				});
 		
 		return $grido;
+	}
+	
+	
+	public function handleRevalidatePlayer()
+	{
+		$userId = (int)$this->getParameter('id');
+		try {
+			$user = $this->coraabiaFactory->access()->getPlayers()
+					->where('user_id = ?', $userId)
+					->fetch();
+			$user->update(array('enabled' => !$user->enabled));
+			$this->getPresenter()->flashMessage("Uživatel '" . $user->username . "' byl " . ($user->enabled ? 'povolen' : 'zakázán') . ".", 'success');
+		} catch (\Exception $e) {
+			$this->getPresenter()->flashMessage($e->getMessage(), 'error');
+		}
+		
+		$this->redirect('this');
 	}
 	
 	

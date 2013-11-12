@@ -106,7 +106,7 @@ class OfferControl extends Framework\Application\UI\BaseControl
 				->setCustomHref(function ($item) use ($removeLink) {
 					return $removeLink->setParameter('id', $item->offerId);
 				})
-				->setConfirm(function ($item) use ($self) {
+				->setConfirm(function ($item) {
 					return "Opravdu chcete smazat nabídku '{$item->offerId}'?";
 				});
 		
@@ -224,6 +224,9 @@ class OfferControl extends Framework\Application\UI\BaseControl
 	}
 	
 	
+	/**
+	 * @param \Nette\Application\UI\Form $form
+	 */
 	public function offerFormSuccess(Nette\Application\UI\Form $form)
 	{
 		$values = $form->getValues();
@@ -273,6 +276,10 @@ class OfferControl extends Framework\Application\UI\BaseControl
 	}
 	
 	
+	/**
+	 * @param string $name
+	 * @return \Nette\Application\UI\Form
+	 */
 	public function createComponentOfferEditForm($name)
 	{
 		$form = $this->createComponentOfferForm($name);
@@ -318,6 +325,9 @@ class OfferControl extends Framework\Application\UI\BaseControl
 	}
 	
 	
+	/**
+	 * @param \Nette\Application\UI\Form $form
+	 */
 	public function offerEditFormSuccess(Nette\Application\UI\Form $form)
 	{
 		$values = $form->getValues();

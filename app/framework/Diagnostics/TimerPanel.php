@@ -24,7 +24,7 @@ class TimerPanel extends Panel
 	 */
 	public function getTab()
 	{
-		return '<span title="Časy"><img src="' . self::ICO . '" alt="icon" />' . round((float)self::$max - (float)Nette\Diagnostics\Debugger::$time, 3) . ' s</span>';
+		return '<span title="Časy"><img src="' . self::ICO . '" alt="icon" />' . (count(self::$timers) ? round((float)self::$max - (float)Nette\Diagnostics\Debugger::$time, 3) : 0) . ' s</span>';
 	}
 	
 	

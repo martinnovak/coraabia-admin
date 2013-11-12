@@ -32,7 +32,6 @@ class Bazaar extends Model
 	
 	
 	/**
-	 * 
 	 * @param int $offerId
 	 */
 	public function deleteOffer($offerId)
@@ -81,5 +80,32 @@ class Bazaar extends Model
 			'XOT' => 'Xot',
 			'TRI' => 'Trin'
 		);
+	}
+	
+	
+	/**
+	 * @param array $refill
+	 * @return int
+	 */
+	public function saveRefill(array $refill)
+	{
+		return $this->getSource()->create('SAVE_REFILL', 'saveRefillResponse.refillId')
+				->setParam('timestamp', 0)
+				->setParam('counter', 0)
+				->setParam('saveRefillOperation', array('refill' => $refill))
+				->load();
+	}
+	
+	
+	/**
+	 * @param int $refillId
+	 */
+	public function deleteRefill($refillId)
+	{
+		return $this->getSource()->create('DELETE_REFILL', '')
+				->setParam('timestamp', 0)
+				->setParam('counter', 0)
+				->setParam('deleteRefillOperation', array('refillId' => $refillId))
+				->load();
 	}
 }
