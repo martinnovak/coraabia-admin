@@ -22,22 +22,22 @@ class RestApi extends Nette\Object
 	 */
 	public static function call($url, array $data)
 	{
-		$json = json_encode((object)$data);
+		$obj = (object)$data;
 		
-		Framework\Diagnostics\RestPanel::log($json);
+		Framework\Diagnostics\RestPanel::log($obj);
 		Framework\Diagnostics\TimerPanel::timer(__METHOD__);
 		
 		$context = stream_context_create(array('http' => array(
 			'method'  => 'POST',
 			'header'  => 'Content-type: application/json',
-			'content' => $json
+			'content' => json_encode($obj)
 		)));
 		
-		$result = file_get_contents($url, FALSE, $context);
+		$result = json_decode(file_get_contents($url, FALSE, $context));
 		
 		Framework\Diagnostics\TimerPanel::timer(__METHOD__);
-		Framework\Diagnostics\RestPanel::log($json, $result);
+		Framework\Diagnostics\RestPanel::log($result);
 		
-		return json_decode($result);
+		return $result;
 	}
 }

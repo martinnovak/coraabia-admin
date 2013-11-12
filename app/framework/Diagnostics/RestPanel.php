@@ -12,7 +12,7 @@ class RestPanel extends Panel
 
 	
 	/** @var array */
-	private static $calls = array();
+	private static $objects = array();
 	
 		
 	/**
@@ -20,7 +20,7 @@ class RestPanel extends Panel
 	 */
 	public function getTab()
 	{
-		return '<span title="REST"><img src="' . self::ICO . '" alt="icon" />' . count(self::$calls) . '</span>';
+		return '<span title="REST"><img src="' . self::ICO . '" alt="icon" />' . count(self::$objects) . '</span>';
 	}
 	
 	
@@ -31,13 +31,13 @@ class RestPanel extends Panel
 	{
 		$template = $this->createTemplate()
 				->setFile(__DIR__ . '/templates/restPanel.latte');
-		$template->calls = self::$calls;
+		$template->objects = self::$objects;
 		return $template;
 	}
 	
 	
-	public static function log($request, $result = NULL)
+	public static function log($obj)
 	{
-		self::$calls[$request] = $result;
+		self::$objects[] = $obj;
 	}
 }
