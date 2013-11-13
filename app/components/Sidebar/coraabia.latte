@@ -1,18 +1,21 @@
 <div class="sidebar well">
 	<ul class="nav nav-list">
-		<li class="nav-header">{_'Karty'}</li>
-		<li{ifCurrent Deck:showDeckList} class="active"{/ifCurrent}><a href="{plink Deck:showDeckList}">{_'Balíky'}</a></li>
+		<li class="nav-header">{_'Hráči'}</li>
+		<li{ifCurrent Player:playerList} class="active"{/ifCurrent}><a href="{plink Player:playerList}">{_'Hráči'}</a></li>
 		<li class="divider"></li>
-		<li class="nav-header">{_'Audit'}</li>
-		<li{ifCurrent Audit:showAudit} class="active"{/ifCurrent}><a href="{plink Audit:showAudit}">{_'Audit'}</a></li>
-		<li{ifCurrent Audit:bazaarAudit} class="active"{/ifCurrent}><a href="{plink Audit:bazaarAudit}">{_'Bazaar'}</a></li>
+		<li class="nav-header">{_'Novinky'}</li>
+		<li{ifCurrent News:showNewsList} class="active"{/ifCurrent}><a href="{plink News:showNewsList}">{_'Novinky'}</a></li>
 		<li class="divider"></li>
 		<li class="nav-header">{_'Obchod'}</li>
 		<li{ifCurrent Offer:showOffers} class="active"{/ifCurrent}><a href="{plink Offer:showOffers}">{_'Iblort & Boostery'}</a></li>
 		<li{ifCurrent Xot:showRefills} class="active"{/ifCurrent}><a href="{plink Xot:showRefills}">{_'Xotnictví'}</a></li>
 		<li{ifCurrent Item:showItems} class="active"{/ifCurrent}><a href="{plink Item:showItems}">{_'Položky'}</a></li>
 		<li class="divider"></li>
-		<li class="nav-header">{_'Ostatní'}</li>
-		<li{ifCurrent News:showNewsList} class="active"{/ifCurrent}><a href="{plink News:showNewsList}">{_'Novinky'}</a></li>
+		<li class="nav-header">{_'Karty'}</li>
+		<li{ifCurrent Deck:showDeckList} class="active"{/ifCurrent}><a href="{plink Deck:showDeckList}">{_'Balíky'}</a></li>
+		<li class="divider"></li>
+		<li class="nav-header">{_'Audit'}</li>
+		<li{ifCurrent Audit:showAudit} class="active"{/ifCurrent}><a href="{plink Audit:showAudit}">{_'Audit'}</a></li>
+		<li{ifCurrent Audit:bazaarAudit} class="active"{/ifCurrent}><a href="{plink Audit:bazaarAudit}">{_'Bazaar'}</a></li>
 	</ul>
 </div>

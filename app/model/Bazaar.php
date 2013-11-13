@@ -108,4 +108,30 @@ class Bazaar extends Model
 				->setParam('deleteRefillOperation', array('refillId' => $refillId))
 				->load();
 	}
+	
+	
+	/**
+	 * @param array $item
+	 * @return int
+	 */
+	public function saveItem(array $item)
+	{
+		return $this->getSource()->create('SAVE_ITEM', 'saveItemResponse.itemId')
+				->setParam('timestamp', 0)
+				->setParam('counter', 0)
+				->setParam('saveItemOperation', array('item' => array($item)))
+				->load();
+	}
+	
+	
+	/**
+	 * @return \Framework\Mapi\MapiRequest
+	 */
+	public function getTransactions()
+	{
+		return $this->getSource()->create('FIND_TRANSACTION', 'findTransactionResponse.transactions')
+				->setParam('timestamp', 0)
+				->setParam('counter', 0)
+				->setParam('findTransactionFilter', array('types' => array()));
+	}
 }

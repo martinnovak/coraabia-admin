@@ -106,7 +106,7 @@ class PlayerControl extends Framework\Application\UI\BaseControl
 	
 	/**
 	 * @param string $name
-	 * @return \Nette\ComponentModel\IComponent
+	 * @return \Nette\Application\UI\Form
 	 */
 	public function createComponentCreatePlayerForm($name)
 	{
@@ -138,6 +138,9 @@ class PlayerControl extends Framework\Application\UI\BaseControl
 	}
 	
 	
+	/**
+	 * @param \Nette\Application\UI\Form $form
+	 */
 	public function createPlayerFormSuccess(Nette\Application\UI\Form $form)
 	{
 		$values = $form->getValues();
@@ -183,4 +186,45 @@ class PlayerControl extends Framework\Application\UI\BaseControl
 		$template->setFile(__DIR__ . '/edit.latte');
 		$template->render();
 	}
+	
+	
+	/**
+	 * @param string $name
+	 * @return \Nette\Application\UI\Form
+	 */
+	public function createComponentPlayerEditForm($name)
+	{
+		$form = $this->formFactory->create($this, $name);
+		
+		
+		if ($this->userId !== NULL) {
+			$user = $this->coraabiaFactory->access()->getPlayers()
+					->where('user_id = ?', $this->userId)
+					->fetch()
+					->toArray();
+			$form->setDefaults($user);
+		}
+		
+		$form->onSuccess[] = $this->playerEditFormSuccess;
+		
+		return $form;
+	}
+	
+	
+	/**
+	 * @param \Nette\Application\UI\Form $form
+	 */
+	public function playerEditFormSuccess(Nette\Application\UI\Form $form)
+	{
+		$values = $form->getValues();
+		try {
+			$player = array(
+				
+			);
+			$this->coraabiaFactory->access()->updatePlayer($this->userId, $player);
+			$this->getPresenter()->flashMessage("Uživatel '{$player['username']}' byl uložen.", 'success');
+		} catch (\Exception $e) {
+			$form->addError($e->getMessage());
+		}
+	}	
 }

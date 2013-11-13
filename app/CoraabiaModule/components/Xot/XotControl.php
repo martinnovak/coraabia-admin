@@ -169,7 +169,7 @@ class XotControl extends Framework\Application\UI\BaseControl
 	
 	
 	/**
-	 * @param Nette\Application\UI\Form $form
+	 * @param \Nette\Application\UI\Form $form
 	 */
 	public function refillFormSuccess(Nette\Application\UI\Form $form)
 	{
@@ -190,5 +190,32 @@ class XotControl extends Framework\Application\UI\BaseControl
 		if ($refillId) {
 			$this->getPresenter()->redirect('Xot:editRefill', array('id' => $refillId));
 		}
+	}
+	
+	
+	/**
+	 * @param string $name
+	 * @return \Nette\Application\UI\Form
+	 */
+	public function createComponentRefillEditForm($name)
+	{
+		$form = $this->createComponentRefillForm($name);
+		
+		unset($form['submit']);
+		$form->setCurrentGroup();
+		$form->addSubmit('submit', 'Uložit');
+		
+		$form->onSuccess = array($this->refillEditFormSuccess);
+		
+		return $form;
+	}
+	
+	
+	/**
+	 * @param \Nette\Application\UI\Form $form
+	 */
+	public function refillEditFormSuccess(Nette\Application\UI\Form $form)
+	{
+		
 	}
 }

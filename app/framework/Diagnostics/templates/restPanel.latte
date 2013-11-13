@@ -3,6 +3,7 @@
 	<table>
 		<tr n:foreach="$objects as $obj">
 			<td>{!\Nette\Diagnostics\Dumper::toHtml($obj)}</td>
+			<td><pre class="nette-dump"><span class="nette-toggle">{_'JSON'}</span><div>{json_encode($obj)}</div></pre></td>
 		</tr>
 	</table>
 </div>

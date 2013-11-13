@@ -8,8 +8,8 @@ use Framework,
 
 class AuditControl extends Framework\Application\UI\BaseControl
 {
-	/** @var \Framework\Mapi\MapiRequestFactory @inject */
-	public $mapiRequestFactory;
+	/** @var \Model\Bazaar @inject */
+	public $bazaar;
 	
 	/** @var \Model\Game @inject */
 	public $game;
@@ -37,16 +37,13 @@ class AuditControl extends Framework\Application\UI\BaseControl
 	{
 		$link = $this->getPresenter()->lazyLink('showViewTransaction');
 		
-		//request
-		$request = $this->mapiRequestFactory->create('transactions', 'txs');
-		
 		//types
 		$tmp = $this->game->getBazaarTransactionTypes();
 		$types = array_combine($tmp, $tmp);
 		
 		//grido
 		$grido = $this->gridoFactory->create($this, $name);
-		$grido->setModel(new Framework\Grido\DataSources\MapiDataSource($request))
+		$grido->setModel(new Framework\Grido\DataSources\MapiDataSource($this->bazaar->getTransactions()))
 				->setPrimaryKey('txId')
 				->setDefaultSort(array('txId' => 'DESC'))
 				->setPropertyAccessor(new Framework\Grido\PropertyAccessors\MapiPropertyAccessor);
@@ -56,10 +53,16 @@ class AuditControl extends Framework\Application\UI\BaseControl
 		
 		$grido->addColumn('userId', 'UID')
 				->setSortable()
+				->setCustomRender(function ($item) {
+					return isset($item->userId) ? $item->userId : '';
+				})
 				->setFilter(Filter::TYPE_NUMBER);
 		
 		$grido->addColumn('name', 'Uživatel')
 				->setSortable()
+				->setCustomRender(function ($item) {
+					return isset($item->name) ? $item->name : '';
+				})
 				->setFilter();
 				
 		$grido->addColumn('type', 'Typ')
@@ -68,14 +71,15 @@ class AuditControl extends Framework\Application\UI\BaseControl
 		$grido->addColumn('timestamp', 'Čas')
 				->setSortable()
 				->setCustomRender(function ($item) {
-					return date('d.m.Y H:i:s', $item->timestamp);
+					return date('d.m.Y H:i:s', $item->timestamp / 1000);
 				});
 		
 		$grido->addColumn('node', 'Data')
 				->setTruncate(80)
 				->setFilter();
 		
-		$grido->addFilterCustom('type', new Framework\Forms\Controls\MultiOptionList('Typ', $types))
+		//@todo
+		/*$grido->addFilterCustom('type', new Framework\Forms\Controls\MultiOptionList('Typ', $types))
 				->setCondition(Filter::CONDITION_CALLBACK, function ($item) {
 					return array('type IN %i', $item);
 				});
@@ -84,7 +88,7 @@ class AuditControl extends Framework\Application\UI\BaseControl
 				->setIcon('list')
 				->setCustomHref(function ($item) use ($link) {
 					return $link->setParameter('id', $item->txId);
-				});
+				});*/
 		
 		return $grido;
 	}

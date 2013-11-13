@@ -78,4 +78,17 @@ class Coraabia extends Model
 					->insert($values);
 		}
 	}
+	
+	
+	/**
+	 * @param int $userId
+	 * @param array $values
+	 */
+	public function updatePlayer($userId, array $values)
+	{
+		$this->getSource()->getSelectionFactory()->table('userdata')
+				->where('user_id = ?', $userId)
+				->fetch()
+				->update($values);
+	}
 }
