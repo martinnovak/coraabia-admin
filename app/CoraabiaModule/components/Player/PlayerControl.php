@@ -11,8 +11,6 @@ use Framework,
  */
 class PlayerControl extends Framework\Application\UI\BaseControl
 {
-	const BORROWED_PASSWORD = 'pokorchansku1238'; //@todo config
-	
 	/** @var \Model\CoraabiaFactory @inject */
 	public $coraabiaFactory;
 		
@@ -122,7 +120,9 @@ class PlayerControl extends Framework\Application\UI\BaseControl
 					->fetch();
 			if (empty($user->password_orig)) {
 				$user->update(array(
-					'password' => $this->authenticator->getPassword(self::BORROWED_PASSWORD),
+					'password' => $this->authenticator->getPassword($this->getPresenter()
+							->getContext()
+							->parameters['borrowedAccountPassword']), //@todo better
 					'password_orig' => $user->password,
 				));
 				$this->getPresenter()->flashMessage("Uživatel '{$user->username}' je nyní půjčený.", 'info');
