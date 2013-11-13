@@ -735,7 +735,17 @@ class Game extends Model
 			'Tunament_V',
 			'Tunament_VI',
 			'Tunament_VII',
-			'Tunament_VIII'
+			'Tunament_VIII',
+			'PLAYER_CARD_FRACTION_GUARDIAN',
+			'PLAYER_CARD_FRACTION_OUTLAW',
+			'PLAYER_CARD_FRACTION_XENNO',
+			'PLAYER_CARD_FRACTION_MERCENARY',
+			'PLAYER_CARD_FRACTION_UNLIVING',
+			'PLAYER_CARD_FRACTION_GENERAL',
+			'PLAYER_CARD_NAME',
+			'PLAYER_CARD_LVL',
+			'PLAYER_CARD_BANNER_KHOPT',
+			'PLAYER_CARD_BANNER_ELO'
 		);
 		return $this->getSource()->getSelectionFactory()->table('translation')
 				->where('key IN ?', $keys)
