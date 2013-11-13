@@ -89,7 +89,7 @@ class ItemControl extends Framework\Application\UI\BaseControl
 				
 		$grido->addColumn('script', '')
 				->setCustomRender(function ($item) {
-					return isset($item->script) ? $item->script : '';
+					return Nette\Utils\Strings::truncate(isset($item->script) ? $item->script : '', 80);
 				});
 		
 		return $grido;

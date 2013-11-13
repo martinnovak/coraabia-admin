@@ -50,7 +50,7 @@ class Authenticator extends Nette\Object implements Nette\Security\IAuthenticato
 			throw new Nette\Security\AuthenticationException('Přihlášení se nezdařilo.', self::IDENTITY_NOT_FOUND);
 		}
 
-		if ($row->password !== $this->calculateHash($password, $this->applicationSecret, $this->hashAlgorithm)) {
+		if ($row->password !== $this->getPassword($password)) {
 			throw new Nette\Security\AuthenticationException('Přihlášení se nezdařilo.', self::INVALID_CREDENTIAL);
 		}
 
@@ -68,5 +68,11 @@ class Authenticator extends Nette\Object implements Nette\Security\IAuthenticato
 	public static function calculateHash($password, $salt, $algorithm)
 	{
 		return hash($algorithm, $salt . hash($algorithm, $password) . $salt);
+	}
+	
+	
+	public function getPassword($password)
+	{
+		return $this->calculateHash($password, $this->applicationSecret, $this->hashAlgorithm);
 	}
 }

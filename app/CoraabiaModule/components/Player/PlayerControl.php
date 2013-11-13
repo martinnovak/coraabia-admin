@@ -11,6 +11,8 @@ use Framework,
  */
 class PlayerControl extends Framework\Application\UI\BaseControl
 {
+	const BORROWED_PASSWORD = 'pokorchansku1238'; //@todo config
+	
 	/** @var \Model\CoraabiaFactory @inject */
 	public $coraabiaFactory;
 		
@@ -19,6 +21,9 @@ class PlayerControl extends Framework\Application\UI\BaseControl
 	
 	/** @var \Framework\Application\FormFactory @inject */
 	public $formFactory;
+	
+	/** @var \Model\Authenticator @inject */
+	public $authenticator;
 	
 	/** @var int */
 	private $userId;
@@ -40,6 +45,7 @@ class PlayerControl extends Framework\Application\UI\BaseControl
 	{
 		$editLink = $this->getPresenter()->lazyLink('editPlayer');
 		$revalidateLink = $this->lazyLink('revalidatePlayer');
+		$borrowLink = $this->lazyLink('borrowPlayer');
 		
 		$grido = $this->gridoFactory->create($this, $name);
 		$grido->setModel($this->coraabiaFactory->access()->getPlayers())
@@ -69,10 +75,21 @@ class PlayerControl extends Framework\Application\UI\BaseControl
 					return $item->enabled ? '<i class="icon-ok"></i>' : '';
 				});
 				
+		$grido->addColumn('borrowed', 'Půjčený')
+				->setCustomRender(function ($item) {
+					return !empty($item->password_orig) ? '<i class="icon-eye-open"></i>' : '';
+				});
+				
 		$grido->addAction('revalidate', 'Povolit/Zakázat')
 				->setIcon('refresh')
 				->setCustomHref(function ($item) use ($revalidateLink) {
 					return $revalidateLink->setParameter('id', $item->user_id);
+				});
+				
+		$grido->addAction('borrow', 'Půjčit/Vrátit')
+				->setIcon('eye-open')
+				->setCustomHref(function ($item) use ($borrowLink) {
+					return $borrowLink->setParameter('id', $item->user_id);
 				});
 		
 		return $grido;
@@ -88,6 +105,34 @@ class PlayerControl extends Framework\Application\UI\BaseControl
 					->fetch();
 			$user->update(array('enabled' => !$user->enabled));
 			$this->getPresenter()->flashMessage("Uživatel '" . $user->username . "' byl " . ($user->enabled ? 'povolen' : 'zakázán') . ".", 'success');
+		} catch (\Exception $e) {
+			$this->getPresenter()->flashMessage($e->getMessage(), 'error');
+		}
+		
+		$this->redirect('this');
+	}
+	
+	
+	public function handleBorrowPlayer()
+	{
+		$userId = (int)$this->getParameter('id');
+		try {
+			$user = $this->coraabiaFactory->access()->getPlayers()
+					->where('user_id = ?', $userId)
+					->fetch();
+			if (empty($user->password_orig)) {
+				$user->update(array(
+					'password' => $this->authenticator->getPassword(self::BORROWED_PASSWORD),
+					'password_orig' => $user->password,
+				));
+				$this->getPresenter()->flashMessage("Uživatel '{$user->username}' je nyní půjčený.", 'info');
+			} else {
+				$user->update(array(
+					'password' => $user->password_orig,
+					'password_orig' => NULL,
+				));
+				$this->getPresenter()->flashMessage("Uživatel '{$user->username}' byl vrácen.", 'info');
+			}
 		} catch (\Exception $e) {
 			$this->getPresenter()->flashMessage($e->getMessage(), 'error');
 		}
@@ -195,15 +240,30 @@ class PlayerControl extends Framework\Application\UI\BaseControl
 	public function createComponentPlayerEditForm($name)
 	{
 		$form = $this->formFactory->create($this, $name);
+	
+		$form->addGroup('Uživatel');
 		
+		$form->addText('username', 'Jméno')
+				->setDisabled()
+				->addRule(Nette\Application\UI\Form::PATTERN, 'Jméno má špatný formát.', '[a-zA-Z][a-zA-Z0-9\._-]+');
+		
+		$form->addPassword('password', 'Heslo')
+				->addRule(Nette\Application\UI\Form::PATTERN, 'Heslo musí být alespoň 6 znaků dlouhé.', '|.{6,}');
+		
+		$form->addText('email', 'Email')
+				->addRule(Nette\Application\UI\Form::EMAIL, 'Zadejte platný email.');
 		
 		if ($this->userId !== NULL) {
-			$user = $this->coraabiaFactory->access()->getPlayers()
+			$player = $this->coraabiaFactory->access()->getPlayers()
 					->where('user_id = ?', $this->userId)
 					->fetch()
 					->toArray();
-			$form->setDefaults($user);
+			unset($player['password']);
+			$form->setDefaults($player);
 		}
+		
+		$form->setCurrentGroup();
+		$form->addSubmit('submit', 'Uložit');
 		
 		$form->onSuccess[] = $this->playerEditFormSuccess;
 		
@@ -218,9 +278,17 @@ class PlayerControl extends Framework\Application\UI\BaseControl
 	{
 		$values = $form->getValues();
 		try {
+			throw new Nette\NotImplementedException('Not yet implemented.');
+			
+			
 			$player = array(
 				
 			);
+			//change password
+			if (!empty($values->password)) {
+				$player['password'] = $this->authenticator->getPassword($values->password);
+			}
+			
 			$this->coraabiaFactory->access()->updatePlayer($this->userId, $player);
 			$this->getPresenter()->flashMessage("Uživatel '{$player['username']}' byl uložen.", 'success');
 		} catch (\Exception $e) {
