@@ -36,7 +36,8 @@ class SignPresenter extends Framework\Application\UI\BasePresenter
 		$form->addPassword('password', 'Heslo:')
 			->setRequired('Zadejte svoje heslo.');
 
-		$form->addCheckbox('remember', 'Pamatovat si přihlášení');
+		$form->addCheckbox('remember', 'Pamatovat si přihlášení')
+				->setDefaultValue('checked');
 
 		$form->addSubmit('send', 'Vstup');
 

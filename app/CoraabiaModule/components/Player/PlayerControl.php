@@ -20,6 +20,9 @@ class PlayerControl extends Framework\Application\UI\BaseControl
 	/** @var \Framework\Application\FormFactory @inject */
 	public $formFactory;
 	
+	/** @var \Model\Bazaar @inject */
+	public $bazaar;
+	
 	/** @var \Model\Authenticator @inject */
 	public $authenticator;
 	
@@ -45,11 +48,28 @@ class PlayerControl extends Framework\Application\UI\BaseControl
 		$revalidateLink = $this->lazyLink('revalidatePlayer');
 		$borrowLink = $this->lazyLink('borrowPlayer');
 		
+		$players = array();
+		try {
+			foreach ($this->bazaar->getPlayers()
+					->setParam('findUserFilter', array(
+						'includePayments' => FALSE,
+						'includeInstances' => FALSE,
+						'includeOffers' => FALSE
+					))
+					->load() as $p) {
+				
+				$players[$p->userId] = $p;
+			};
+		} catch (\Exception $e) {
+			$this->getPresenter()->flashMessage($e->getMessage(), 'error');
+			$players = array();
+		}
+
 		$grido = $this->gridoFactory->create($this, $name);
 		$grido->setModel($this->coraabiaFactory->access()->getPlayers())
 				->setPrimaryKey('user_id')
 				->setDefaultSort(array('username' => 'ASC'));
-		
+
 		$grido->addColumn('user_id', 'ID')
 				->setSortable()
 				->setCustomRender(function ($item) use ($editLink) {
@@ -58,7 +78,7 @@ class PlayerControl extends Framework\Application\UI\BaseControl
 							->setText($item->user_id);
 				})
 				->setFilterNumber();
-		
+
 		$grido->addColumn('username', 'Jméno')
 				->setSortable()
 				->setCustomRender(function ($item) use ($editLink) {
@@ -67,27 +87,54 @@ class PlayerControl extends Framework\Application\UI\BaseControl
 							->setText($item->username);
 				})
 				->setFilterText();
+
+		$grido->addColumn('level', 'Level')
+				->setSortable();
+		
+		$grido->addColumn('trin', 'Triny')
+				->setCustomRender(function ($item) use ($players) {
+					if (isset($players[$item->user_id])) {
+						foreach ($players[$item->user_id]->amounts as $amount) {
+							if ($amount->currency == 'TRI') {
+								return $amount->amount;
+							}
+						}
+					}
+					return 'N/A';
+				});
 				
+		$grido->addColumn('xot', 'Xot')
+				->setCustomRender(function ($item) use ($players) {
+					if (isset($players[$item->user_id])) {
+						foreach ($players[$item->user_id]->amounts as $amount) {
+							if ($amount->currency == 'XOT') {
+								return $amount->amount;
+							}
+						}
+					}
+					return 'N/A';
+				});
+
 		$grido->addColumn('enabled', '')
 				->setCustomRender(function ($item) {
 					return $item->enabled ? '<i class="icon-ok"></i>' : '';
 				});
-				
+
 		$grido->addColumn('borrowed', 'Půjčený')
 				->setCustomRender(function ($item) {
 					return !empty($item->password_orig) ? '<i class="icon-eye-open"></i>' : '';
 				});
-				
-		$grido->addAction('revalidate', 'Povolit/Zakázat')
-				->setIcon('refresh')
-				->setCustomHref(function ($item) use ($revalidateLink) {
-					return $revalidateLink->setParameter('id', $item->user_id);
-				});
-				
+
 		$grido->addAction('borrow', 'Půjčit/Vrátit')
 				->setIcon('eye-open')
 				->setCustomHref(function ($item) use ($borrowLink) {
 					return $borrowLink->setParameter('id', $item->user_id);
+				});
+
+		$grido->addAction('revalidate', 'Povolit/Zakázat')
+				->setIcon('refresh')
+				->setCustomHref(function ($item) use ($revalidateLink) {
+					return $revalidateLink->setParameter('id', $item->user_id);
 				});
 		
 		return $grido;
@@ -227,8 +274,16 @@ class PlayerControl extends Framework\Application\UI\BaseControl
 	
 	public function renderEdit()
 	{
+		$self = $this;
 		$template = $this->template;
 		$template->setFile(__DIR__ . '/edit.latte');
+		$this->hookManager->listen('scripts', function (\Framework\Hooks\TemplateHook $hook) use ($self) {
+			$tmpl = $self->createTemplate();
+			$tmpl->setFile(__DIR__ . '/editScripts.latte');
+			
+			$hook->addTemplate($tmpl);
+		});
+		
 		$template->render();
 	}
 	
@@ -244,14 +299,63 @@ class PlayerControl extends Framework\Application\UI\BaseControl
 		$form->addGroup('Uživatel');
 		
 		$form->addText('username', 'Jméno')
+				->setRequired()
 				->setDisabled()
+				->setOmitted()
 				->addRule(Nette\Application\UI\Form::PATTERN, 'Jméno má špatný formát.', '[a-zA-Z][a-zA-Z0-9\._-]+');
 		
 		$form->addPassword('password', 'Heslo')
 				->addRule(Nette\Application\UI\Form::PATTERN, 'Heslo musí být alespoň 6 znaků dlouhé.', '|.{6,}');
 		
 		$form->addText('email', 'Email')
+				->setRequired()
 				->addRule(Nette\Application\UI\Form::EMAIL, 'Zadejte platný email.');
+		
+		$languages = $this->locales->getLangs();
+		$form->addSelect('lang', 'Jazyk', array_combine($languages, array_map(function ($item) {
+			return strtoupper($item);
+		}, $languages)))
+				->setRequired();
+		
+		$form->addGroup('Level');
+		
+		$form->addText('level', 'Level')
+				->setRequired()
+				->setAttribute('class', 'level')
+				->setAttribute('data-bind', "value: level, valueUpdate: 'afterkeydown'")
+				->addRule(Nette\Forms\Form::INTEGER);
+		
+		$form->addText('experience', 'Exp')
+				->setRequired()
+				->setAttribute('class', 'experience')
+				->setAttribute('data-bind', "value: experience, valueUpdate: 'afterkeydown'")
+				->addRule(Nette\Forms\Form::INTEGER);
+		
+		$form->addText('influence_max', 'Vliv')
+				->setRequired()
+				->addRule(Nette\Forms\Form::INTEGER);
+		
+		$form->addGroup('Peníze');
+		
+		$form->addText('tri', 'Triny')
+				->setRequired()
+				->setOmitted()
+				->setDisabled();
+		
+		$form->addText('add_tri', 'Přidat triny')
+				->setRequired()
+				->addRule(\Nette\Forms\Form::INTEGER);
+		
+		$form->addText('xot', 'Xot')
+				->setRequired()
+				->setOmitted()
+				->setDisabled();
+		
+		$form->addText('add_xot', 'Přidat xot')
+				->setRequired()
+				->addRule(\Nette\Forms\Form::INTEGER);
+		
+		
 		
 		if ($this->userId !== NULL) {
 			$player = $this->coraabiaFactory->access()->getPlayers()
@@ -259,6 +363,30 @@ class PlayerControl extends Framework\Application\UI\BaseControl
 					->fetch()
 					->toArray();
 			unset($player['password']);
+			
+			try {
+				$bPlayer = $this->bazaar->getPlayers()
+						->setParam('findUserFilter', array(
+							'userId' => $this->userId,
+							'includePayments' => FALSE,
+							'includeInstances' => FALSE,
+							'includeOffers' => FALSE
+						))
+						->load();
+				if (empty($bPlayer) || count($bPlayer) > 1) {
+					throw new \Exception("Hráč '{$player['username']}' nebyl nalezen.");
+				} else {
+					$bPlayer = $bPlayer[0];
+				}
+				foreach ($bPlayer->amounts as $amount) {
+					$player[strtolower($amount->currency)] = $amount->amount;
+				}
+			} catch (\Exception $e) {
+				$form->addError($e->getMessage());
+			}
+			
+			$player['add_tri'] = 0;
+			$player['add_xot'] = 0;
 			$form->setDefaults($player);
 		}
 		
@@ -278,11 +406,14 @@ class PlayerControl extends Framework\Application\UI\BaseControl
 	{
 		$values = $form->getValues();
 		try {
-			throw new Nette\NotImplementedException('Not yet implemented.');
+			//throw new Nette\NotImplementedException('Not yet implemented.');
 			
 			
 			$player = array(
-				
+				'email' => $values->email,
+				'level' => $values->level,
+				'experience' => $values->experience,
+				'influence_max' => $values->influence_max
 			);
 			//change password
 			if (!empty($values->password)) {
@@ -290,9 +421,34 @@ class PlayerControl extends Framework\Application\UI\BaseControl
 			}
 			
 			$this->coraabiaFactory->access()->updatePlayer($this->userId, $player);
-			$this->getPresenter()->flashMessage("Uživatel '{$player['username']}' byl uložen.", 'success');
+			
+			//money trin
+			if ((int)$values->add_tri != 0) {
+				$this->bazaar->rewardPlayer()
+						->setParam('rewardUserOperation', array(
+							'userId' => array($this->userId),
+							'amount' => array('currency' => 'TRI', 'amount' => (int)$values->add_tri),
+							'reasonCode' => 'EDITOR USER ' . $this->getPresenter()->getUser()->getId()
+						))
+						->load();
+			}
+			
+			//money xot
+			if ((int)$values->add_xot != 0) {
+				$this->bazaar->rewardPlayer()
+						->setParam('rewardUserOperation', array(
+							'userId' => array($this->userId),
+							'amount' => array('currency' => 'XOT', 'amount' => (int)$values->add_xot),
+							'reasonCode' => 'EDITOR USER ' . $this->getPresenter()->getUser()->getId()
+						))
+						->load();
+			}
+			
+			$this->getPresenter()->flashMessage("Uživatel '{$this->userId}' byl uložen.", 'success');
 		} catch (\Exception $e) {
 			$form->addError($e->getMessage());
 		}
-	}	
+		
+		$this->redirect('this');
+	}
 }

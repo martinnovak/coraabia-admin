@@ -134,4 +134,32 @@ class Bazaar extends Model
 				->setParam('counter', 0)
 				->setParam('findTransactionFilter', array('types' => array()));
 	}
+	
+	
+	/**
+	 * @return \Framework\Mapi\MapiRequest
+	 */
+	public function getPlayers()
+	{
+		return $this->getSource()->create('FIND_USER', 'findUserResponse.user')
+				->setParam('timestamp', 0)
+				->setParam('counter', 0)
+				->setParam('findUserFilter', array(
+					'includePayments' => TRUE,
+					'includeInstances' => TRUE,
+					'includeOffers' => TRUE
+				));
+	}
+	
+	
+	/**
+	 * @return \Framework\Mapi\MapiRequest
+	 */
+	public function rewardPlayer()
+	{
+		return $this->getSource()->create('REWARD_USER', 'rewardUserResponse.totalAmount')
+				->setParam('timestamp', 0)
+				->setParam('counter', 0)
+				->setParam('rewardUserOperation', new \stdClass());
+	}
 }

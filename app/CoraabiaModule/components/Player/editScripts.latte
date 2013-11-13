@@ -1,0 +1,32 @@
+<script type="text/javascript" src="{$basePath}/js/knockout.min.js"></script>
+<script type="text/javascript">
+(function($, _, ko, undefined) {
+	var pModel = function(experience) {
+		var self = this;
+		
+		this.total = [200,508,925,1451,2087,2834,3692,4664,5749,6949,8265,9698,11250,12921,14715,16632,18675,20845,23145,25576,28142,30846,33689,36676,39811,43095,46535,50134,53897,57828,61935,66221,70695,75363,80232,85310,90607,96132,101894,107906,114178,120724,127558,134695,142151,149943,158090,166613,175534];
+		
+		this.experience = ko.observable(experience);
+		
+		this.level = ko.computed({
+			read: function () {
+				var exp = self.experience();
+				for (var i = 0; i < self.total.length; i++) {
+					if (exp < self.total[i]) {
+						return i + 1;
+					}
+				}
+				return self.total.length + 1;
+			},
+			write: function (value) {
+				self.experience(value < 2 ? 0 : self.total[value - 2]);
+			},
+			owner: this
+		});
+	};
+	
+	var experience = $('input.experience').val();
+	var pmodel = new pModel(experience);
+	ko.applyBindings(pmodel);
+})(jQuery, _, ko);
+</script>
