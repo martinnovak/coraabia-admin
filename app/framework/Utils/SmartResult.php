@@ -1,11 +1,14 @@
 <?php
 
-namespace Framework\Mapi;
+namespace Framework\Utils;
 
 use Nette;
 
 
-class MapiResult extends Nette\Object implements \Countable, \Iterator, \ArrayAccess
+/**
+ * @method array getData()
+ */
+class SmartResult extends Nette\Object implements \Countable, \Iterator, \ArrayAccess
 {
 	/** @var array */
 	private $data;	
@@ -34,7 +37,7 @@ class MapiResult extends Nette\Object implements \Countable, \Iterator, \ArrayAc
 	 */
 	public function current()
 	{
-		return MapiObject::access(current($this->data));
+		return SmartObject::access(current($this->data));
 	}
 	
 	
@@ -74,7 +77,7 @@ class MapiResult extends Nette\Object implements \Countable, \Iterator, \ArrayAc
 	 * @throws \Nette\InvalidStateException 
 	 */
 	public function offsetSet($offset, $value) {
-        throw new Nette\NotSupportedException("MapiResult nelze modifikovat.");
+        throw new Nette\NotSupportedException("SmartResult cannot be modified.");
     }
 	
 	
@@ -92,7 +95,7 @@ class MapiResult extends Nette\Object implements \Countable, \Iterator, \ArrayAc
 	 * @throws \Nette\InvalidStateException 
 	 */
     public function offsetUnset($offset) {
-        throw new Nette\NotSupportedException("MapiResult nelze modifikovat.");
+        throw new Nette\NotSupportedException("SmartResult cannot be modified.");
     }
 	
 	
@@ -101,6 +104,6 @@ class MapiResult extends Nette\Object implements \Countable, \Iterator, \ArrayAc
 	 * @return mixed 
 	 */
     public function offsetGet($offset) {
-        return array_key_exists($offset, $this->data) ? MapiObject::access($this->data[$offset]) : NULL;
+        return array_key_exists($offset, $this->data) ? SmartObject::access($this->data[$offset]) : NULL;
     }
 }

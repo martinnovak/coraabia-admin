@@ -1,27 +1,27 @@
 <?php
 
-namespace Framework\Mapi;
+namespace Framework\Utils;
 
 use Nette;
 
 
-class MapiObject implements \ArrayAccess {
+class SmartObject implements \ArrayAccess {
 	
 	/** @var object */
 	private $obj;
 	
 	
 	/**
+	 * Do not call directly, use self::access($obj) instead.
 	 * @param object $obj
 	 * @throws \Nette\InvalidArgumentException 
 	 */
 	public function __construct($obj)
 	{
 		if (!is_object($obj)) {
-			throw new Nette\InvalidArgumentException("Argument musí být objekt.");
+			throw new Nette\InvalidArgumentException("Argument must be an object, '" . gettype($obj) . "' given.");
 		}
-		if ($obj instanceof MapiObject) {
-			//throw new Nette\InvalidArgumentException("MapiObject nelze zabalit do sebe.");
+		if ($obj instanceof SmartObject) {
 			$obj = $obj->obj;
 		}
 		$this->obj = $obj;
@@ -34,11 +34,11 @@ class MapiObject implements \ArrayAccess {
 	 */
 	public static function access($obj)
 	{
-		if (is_object($obj) && !($obj instanceof MapiObject)) {
+		if (is_object($obj)) {
 			$obj = new static($obj);
 		} else if (is_array($obj)) {
 			$obj = array_map(function ($item) {
-				return \Framework\Mapi\MapiObject::access($item);
+				return \Framework\Utils\SmartObject::access($item);
 			}, $obj);
 		}
 		return $obj;
@@ -71,7 +71,7 @@ class MapiObject implements \ArrayAccess {
 	public function __get($name)
 	{
 		if (!property_exists($this->obj, $name)) {
-			throw new Nette\InvalidArgumentException("MapiObject neobsahuje sloupec '$name'.");
+			throw new Nette\InvalidArgumentException("SmartObject does not contain column '$name'.");
 		}
 		return self::access($this->obj->$name);
 	}
@@ -113,7 +113,7 @@ class MapiObject implements \ArrayAccess {
 	 */
 	public function offsetSet($offset, $value) {
         if (is_null($offset)) {
-			throw new Nette\InvalidArgumentException("Offset nemůže být NULL.");
+			throw new Nette\InvalidArgumentException("Offset cannot be NULL.");
 		}
 		$this->obj->$offset = $value;
     }
@@ -143,7 +143,7 @@ class MapiObject implements \ArrayAccess {
 	 */
     public function offsetGet($offset) {
 		if (!property_exists($this->obj, $offset)) {
-			throw new Nette\InvalidArgumentException("MapiObject neobsahuje sloupec '$offset'.");
+			throw new Nette\InvalidArgumentException("SmartObject does not contain column '$offset'.");
 		}
 		return self::access($this->obj->$offset);
     }

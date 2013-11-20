@@ -87,15 +87,10 @@ class MapiRequest extends Nette\Object
 	public static function formatDate($date)
 	{
 		if ($date instanceof \DateTime) {
-			return $date->format('Y-m-d\TH:i:s');
-		} else if (is_integer($date)) {
-			return date('Y-m-d\TH:i:s', $date);
-		} else {
+			$date = $date->getTimestamp();
+		} else if (!is_integer($date)) {
 			$date = strtotime((string)$date);
-			if ($date === FALSE) {
-				throw new Nette\InvalidArgumentException("Datum '$date' nelze naformátovat.");
-			}
-			return date('Y-m-d\TH:i:s', $date);
 		}
+		return $date * 1000;
 	}
 }

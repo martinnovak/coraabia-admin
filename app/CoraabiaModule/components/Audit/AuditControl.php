@@ -3,7 +3,6 @@
 namespace App\CoraabiaModule;
 
 use Framework,
-	Grido,
 	Grido\Components\Filters\Filter;
 
 
@@ -41,7 +40,7 @@ class AuditControl extends Framework\Application\UI\BaseControl
 		
 		//grido
 		$grido = $this->gridoFactory->create($this, $name);
-		$grido->setModel($this->bazaar->getTransactions())
+		$grido->setModel(new Framework\Grido\DataSources\MapiDataSource($this->bazaar->getTransactions()))
 				->setPrimaryKey('txId')
 				->setDefaultSort(array('txId' => 'DESC'))
 				->setPropertyAccessor(new Framework\Grido\PropertyAccessors\MapiPropertyAccessor);

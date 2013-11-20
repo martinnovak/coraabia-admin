@@ -2,6 +2,8 @@
 
 namespace Model;
 
+use Framework;
+
 
 class Bazaar extends Model
 {
@@ -135,7 +137,7 @@ class Bazaar extends Model
 	
 	/**
 	 * @param int $id
-	 * @return \Framework\Mapi\MapiObject|NULL
+	 * @return \Framework\Utils\SmartObject|NULL
 	 */
 	public function getTransactionById($id)
 	{
