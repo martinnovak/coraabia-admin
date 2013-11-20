@@ -15,8 +15,8 @@ class SignPresenter extends Framework\Application\UI\BasePresenter
 	/** @var string @persistent */
 	public $backlink = '';
 	
-	/** @var \Model\Game @inject */
-	public $game;
+	/** @var \Model\Editor @inject */
+	public $editor;
 	
 	/** @var \Nette\Http\Request @inject */
 	public $httpRequest;
@@ -62,16 +62,15 @@ class SignPresenter extends Framework\Application\UI\BasePresenter
 
 		try {
 			$currentUser->login($values->username, $values->password);
+			Nette\Diagnostics\Debugger::log($currentUser->getIdentity()->username . ' logged in.');
 			$this->updateUserLogin();
 			$this->flashMessage('Byl jste úspěšně přihlášen.', 'success');
 			$this->restoreRequest($this->backlink);
-			$this->redirect(
-					':' . ($currentUser->getIdentity()->module == Coraabia\ModuleEnum::CORAABIA ? 'Coraabia' : 'Game') . ':User:profile',
+			$this->redirect(':' . ucfirst($currentUser->getIdentity()->module) . ':User:profile',
 					array(
 						'lang' => $currentUser->getIdentity()->lang,
-						'server' => $currentUser->getIdentity()->module == Coraabia\ModuleEnum::CORAABIA ? $currentUser->getIdentity()->server : ''
-					)
-			);
+						'server' => $currentUser->getIdentity()->server
+					));
 		} catch (Nette\Security\AuthenticationException $e) {
 			$form->addError($e->getMessage());
 		}
@@ -103,12 +102,10 @@ class SignPresenter extends Framework\Application\UI\BasePresenter
 		$last_login = $this->locales->timestamp;
 		$last_login_ip = ip2long($this->httpRequest->getRemoteAddress());
 		
-		$this->game->getUserdata()->where('user_id = ?', $currentUser->getId())
-				->fetch()
-				->update(array(
-					'last_login' => $last_login,
-					'last_login_ip' => $last_login_ip
-				));
+		$this->editor->updateUser($currentUser->getId(), array(
+			'last_login' => $last_login,
+			'last_login_ip' => $last_login_ip
+		));
 		
 		$currentUser->getIdentity()->last_login = $last_login;
 		$currentUser->getIdentity()->last_login_ip = $last_login_ip;

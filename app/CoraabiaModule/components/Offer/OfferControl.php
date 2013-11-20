@@ -11,6 +11,8 @@ use Framework,
  */
 class OfferControl extends Framework\Application\UI\BaseControl
 {
+	const DATE_FORMAT = '(19|20)\d\d-(((0[13578]|1[02])-(0[1-9]|[12]\d|3[01]))|((0[469]|11)-(0[1-9]|[12]\d|30))|(02-(0[1-9]|1\d|2\d))) ([01]\d|2[0-3]):[0-5]\d:[0-5]\d';
+	
 	/** @var \Model\Bazaar @inject */
 	public $bazaar;
 	
@@ -93,6 +95,12 @@ class OfferControl extends Framework\Application\UI\BaseControl
 		$grido->addColumn('valid', '')
 				->setCustomRender(function ($item) {
 					return $item->valid ? '<i class="icon-ok"></i>' : '';
+				});
+				
+		$grido->addColumnDate('from', 'Od')
+				->setSortable()
+				->setCustomRender(function ($item) {
+					return isset($item->from) ? Nette\DateTime::from($item->from / 1000) : '∞';
 				});
 				
 		$grido->addAction('revalidate', 'Povolit/Zakázat')
@@ -197,23 +205,38 @@ class OfferControl extends Framework\Application\UI\BaseControl
 			$form->addError($e->getMessage());
 		}
 		asort($items);
-		$form->addSelect('itemId', 'Položka', $items);
+		$form->addSelect('itemId', 'Položka', $items)
+				->setRequired();
 		
 		$form->addText('basePrice', 'Cena')
+				->setRequired('Cena musí být celé nezáporné číslo.')
 				->addRule(Nette\Forms\Form::INTEGER, 'Cena musí být celé nezáporné číslo.');
 		
-		$form->addSelect('currency', 'Měna', $this->bazaar->getCurrencies());
+		$form->addSelect('currency', 'Měna', $this->bazaar->getCurrencies())
+				->setRequired();
 		
 		$form->addText('initialQuantity', 'Počáteční množství')
-				->addRule(Nette\Forms\Form::INTEGER, 'Počáteční množství musí být celé nezáporné číslo.');
+				->setRequired('Počáteční množství musí být celé nezáporné číslo.')
+				->addRule(Nette\Forms\Form::INTEGER, 'Počáteční množství musí být celé nezáporné číslo.')
+				->getControlPrototype()
+				->addAttributes(array('placeholder' => '-1 pro ∞'));
 		
 		$form->addGroup('Nastavení');
 		
-		$form->addSelect('valid', 'Povoleno', array(1 => 'Ano', 0 => 'Ne'));
+		$form->addSelect('valid', 'Povoleno', array(1 => 'Ano', 0 => 'Ne'))
+				->setRequired();
 		
-		$form->addText('from', 'Od'); //@todo rules
+		$form->addText('from', 'Od')
+				->setRequired('Musí být ve formátu YYYY-MM-DD HH:MM:SS')
+				->addRule(Nette\Forms\Form::PATTERN, 'Musí být ve formátu YYYY-MM-DD HH:MM:SS', self::DATE_FORMAT)
+				->setDefaultValue($this->locales->timestamp)
+				->getControlPrototype()
+				->addAttributes(array('class' => 'datepicker', 'placeholder' => 'YYYY-MM-DD HH:MM:SS'));
 		
-		$form->addText('to', 'Do'); //@todo rules
+		$form->addText('to', 'Do')
+				->addRule(Nette\Forms\Form::PATTERN, 'Musí být ve formátu YYYY-MM-DD HH:MM:SS', '|' . self::DATE_FORMAT)
+				->getControlPrototype()
+				->addAttributes(array('class' => 'datepicker', 'placeholder' => 'YYYY-MM-DD HH:MM:SS'));
 		
 		$form->setCurrentGroup();
 		$form->addSubmit('submit', 'Vytvořit');
@@ -288,6 +311,7 @@ class OfferControl extends Framework\Application\UI\BaseControl
 		$form->setCurrentGroup($form->getGroup('Nabídka'));
 		
 		$form->addText('quantity', 'Množství')
+				->setRequired()
 				->addRule(Nette\Forms\Form::INTEGER, 'Množství musí být celé nezáporné číslo.');
 		
 		$form->setCurrentGroup();
@@ -310,6 +334,8 @@ class OfferControl extends Framework\Application\UI\BaseControl
 				$offer->valid = $offer->valid ? 1 : 0;
 				if (isset($offer->from)) {
 					$offer->from = Nette\DateTime::from($offer->from / 1000);
+				} else {
+					$offer->from = NULL;
 				}
 				if (isset($offer->to)) {
 					$offer->to = Nette\DateTime::from($offer->to / 1000);

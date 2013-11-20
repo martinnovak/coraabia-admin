@@ -1,6 +1,6 @@
 <?php
 
-namespace Model\Datasource;
+namespace Model\DataSources;
 
 
 interface ISource

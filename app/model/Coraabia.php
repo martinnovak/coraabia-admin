@@ -2,6 +2,7 @@
 
 namespace Model;
 
+
 class Coraabia extends Model
 {
 	/**
@@ -39,15 +40,6 @@ class Coraabia extends Model
 	public function getDeckConnections()
 	{
 		return $this->getSource()->getSelectionFactory()->table('deck_connection');
-	}
-	
-	
-	/**
-	 * @return \Nette\Database\Table\Selection
-	 */
-	public function getAudits()
-	{
-		return $this->getSource()->getSelectionFactory()->table('audit_event');
 	}
 	
 	

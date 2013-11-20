@@ -19,8 +19,7 @@
 	{/#}
 	<link href="{$basePath}/css/coraabia.css?5" rel="stylesheet" media="screen">
 	{#serverStyles}
-	{var $server = $locales->server ?: \Coraabia\ServerEnum::DEV}
-	<link href="{$basePath}/css/server.{$server}.css" rel="stylesheet" media="screen">
+	<link href="{$basePath}/css/server.{$locales->server}.css" rel="stylesheet" media="screen">
 	{/#}
 	{#head}{/#}
 </head>

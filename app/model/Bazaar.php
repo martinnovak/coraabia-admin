@@ -125,14 +125,25 @@ class Bazaar extends Model
 	
 	
 	/**
-	 * @return \Framework\Mapi\MapiRequest
+	 * @return array
 	 */
 	public function getTransactions()
 	{
-		return $this->getSource()->create('FIND_TRANSACTION', 'findTransactionResponse.transactions')
-				->setParam('timestamp', 0)
-				->setParam('counter', 0)
-				->setParam('findTransactionFilter', array('types' => array()));
+		return $this->getDatasource()->getTransactions();
+	}
+	
+	
+	/**
+	 * @param int $id
+	 * @return \Framework\Mapi\MapiObject|NULL
+	 */
+	public function getTransactionById($id)
+	{
+		foreach ($this->getDatasource()->getTransactions() as $transaction) {
+			if ($transaction->txId == (int)$id) {
+				return $transaction;
+			}
+		}
 	}
 	
 	
@@ -161,5 +172,37 @@ class Bazaar extends Model
 				->setParam('timestamp', 0)
 				->setParam('counter', 0)
 				->setParam('rewardUserOperation', new \stdClass());
+	}
+	
+	
+	/**
+	 * @return array
+	 */
+	public function getBazaarTransactionTypes()
+	{
+		return array(
+			'USER_CREATED',
+			'REWARD_TRIN',
+			'REWARD_XOT',
+			'REWARD_XOT_INVITED',
+			'REWARD_ITEM',
+			'BUY_XOT',
+			'CHANGE_OFFER',
+			'SAVE_ITEM',
+			'BUY_ITEM',
+			'BUY_INSTANCE',
+			'SELL_TO_IBLORT',
+			'INIT_EXTERNAL_PAYMENT',
+			'FINISH_EXTERNAL_PAYMENT',
+			'CANCEL_EXTERNAL_PAYMENT',
+			'IMPORT_CARD',
+			'UPDATE_CARD',
+			'ASSIGN_PAYMENT_TX',
+			'PAYMILL_REQUEST',
+			'PAYPAL_REQUEST',
+			'FORTUMO_NEW_PRICE',
+			'FORTUMO_UPDATE_PRICE',
+			'FORTUMO_REQUEST'
+		);
 	}
 }

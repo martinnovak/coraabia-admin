@@ -19,85 +19,9 @@ class Game extends Model
 	/**
 	 * @return \Nette\Database\Table\Selection
 	 */
-	public function getUserdata()
-	{
-		return $this->getSource()->getSelectionFactory()->table('userdata');
-	}
-	
-	
-	/**
-	 * @return \Nette\Database\Table\Selection
-	 */
 	public function getTranslations()
 	{
 		return $this->getSource()->getSelectionFactory()->table('translation');
-	}
-	
-	
-	/**
-	 * @return \Nette\Database\Table\Selection
-	 */
-	public function getPermissions()
-	{
-		return $this->getSource()->getSelectionFactory()->table('permission');
-	}
-	
-	
-	/**
-	 * @return array
-	 */
-	public function getBazaarTransactionTypes()
-	{
-		return array(
-			'USER_CREATED',
-			'REWARD_TRIN',
-			'REWARD_XOT',
-			'REWARD_XOT_INVITED',
-			'REWARD_ITEM',
-			'BUY_XOT',
-			'CHANGE_OFFER',
-			'SAVE_ITEM',
-			'BUY_ITEM',
-			'BUY_INSTANCE',
-			'SELL_TO_IBLORT',
-			'INIT_EXTERNAL_PAYMENT',
-			'FINISH_EXTERNAL_PAYMENT',
-			'CANCEL_EXTERNAL_PAYMENT',
-			'IMPORT_CARD',
-			'UPDATE_CARD',
-			'ASSIGN_PAYMENT_TX',
-			'PAYMILL_REQUEST',
-			'PAYPAL_REQUEST',
-			'FORTUMO_NEW_PRICE',
-			'FORTUMO_UPDATE_PRICE',
-			'FORTUMO_REQUEST'
-		);
-	}
-	
-	
-	/**
-	 * @return array 
-	 */
-	public function getAuditEventTypes()
-	{
-		return array(
-			'WP_LGO',
-			'GL_RLP',
-			'SR_STA',
-			'BC_UPD',
-			'GB_BCI',
-			'GL_RLA',
-			'GL_SLV',
-			'GB_AVI',
-			'GL_SGV',
-			'BC_MOD',
-			'GS_SCI',
-			'GL_LEP',
-			'GP_SRE',
-			'GL_LEB',
-			'BC_DIS',
-			'GL_STR'
-		);
 	}
 	
 	
@@ -1033,5 +957,50 @@ class Game extends Model
 	public function getActivityPlayableFilters()
 	{
 		return $this->getSource()->getSelectionFactory()->table('activity_filter_playable');
+	}
+	
+	
+	/**
+	 * @return array
+	 */
+	public function getConnections()
+	{
+		$result = array();
+		foreach ($this->getSource()->query(
+				'SELECT
+					connection.*
+				FROM connection
+				LEFT JOIN connection_version USING (connection_id, version)
+				WHERE
+					connection_version.server = ?',
+				$this->locales->server)
+				->fetchAll() as $connection) {
+			$result[$connection->connection_id] = $connection;
+		}
+		return $result;
+	}
+	
+	
+	/**
+	 * @param string $connectionId
+	 * @param int $version
+	 */
+	public function deleteConnection($connectionId, $version)
+	{
+		try {
+			$this->getSource()->beginTransaction();
+			
+			$this->getSource()->query(
+					'DELETE FROM connection
+					WHERE
+						connection_id = ? AND
+						version = ?',
+					$connectionId, $version);
+			
+			$this->getSource()->commit();
+		} catch (\Exception $e) {
+			$this->getSource()->rollBack();
+			throw $e;
+		}
 	}
 }

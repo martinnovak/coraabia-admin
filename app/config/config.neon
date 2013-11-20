@@ -46,7 +46,7 @@ services:
 	router: @App\RouterFactory::createRouter
 	- Framework\Hooks\HookManager
 	locales: Model\Locales(%staticUrls%, %langs%)
-	- Model\Authenticator(@game, %applicationSecret%, %hashAlgorithm%)
+	- Model\Authenticator(@editor, %applicationSecret%, %hashAlgorithm%)
 	mapiRequestFactory: Framework\Mapi\MapiRequestFactory(..., %bazaarUrls%)
 	- Framework\Grido\GridoFactory
 	- Framework\Application\FormFactory
@@ -54,12 +54,14 @@ services:
 		class: Framework\Kapafaa\KapafaaParser
 		setup: [ loadClassData ]
 	xmlFactory: Framework\Xml\XmlFactory
-	- Model\GameXmlFactory
-	- Model\CoraabiaFactory
-	- Model\AuditFactory
-	- Model\StatsFactory
+	editorDatasourceFactory: Model\DataSources\Factories\EditorDatasourceFactory
+	coraabiaDatasourceFactory: Model\DataSources\Factories\CoraabiaDatasourceFactory
+	auditDatasourceFactory: Model\DataSources\Factories\AuditDatasourceFactory
+	statsDatasourceFactory: Model\DataSources\Factories\StatsDatasourceFactory
+	gameDatasourceFactory: Model\DataSources\Factories\GameDatasourceFactory
+	bazaarDatasourceFactory: Model\DataSources\Factories\BazaarDatasourceFactory
 	authorizator:
-		class: Model\Authorizator(@game)
+		class: Model\Authorizator(@editor)
 		setup: [ setupPermissions ]
 	translator:
 		class: Model\Translator(@game)

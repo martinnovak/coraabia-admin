@@ -10,8 +10,8 @@ use Nette;
  */
 class Authenticator extends Nette\Object implements Nette\Security\IAuthenticator
 {
-	/** @var \Model\Game */
-	private $game;
+	/** @var \Model\Editor */
+	private $editor;
 	
 	/** @var string */
 	private $applicationSecret;
@@ -21,13 +21,13 @@ class Authenticator extends Nette\Object implements Nette\Security\IAuthenticato
 
 
 	/**
-	 * @param \Model\Game $game
+	 * @param \Model\Editor $editor
 	 * @param type $applicationSecret
 	 * @param type $hashAlgorithm 
 	 */
-	public function __construct(Game $game, $applicationSecret, $hashAlgorithm)
+	public function __construct(Editor $editor, $applicationSecret, $hashAlgorithm)
 	{
-		$this->game = $game;
+		$this->editor = $editor;
 		$this->applicationSecret = $applicationSecret;
 		$this->hashAlgorithm = $hashAlgorithm;
 	}
@@ -41,10 +41,7 @@ class Authenticator extends Nette\Object implements Nette\Security\IAuthenticato
 	public function authenticate(array $credentials)
 	{
 		list($username, $password) = $credentials;
-		$row = $this->game->getUserdata()
-				->where('username = ?', $username)
-				->where('enabled = ?', TRUE)
-				->fetch();
+		$row = $this->editor->getValidUserByName($username);
 
 		if (!$row) {
 			throw new Nette\Security\AuthenticationException('Přihlášení se nezdařilo.', self::IDENTITY_NOT_FOUND);

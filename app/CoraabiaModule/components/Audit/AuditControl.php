@@ -3,6 +3,7 @@
 namespace App\CoraabiaModule;
 
 use Framework,
+	Grido,
 	Grido\Components\Filters\Filter;
 
 
@@ -11,14 +12,11 @@ class AuditControl extends Framework\Application\UI\BaseControl
 	/** @var \Model\Bazaar @inject */
 	public $bazaar;
 	
-	/** @var \Model\Game @inject */
-	public $game;
+	/** @var \Model\Audit @inject */
+	public $audit;
 	
 	/** @var \Framework\Grido\GridoFactory @inject */
 	public $gridoFactory;
-	
-	/** @var \Model\AuditFactory @inject */
-	public $auditFactory;
 		
 	
 	public function renderBazaar()
@@ -38,12 +36,12 @@ class AuditControl extends Framework\Application\UI\BaseControl
 		$link = $this->getPresenter()->lazyLink('showViewTransaction');
 		
 		//types
-		$tmp = $this->game->getBazaarTransactionTypes();
+		$tmp = $this->bazaar->getBazaarTransactionTypes();
 		$types = array_combine($tmp, $tmp);
 		
 		//grido
 		$grido = $this->gridoFactory->create($this, $name);
-		$grido->setModel(new Framework\Grido\DataSources\MapiDataSource($this->bazaar->getTransactions()))
+		$grido->setModel($this->bazaar->getTransactions())
 				->setPrimaryKey('txId')
 				->setDefaultSort(array('txId' => 'DESC'))
 				->setPropertyAccessor(new Framework\Grido\PropertyAccessors\MapiPropertyAccessor);
@@ -99,12 +97,7 @@ class AuditControl extends Framework\Application\UI\BaseControl
 		$template = $this->template;
 		$template->setFile(__DIR__ . '/transaction.latte');
 		
-		$id = $this->getPresenter()->getParameter('id');
-		$transactions = array_filter($this->mapiRequestFactory->create('transactions', 'txs')->load(), function ($item) use ($id) {
-			return $item->txId == $id;
-		});
-		$transaction = array_pop($transactions);
-		$template->transaction = $transaction;
+		$template->transaction = $this->bazaar->getTransactionById($this->getPresenter()->getParameter('id'));
 		
 		$template->render();
 	}
@@ -127,12 +120,12 @@ class AuditControl extends Framework\Application\UI\BaseControl
 		$link = $this->getPresenter()->lazyLink('showViewAudit');
 		
 		//types
-		$tmp = $this->game->getAuditEventTypes();
+		$tmp = $this->audit->getAuditEventTypes();
 		$types = array_combine($tmp, $tmp);
 		
 		//grido
 		$grido = $this->gridoFactory->create($this, $name);
-		$grido->setModel($this->auditFactory->access()->getAudits())
+		$grido->setModel($this->audit->getAudits())
 				->setPrimaryKey('audit_event_id')
 				->setDefaultSort(array('audit_event_id' => 'DESC'));
 		
@@ -185,10 +178,8 @@ class AuditControl extends Framework\Application\UI\BaseControl
 		$template->setFile(__DIR__ . '/event.latte');
 		
 		$id = $this->getPresenter()->getParameter('id');
-		$event = $this->auditFactory->access()->getAudits()
-				->where('audit_event_id = ?', $id)
-				->fetch()
-				->toArray();
+		
+		$event = $this->audit->getEventById($id);
 		$event['data'] = json_decode($event['data']);
 		
 		$template->event = $event;

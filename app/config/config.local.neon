@@ -3,6 +3,9 @@ includes:
 
 nette:
 	database:
+		editor:
+			dsn: 'pgsql:host=localhost port=5432 dbname=editor'
+			lazy: TRUE
 		game:
 			dsn: 'pgsql:host=localhost port=5432 dbname=game2'
 			lazy: TRUE

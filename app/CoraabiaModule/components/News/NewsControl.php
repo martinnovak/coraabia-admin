@@ -179,7 +179,6 @@ class NewsControl extends Framework\Application\UI\BaseControl
 			$form->addGroup(strtoupper($lang));
 			
 			$form->addText('title_' . $lang, 'Titulek')
-				->setRequired()
 				->addRule(Nette\Forms\Form::FILLED, 'Vyplňte titulek ' . strtoupper($lang) . ' novinky.');
 			
 			$form->addTextArea('text_' . $lang, 'Text')
@@ -255,7 +254,7 @@ class NewsControl extends Framework\Application\UI\BaseControl
 					$values->image_name = $filename;
 					
 					//upload to static
-					$uploader = $params['appDir'] . "/../bin/{$this->locales->server}-image-uploader.sh $filename 2>&1";
+					$uploader = $this->getPresenter()->getContext()->parameters['appDir'] . "/../bin/{$this->locales->server}-image-uploader.sh $filename 2>&1";
 					@exec($uploader);
 				} else {
 					throw new Nette\UnknownImageFileException('Nahraný soubor musí být obrázek typu GIF, PNG nebo JPEG.');

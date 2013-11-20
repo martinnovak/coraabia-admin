@@ -11,20 +11,20 @@ use Nette;
  */
 class Authorizator extends Nette\Security\Permission
 {
-	/** @var \Model\Game */
-	private $game;
+	/** @var \Model\Editor */
+	private $editor;
 	
 	/** @var \Nette\Caching\IStorage */
 	private $storage;
 	
 	
 	/**
-	 * @param \Model\Game $game
+	 * @param \Model\Editor $editor
 	 * @param \Nette\Caching\IStorage $storage
 	 */
-	public function __construct(Game $game, Nette\Caching\IStorage $storage)
+	public function __construct(Editor $editor, Nette\Caching\IStorage $storage)
 	{
-		$this->game = $game;
+		$this->editor = $editor;
 		$this->storage = $storage;
 	}
 	
@@ -37,7 +37,7 @@ class Authorizator extends Nette\Security\Permission
 		$cache = new Nette\Caching\Cache($this->storage, str_replace('\\', '.', get_class()));
 		if (NULL === ($permissions = $cache->load('permissions'))) {
 			$permissions = array();
-			foreach ($this->game->getPermissions()->fetchAll() as $row) {
+			foreach ($this->editor->getPermissions() as $row) {
 				$permissions[] = $row->toArray();
 			}
 			$cache->save('permissions', $permissions);
