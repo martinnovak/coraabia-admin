@@ -39,10 +39,13 @@ class SmartDataSource extends Nette\Object implements \Grido\DataSources\IDataSo
      */
     public function getData()
     {
+		$data = $this->data;
 		//filter
 		//sort
+		$this->applySorting($data);
 		//offset, limit
-		return new Framework\Utils\SmartResult(array_slice($this->data, (int)$this->offset, $this->limit ?: count($this->data)));
+		$data = array_slice($data, (int)$this->offset, $this->limit ?: count($data));
+		return new Framework\Utils\SmartResult($data);
     }
 
 	
@@ -93,5 +96,19 @@ class SmartDataSource extends Nette\Object implements \Grido\DataSources\IDataSo
 	public function suggest($column, array $conditions)
 	{
 		return $this->getData();
+	}
+	
+	
+	/**
+	 * @todo
+	 * @param array $data
+	 */
+	protected function applySorting(array &$data)
+	{
+		if (is_array($this->sorting)) {
+			foreach ($this->sorting as $key => $order) {
+				
+			}
+		}
 	}
 }

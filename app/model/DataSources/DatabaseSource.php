@@ -301,4 +301,49 @@ class DatabaseSource extends Nette\Object implements ISource
 				->table('connection_version')
 				->fetchAll();
 	}
+	
+	
+	/**
+	 * @return array
+	 */
+	public function getGameTexts()
+	{
+		return $this->connection->getSelectionFactory()
+				->table('translation')
+				->where('key LIKE ?', \App\GameModule\TextControl::PREFIX . '%')
+				->where('lang = ?', $this->locales->lang)
+				->fetchAll();
+	}
+	
+	
+	public function updateGameTexts(array $texts)
+	{
+		$this->connection->beginTransaction();
+		try {
+			foreach ($texts as $text) {
+				$this->connection->query(
+						'UPDATE translation SET value = ? WHERE key = ? AND lang = ?',
+						$text['value'], $text['key'], $text['lang']
+				);
+			}
+			$this->connection->commit();
+		} catch (\Exception $e) {
+			$this->connection->rollBack();
+			throw $e;
+		}
+	}
+	
+	
+	public function createGameTexts(array $texts)
+	{
+		return $this->connection->getSelectionFactory()
+				->table('translation')
+				->insert($texts);
+	}
+	
+	
+	public function deleteGameText($key)
+	{
+		return $this->connection->query('DELETE FROM translation WHERE key = ?', $key);
+	}
 }
