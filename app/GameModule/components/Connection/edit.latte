@@ -1,0 +1,11 @@
+{if $locales->server === \Coraabia\ServerEnum::DEV}
+	<div class="actions well">
+		<a class="btn" href="{link Connection:readyConnection, connId => $connectionId, srv => \Coraabia\ServerEnum::STAGE}">{_'Připraveno pro STAGE'}</a>
+	</div>
+{elseif $locales->server === \Coraabia\ServerEnum::STAGE}
+	<div class="actions well">
+		<a class="btn" href="{link Connection:readyConnection, connId => $connectionId, srv => \Coraabia\ServerEnum::BETA}">{_'Připraveno pro BETA'}</a>
+	</div>
+{/if}
+
+{include 'connectionForm.latte'}

@@ -70,7 +70,7 @@ class SmartObject implements \ArrayAccess {
 	 */
 	public function __get($name)
 	{
-		if (!property_exists($this->obj, $name)) {
+		if (!\Framework\Utils\SmartPropertyAccessor::has($this->obj, $name)) {
 			throw new Nette\InvalidArgumentException("SmartObject does not contain column '$name'.");
 		}
 		return self::access($this->obj->$name);
@@ -93,7 +93,7 @@ class SmartObject implements \ArrayAccess {
 	 */
 	public function __isset($name)
 	{
-		return property_exists($this->obj, $name);
+		return \Framework\Utils\SmartPropertyAccessor::has($this->obj, $name);
 	}
 	
 	
@@ -124,7 +124,7 @@ class SmartObject implements \ArrayAccess {
 	 * @return boolean 
 	 */
     public function offsetExists($offset) {
-        return property_exists($this->obj, $offset);
+		return \Framework\Utils\SmartPropertyAccessor::has($this->obj, $offset);
     }
 	
 	
@@ -142,9 +142,19 @@ class SmartObject implements \ArrayAccess {
 	 * @throws \Nette\InvalidArgumentException 
 	 */
     public function offsetGet($offset) {
-		if (!property_exists($this->obj, $offset)) {
+		if (!\Framework\Utils\SmartPropertyAccessor::has($this->obj, $offset)) {
 			throw new Nette\InvalidArgumentException("SmartObject does not contain column '$offset'.");
 		}
 		return self::access($this->obj->$offset);
     }
+	
+	
+	/**
+	 * @param callable $name
+	 * @param array $arguments
+	 * @return mixed
+	 */
+	public function __call($name, $arguments) {
+		return call_user_func_array(array($this->obj, $name), $arguments);
+	}
 }

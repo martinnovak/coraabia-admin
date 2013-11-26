@@ -1,5 +1,7 @@
-<div class="actions well">
-	<a class="btn" href="{plink Connection:create}">{_'Vytvořit konexi'}</a>
-</div>
+{if $locales->server == \Coraabia\ServerEnum::DEV}
+	<div class="actions well">
+		<a class="btn" href="{plink Connection:createConnection}">{_'Vytvořit konexi'}</a>
+	</div>
+{/if}
 
 {control list}

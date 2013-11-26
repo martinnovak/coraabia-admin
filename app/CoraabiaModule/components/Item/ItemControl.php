@@ -36,10 +36,9 @@ class ItemControl extends Framework\Application\UI\BaseControl
 		$editLink = $this->getPresenter()->lazyLink('editItem');
 		
 		$grido = $this->gridoFactory->create($this, $name);
-		$grido->setModel(new Framework\Grido\DataSources\MapiDataSource($this->bazaar->getShopItems()))
+		$grido->setModel(new Framework\Grido\DataSources\SmartDataSource($this->bazaar->getShopItems()))
 				->setPrimaryKey('itemId')
-				->setDefaultSort(array('itemId' => 'DESC'))
-				->setPropertyAccessor(new Framework\Grido\PropertyAccessors\MapiPropertyAccessor);
+				->setDefaultSort(array('itemId' => 'DESC'));
 		
 		$grido->addColumn('itemId', 'ID')
 				->setSortable()
@@ -128,18 +127,11 @@ class ItemControl extends Framework\Application\UI\BaseControl
 		
 		try {
 			if ($this->itemId !== NULL) {
-				$item = $this->bazaar->getShopItems()
-						->setParam('findItemFilter', array(
-							'itemId' => array($this->itemId),
-							'includeShopOffers' => TRUE,
-							'includeMarketOffers' => FALSE
-						))
-						->load();
-				if (empty($item) || count($item) > 1) {
+				$item = $this->bazaar->getShopItemById($this->itemId);
+				if (!$item) {
 					throw new \Exception("Položka '{$this->itemId}' nebyla nalezena.");
-				} else {
-					$item = $item[0];
 				}
+				
 				if (isset($item->validFrom)) {
 					$item->validFrom = Nette\DateTime::from($item->validFrom / 1000);
 				}
@@ -162,17 +154,9 @@ class ItemControl extends Framework\Application\UI\BaseControl
 		$values = $form->getValues();
 		if ($this->itemId !== NULL) {
 			try {
-				$item = $this->bazaar->getShopItems()
-						->setParam('findItemFilter', array(
-							'itemId' => array($this->itemId),
-							'includeShopOffers' => TRUE,
-							'includeMarketOffers' => FALSE
-						))
-						->load();
-				if (empty($item) || count($item) > 1) {
+				$item = $this->bazaar->getShopItemById($this->itemId);
+				if (!$item) {
 					throw new \Exception("Položka '{$this->itemId}' nebyla nalezena.");
-				} else {
-					$item = $item[0];
 				}
 				
 				if (!empty($values->validFrom)) {
@@ -187,7 +171,7 @@ class ItemControl extends Framework\Application\UI\BaseControl
 				}
 				$item->script = $values->script;
 				
-				$this->bazaar->saveItem((array)$item);
+				$this->bazaar->saveShopItem((array)$item);
 				$this->getPresenter()->flashMessage("Položka '{$this->itemId}' byla uložena.", 'success');
 			} catch (\Exception $e) {
 				$form->addError($e->getMessage());

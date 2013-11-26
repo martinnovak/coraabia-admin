@@ -40,10 +40,9 @@ class XotControl extends Framework\Application\UI\BaseControl
 		$revalidateLink = $this->lazyLink('revalidateRefill');
 		
 		$grido = $this->gridoFactory->create($this, $name);
-		$grido->setModel(new Framework\Grido\DataSources\MapiDataSource($this->bazaar->getRefills()))
+		$grido->setModel(new Framework\Grido\DataSources\SmartDataSource($this->bazaar->getRefills()))
 				->setPrimaryKey('refillId')
-				->setDefaultSort(array('refillId' => 'DESC'))
-				->setPropertyAccessor(new Framework\Grido\PropertyAccessors\MapiPropertyAccessor);
+				->setDefaultSort(array('refillId' => 'DESC'));
 		
 		$grido->addColumn('refillId', 'ID')
 				->setSortable()
@@ -113,15 +112,9 @@ class XotControl extends Framework\Application\UI\BaseControl
 	{
 		$refillId = (int)$this->getParameter('id');
 		try {
-			$refill = $this->bazaar->getRefills()
-				->setParam('findRefillFilter', array(
-					'refillId' => $refillId,
-				))
-				->load();
-			if (empty($refill) || count($refill) > 1) {
+			$refill = $this->bazaar->getRefillById($refillId);
+			if (!$refill) {
 				throw new \Exception("Nabídka '$refillId' nebyla nalezena.");
-			} else {
-				$refill = $refill[0];
 			}
 			
 			$refill->valid = !$refill->valid;
@@ -152,6 +145,7 @@ class XotControl extends Framework\Application\UI\BaseControl
 	
 	
 	/**
+	 * @todo
 	 * @param string $name
 	 * @return \Nette\Application\UI\Form
 	 */
@@ -169,11 +163,12 @@ class XotControl extends Framework\Application\UI\BaseControl
 	
 	
 	/**
+	 * @todo
 	 * @param \Nette\Application\UI\Form $form
 	 */
 	public function refillFormSuccess(Nette\Application\UI\Form $form)
 	{
-		$values = $form->getValues();
+		/*$values = $form->getValues();
 		$refillId = NULL;
 		
 		try {
@@ -189,7 +184,7 @@ class XotControl extends Framework\Application\UI\BaseControl
 		
 		if ($refillId) {
 			$this->getPresenter()->redirect('Xot:editRefill', array('id' => $refillId));
-		}
+		}*/
 	}
 	
 	

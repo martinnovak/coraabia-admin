@@ -6,7 +6,7 @@ use Nette,
 	Framework;
 
 
-class MapiDataSource extends Nette\Object implements \Grido\DataSources\IDataSource
+class SmartDataSource extends Nette\Object implements \Grido\DataSources\IDataSource
 {
 	/** @var array */
 	private $data;

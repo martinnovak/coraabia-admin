@@ -40,10 +40,9 @@ class OfferControl extends Framework\Application\UI\BaseControl
 		$revalidateLink = $this->lazyLink('revalidateOffer');
 		
 		$grido = $this->gridoFactory->create($this, $name);
-		$grido->setModel(new Framework\Grido\DataSources\MapiDataSource($this->bazaar->getShopOffers()))
+		$grido->setModel(new Framework\Grido\DataSources\SmartDataSource($this->bazaar->getShopOffers()))
 				->setPrimaryKey('offerId')
-				->setDefaultSort(array('offerId' => 'DESC'))
-				->setPropertyAccessor(new Framework\Grido\PropertyAccessors\MapiPropertyAccessor);
+				->setDefaultSort(array('offerId' => 'DESC'));
 		
 		$grido->addColumn('offerId', 'ID')
 				->setSortable()
@@ -140,16 +139,9 @@ class OfferControl extends Framework\Application\UI\BaseControl
 	{
 		$offerId = (int)$this->getParameter('id');
 		try {
-			$offer = $this->bazaar->getShopOffers()
-				->setParam('findOfferFilter', array(
-					'offerId' => $offerId,
-					'type' => array('SHOP')
-				))
-				->load();
-			if (empty($offer) || count($offer) > 1) {
+			$offer = $this->bazaar->getShopOfferById($offerId);
+			if (!$offer) {
 				throw new \Exception("Nabídka '$offerId' nebyla nalezena.");
-			} else {
-				$offer = $offer[0];
 			}
 			
 			$offer->valid = !$offer->valid;
@@ -191,7 +183,7 @@ class OfferControl extends Framework\Application\UI\BaseControl
 		
 		$items = array();
 		try {
-			foreach ($this->bazaar->getShopItems()->load() as $item) {
+			foreach ($this->bazaar->getShopItems() as $item) {
 				switch ($item->type) {
 					case 'CARD':
 						$items[$item->itemId] = $this->translator->translate('card.' . $item->customId);
@@ -256,17 +248,9 @@ class OfferControl extends Framework\Application\UI\BaseControl
 		$offerId = NULL;
 		
 		try {
-			$item = $this->bazaar->getShopItems()
-				->setParam('findItemFilter', array(
-					'itemId' => array((int)$values->itemId),
-					'includeShopOffers' => TRUE,
-					'includeMarketOffers' => FALSE
-				))
-				->load();
-			if (empty($item) || count($item) > 1) {
+			$item = $this->bazaar->getShopItemById((int)$values->itemId);
+			if (!$item) {
 				throw new \Exception("Položka '{$values->itemId}' nebyla nalezena.");
-			} else {
-				$item = $item[0];
 			}
 			
 			$offer = array(
@@ -321,28 +305,22 @@ class OfferControl extends Framework\Application\UI\BaseControl
 		$form->onSuccess = array($this->offerEditFormSuccess);
 		
 		try {
-			$offer = $this->bazaar->getShopOffers()
-					->setParam('findOfferFilter', array(
-						'offerId' => $this->offerId,
-						'type' => array('SHOP')
-					))
-					->load();
-			if (empty($offer) || count($offer) > 1) {
+			$offer = $this->bazaar->getShopOfferById($this->offerId);
+			if (!$offer) {
 				throw new \Exception("Nabídka '{$this->offerId}' nebyla nalezena.");
-			} else {
-				$offer = $offer[0];
-				$offer->valid = $offer->valid ? 1 : 0;
-				if (isset($offer->from)) {
-					$offer->from = Nette\DateTime::from($offer->from / 1000);
-				} else {
-					$offer->from = NULL;
-				}
-				if (isset($offer->to)) {
-					$offer->to = Nette\DateTime::from($offer->to / 1000);
-				}
-				
-				$form->setDefaults((array)$offer);
 			}
+			
+			$offer->valid = $offer->valid ? 1 : 0;
+			if (isset($offer->from)) {
+				$offer->from = Nette\DateTime::from($offer->from / 1000);
+			} else {
+				$offer->from = NULL;
+			}
+			if (isset($offer->to)) {
+				$offer->to = Nette\DateTime::from($offer->to / 1000);
+			}
+
+			$form->setDefaults((array)$offer);
 		} catch (\Exception $e) {
 			$form->addError($e->getMessage());
 		}
@@ -359,17 +337,9 @@ class OfferControl extends Framework\Application\UI\BaseControl
 		$values = $form->getValues();
 		
 		try {
-			$item = $this->bazaar->getShopItems()
-				->setParam('findItemFilter', array(
-					'itemId' => array((int)$values->itemId),
-					'includeShopOffers' => TRUE,
-					'includeMarketOffers' => FALSE
-				))
-				->load();
-			if (empty($item) || count($item) > 1) {
+			$item = $this->bazaar->getShopItemById((int)$values->itemId);
+			if (!$item) {
 				throw new \Exception("Položka '{$values->itemId}' nebyla nalezena.");
-			} else {
-				$item = $item[0];
 			}
 			
 			$offer = array(

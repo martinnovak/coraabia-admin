@@ -40,10 +40,9 @@ class AuditControl extends Framework\Application\UI\BaseControl
 		
 		//grido
 		$grido = $this->gridoFactory->create($this, $name);
-		$grido->setModel(new Framework\Grido\DataSources\MapiDataSource($this->bazaar->getTransactions()))
+		$grido->setModel(new Framework\Grido\DataSources\SmartDataSource($this->bazaar->getTransactions()))
 				->setPrimaryKey('txId')
-				->setDefaultSort(array('txId' => 'DESC'))
-				->setPropertyAccessor(new Framework\Grido\PropertyAccessors\MapiPropertyAccessor);
+				->setDefaultSort(array('txId' => 'DESC'));
 		
 		$grido->addColumn('txId', 'ID')
 				->setSortable();
@@ -124,7 +123,7 @@ class AuditControl extends Framework\Application\UI\BaseControl
 		
 		//grido
 		$grido = $this->gridoFactory->create($this, $name);
-		$grido->setModel($this->audit->getAudits())
+		$grido->setModel(new Framework\Grido\DataSources\SmartDataSource($this->audit->getAudits()))
 				->setPrimaryKey('audit_event_id')
 				->setDefaultSort(array('audit_event_id' => 'DESC'));
 		

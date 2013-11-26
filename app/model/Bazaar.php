@@ -2,20 +2,25 @@
 
 namespace Model;
 
-use Framework;
-
 
 class Bazaar extends Model
 {
 	/**
-	 * @return \Framework\Mapi\MapiRequest
+	 * @return array
 	 */
 	public function getShopOffers()
 	{
-		return $this->getSource()->create('FIND_OFFER', 'findOfferResponse.offer')
-				->setParam('timestamp', 0)
-				->setParam('counter', 0)
-				->setParam('findOfferFilter', array('type' => array('SHOP')));
+		return $this->getDatasource()->getShopOffers();
+	}
+	
+	
+	public function getShopOfferById($offerId)
+	{
+		foreach ($this->getShopOffers() as $offer) {
+			if ($offer->offerId == (int)$offerId) {
+				return $offer;
+			}
+		}
 	}
 	
 	
@@ -25,11 +30,7 @@ class Bazaar extends Model
 	 */
 	public function saveOffer(array $offer)
 	{
-		return $this->getSource()->create('SAVE_OFFER', 'saveOfferResponse.offerId')
-				->setParam('timestamp', 0)
-				->setParam('counter', 0)
-				->setParam('saveOfferOperation', array('offer' => $offer))
-				->load();
+		return $this->getDatasource()->saveOffer($offer);
 	}
 	
 	
@@ -38,38 +39,49 @@ class Bazaar extends Model
 	 */
 	public function deleteOffer($offerId)
 	{
-		return $this->getSource()->create('DELETE_OFFER', '')
-				->setParam('timestamp', 0)
-				->setParam('counter', 0)
-				->setParam('deleteOfferOperation', array('offerId' => $offerId))
-				->load();
+		return $this->getDatasource()->deleteOffer($offerId);
 	}
 	
 	
 	/**
-	 * @return \Framework\Mapi\MapiRequest
+	 * @return array
 	 */
 	public function getShopItems()
 	{
-		return $this->getSource()->create('FIND_ITEM', 'findItemResponse.item')
-				->setParam('timestamp', 0)
-				->setParam('counter', 0)
-				->setParam('findItemFilter', array(
-					'includeShopOffers' => TRUE,
-					'includeMarketOffers' => FALSE
-				));
+		return $this->getDatasource()->getShopItems();
 	}
 	
 	
 	/**
-	 * @return \Framework\Mapi\MapiRequest
+	 * @param int $itemId
+	 * @return object
+	 */
+	public function getShopItemById($itemId)
+	{
+		foreach ($this->getShopItems() as $item) {
+			if ($item->itemId == (int)$itemId) {
+				return $item;
+			}
+		}
+	}
+	
+	
+	/**
+	 * @return array
 	 */
 	public function getRefills()
 	{
-		return $this->getSource()->create('FIND_REFILL', 'findRefillResponse.refill')
-				->setParam('timestamp', 0)
-				->setParam('counter', 0)
-				->setParam('findRefillFilter', new \stdClass());
+		return $this->getDatasource()->getRefills();
+	}
+	
+	
+	public function getRefillById($refillId)
+	{
+		foreach ($this->getRefills() as $refill) {
+			if ($refill->refillId == (int)$refillId) {
+				return $refill;
+			}
+		}
 	}
 	
 	
@@ -91,11 +103,7 @@ class Bazaar extends Model
 	 */
 	public function saveRefill(array $refill)
 	{
-		return $this->getSource()->create('SAVE_REFILL', 'saveRefillResponse.refillId')
-				->setParam('timestamp', 0)
-				->setParam('counter', 0)
-				->setParam('saveRefillOperation', array('refill' => $refill))
-				->load();
+		return $this->getDatasource()->saveRefill($refill);
 	}
 	
 	
@@ -104,11 +112,7 @@ class Bazaar extends Model
 	 */
 	public function deleteRefill($refillId)
 	{
-		return $this->getSource()->create('DELETE_REFILL', '')
-				->setParam('timestamp', 0)
-				->setParam('counter', 0)
-				->setParam('deleteRefillOperation', array('refillId' => $refillId))
-				->load();
+		return $this->getDatasource()->deleteRefill((int)$refillId);
 	}
 	
 	
@@ -116,13 +120,9 @@ class Bazaar extends Model
 	 * @param array $item
 	 * @return int
 	 */
-	public function saveItem(array $item)
+	public function saveShopItem(array $item)
 	{
-		return $this->getSource()->create('SAVE_ITEM', 'saveItemResponse.itemId')
-				->setParam('timestamp', 0)
-				->setParam('counter', 0)
-				->setParam('saveItemOperation', array('item' => array($item)))
-				->load();
+		return $this->getDatasource()->saveShopItem($item);
 	}
 	
 	
@@ -141,7 +141,7 @@ class Bazaar extends Model
 	 */
 	public function getTransactionById($id)
 	{
-		foreach ($this->getDatasource()->getTransactions() as $transaction) {
+		foreach ($this->getTransactions() as $transaction) {
 			if ($transaction->txId == (int)$id) {
 				return $transaction;
 			}
@@ -150,30 +150,33 @@ class Bazaar extends Model
 	
 	
 	/**
-	 * @return \Framework\Mapi\MapiRequest
+	 * @return array
 	 */
 	public function getPlayers()
 	{
-		return $this->getSource()->create('FIND_USER', 'findUserResponse.user')
-				->setParam('timestamp', 0)
-				->setParam('counter', 0)
-				->setParam('findUserFilter', array(
-					'includePayments' => TRUE,
-					'includeInstances' => TRUE,
-					'includeOffers' => TRUE
-				));
+		return $this->getDatasource()->getPlayers();
 	}
 	
 	
-	/**
-	 * @return \Framework\Mapi\MapiRequest
-	 */
-	public function rewardPlayer()
+	public function getPlayerById($userId)
 	{
-		return $this->getSource()->create('REWARD_USER', 'rewardUserResponse.totalAmount')
-				->setParam('timestamp', 0)
-				->setParam('counter', 0)
-				->setParam('rewardUserOperation', new \stdClass());
+		foreach ($this->getPlayers() as $player) {
+			if ($player->userId == (int)$userId) {
+				return $player;
+			}
+		}
+	}
+	
+	
+	public function playerAddTrin($userId, $amount, $reason = '')
+	{
+		$this->getDatasource()->playerAddCurrency((int)$userId, (int)$amount, 'TRI', $reason);
+	}
+	
+	
+	public function playerAddXot($userId, $amount, $reason = '')
+	{
+		$this->getDatasource()->playerAddCurrency((int)$userId, (int)$amount, 'XOT', $reason);
 	}
 	
 	

@@ -6,10 +6,6 @@ use Nette;
 
 
 /**
- * Cora.g
- * revision 6360
- * retrieved 11.9.2013
- * 
  * @method array getObjects()
  */
 class Script extends Nette\Object

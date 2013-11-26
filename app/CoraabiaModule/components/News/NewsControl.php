@@ -21,8 +21,8 @@ class NewsControl extends Framework\Application\UI\BaseControl
 	const VISIBLE_NEWS = 20;
 	
 	
-	/** @var \Model\CoraabiaFactory @inject */
-	public $coraabiaFactory;
+	/** @var \Model\Coraabia @inject */
+	public $coraabia;
 		
 	/** @var \Framework\Grido\GridoFactory @inject */
 	public $gridoFactory;
@@ -53,7 +53,7 @@ class NewsControl extends Framework\Application\UI\BaseControl
 		$removeLink = $this->lazyLink('deleteNews');
 		
 		$grido = $this->gridoFactory->create($this, $name);
-		$grido->setModel($this->coraabiaFactory->access()->getNews())
+		$grido->setModel(new Framework\Grido\DataSources\SmartDataSource($this->coraabia->getNews()))
 				->setPrimaryKey('news_id')
 				->setDefaultSort(array('order_by' => 'DESC'));
 		
@@ -70,8 +70,7 @@ class NewsControl extends Framework\Application\UI\BaseControl
 					} else {
 						return '';
 					}
-				});
-				
+				});		
 		
 		$grido->addColumn('title_' . $this->locales->lang, 'Titulek')
 				->setSortable()
@@ -136,15 +135,11 @@ class NewsControl extends Framework\Application\UI\BaseControl
 	
 	public function handleDeleteNews()
 	{
-		$news_id = $this->getParameter('id');
+		$newsId = $this->getParameter('id');
 		
 		try {
-			$news = $this->coraabiaFactory->access()->getNews()
-					->where('news_id = ?', $news_id)
-					->fetch();
-			$news->delete();
-			$title = 'title_' . $this->locales->lang;
-			$this->getPresenter()->flashMessage("Novinka '{$news->$title}' byla smazána.", 'success');
+			$this->coraabia->deleteNews($newsId);
+			$this->getPresenter()->flashMessage("Novinka '$newsId' byla smazána.", 'success');
 		} catch (\Exception $e) {
 			$this->getPresenter()->flashMessage($e->getMessage(), 'error');
 		}
@@ -158,9 +153,7 @@ class NewsControl extends Framework\Application\UI\BaseControl
 		$template = $this->template;
 		$template->setFile(__DIR__ . '/edit.latte');
 		
-		$template->news = $this->coraabiaFactory->access()->getNews()
-				->where('news_id = ?', $this->newsId)
-				->fetch();
+		$template->news = $this->coraabia->getNewsById($this->newsId);
 		
 		$template->render();
 	}
@@ -207,9 +200,7 @@ class NewsControl extends Framework\Application\UI\BaseControl
 		$form->addSubmit('submit', 'Uložit');
 		
 		if ($this->newsId != NULL) {
-			$defaults = $this->coraabiaFactory->access()->getNews()
-					->where('news_id = ?', $this->newsId)
-					->fetch();
+			$defaults = $this->coraabia->getNewsById($this->newsId);
 			if ($defaults->valid_from == '') { //intentionaly ==
 				$defaults->update(array('valid_from' => $defaults->created));
 			}
@@ -271,7 +262,7 @@ class NewsControl extends Framework\Application\UI\BaseControl
 				unset($values->valid_to);
 			}
 
-			$row = $this->coraabiaFactory->access()->updateNews($this->newsId, (array)$values);
+			$row = $this->coraabia->updateNews($this->newsId, (array)$values);
 			//set image
 			if (isset($values->image_name) && is_string($values->image_name)) {
 				$this->setImage($form['image_name'], $values->image_name);
@@ -310,7 +301,7 @@ class NewsControl extends Framework\Application\UI\BaseControl
 	{
 		$newsId = (int)$this->getParameter('id');
 		try {
-			$this->coraabiaFactory->access()->updateNews($newsId, array('image_name' => NULL));
+			$this->coraabia->updateNews($newsId, array('image_name' => NULL));
 			$this->getPresenter()->flashMessage('Obrázek byl smazán.', 'success');
 		} catch (\Exception $e) {
 			$this->getPresenter()->flashMessage($e->getMessage(), 'error');

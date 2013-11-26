@@ -738,7 +738,7 @@ class Game extends Model
 	 */
 	public function getActivities()
 	{
-		return $this->getSource()->getSelectionFactory()->table('activity');
+		return $this->getDatasource()->getActivities();
 	}
 	
 	
@@ -965,42 +965,64 @@ class Game extends Model
 	 */
 	public function getConnections()
 	{
-		$result = array();
-		foreach ($this->getSource()->query(
-				'SELECT
-					connection.*
-				FROM connection
-				LEFT JOIN connection_version USING (connection_id, version)
-				WHERE
-					connection_version.server = ?',
-				$this->locales->server)
-				->fetchAll() as $connection) {
-			$result[$connection->connection_id] = $connection;
-		}
-		return $result;
+		return $this->getDatasource()->getConnections();
 	}
 	
 	
 	/**
-	 * @param string $connectionId
-	 * @param int $version
+	 * @return array
 	 */
-	public function deleteConnection($connectionId, $version)
+	public function getConnectionById($connectionId)
 	{
-		try {
-			$this->getSource()->beginTransaction();
-			
-			$this->getSource()->query(
-					'DELETE FROM connection
-					WHERE
-						connection_id = ? AND
-						version = ?',
-					$connectionId, $version);
-			
-			$this->getSource()->commit();
-		} catch (\Exception $e) {
-			$this->getSource()->rollBack();
-			throw $e;
+		foreach ($this->getConnections() as $connection) {
+			if ($connection->connection_id == $connectionId) {
+				return $connection;
+			}
+		};
+	}
+	
+	
+	public function deleteConnection($connectionId, $server = NULL)
+	{
+		if (!$server) {
+			$server = $this->locales->server;
 		}
+		$this->getDatasource()->deleteConnection($connectionId, $server);
+	}
+	
+	
+	public function getConnectionTypes()
+	{
+		return array(
+			'MULTIVERSE',
+			'GAME'
+		);
+	}
+	
+	
+	public function saveConnection(array $connection, $server = NULL)
+	{
+		if (!$server) {
+			$server = $this->locales->server;
+		}
+		$this->getDatasource()->createConnection($connection, $server);
+		return $connection['connection_id'];
+	}
+	
+	
+	public function readyConnection($connectionId, $server)
+	{
+		$version = $this->getConnectionById($connectionId)->version;
+		return $this->getDatasource()->readyConnection($connectionId, $version, $server);
+	}
+	
+	
+	public function getConnectionVersions()
+	{
+		$versions = array();
+		foreach ($this->getDatasource()->getConnectionVersions() as $data) {
+			$versions[$data->connection_id][$data->server] = $data->version;
+		}
+		return $versions;
 	}
 }

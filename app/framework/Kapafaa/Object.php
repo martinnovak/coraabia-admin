@@ -77,14 +77,4 @@ abstract class Object extends Nette\Object
 		$def['params'] = $params;
 		return (object)$def;
 	}
-	
-	/*name; //jméno
-	type; //classa
-	kapafaa; //kapafaa
-	parent; //parent
-	params; //array of params
-				name; //variable name
-				type; //variable type
-				value; //value - if scalar value, else array of object
-	*/
 }

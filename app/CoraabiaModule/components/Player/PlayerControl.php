@@ -11,14 +11,11 @@ use Framework,
  */
 class PlayerControl extends Framework\Application\UI\BaseControl
 {
-	/** @var \Model\CoraabiaFactory @inject */
-	public $coraabiaFactory;
+	/** @var \Model\Coraabia @inject */
+	public $coraabia;
 		
 	/** @var \Framework\Grido\GridoFactory @inject */
 	public $gridoFactory;
-	
-	/** @var \Framework\Application\FormFactory @inject */
-	public $formFactory;
 	
 	/** @var \Model\Bazaar @inject */
 	public $bazaar;
@@ -50,23 +47,16 @@ class PlayerControl extends Framework\Application\UI\BaseControl
 		
 		$players = array();
 		try {
-			foreach ($this->bazaar->getPlayers()
-					->setParam('findUserFilter', array(
-						'includePayments' => FALSE,
-						'includeInstances' => FALSE,
-						'includeOffers' => FALSE
-					))
-					->load() as $p) {
-				
+			foreach ($this->bazaar->getPlayers() as $p) {
 				$players[$p->userId] = $p;
-			};
+			}
 		} catch (\Exception $e) {
 			$this->getPresenter()->flashMessage($e->getMessage(), 'error');
 			$players = array();
 		}
-
+		
 		$grido = $this->gridoFactory->create($this, $name);
-		$grido->setModel($this->coraabiaFactory->access()->getPlayers())
+		$grido->setModel(new Framework\Grido\DataSources\SmartDataSource($this->coraabia->getPlayers()))
 				->setPrimaryKey('user_id')
 				->setDefaultSort(array('username' => 'ASC'));
 
@@ -145,10 +135,8 @@ class PlayerControl extends Framework\Application\UI\BaseControl
 	{
 		$userId = (int)$this->getParameter('id');
 		try {
-			$user = $this->coraabiaFactory->access()->getPlayers()
-					->where('user_id = ?', $userId)
-					->fetch();
-			$user->update(array('enabled' => !$user->enabled));
+			$user = $this->coraabia->getPlayerById($userId);
+			$user = $this->coraabia->updatePlayer($userId, array('enabled' => !$user->enabled));
 			$this->getPresenter()->flashMessage("Uživatel '" . $user->username . "' byl " . ($user->enabled ? 'povolen' : 'zakázán') . ".", 'success');
 		} catch (\Exception $e) {
 			$this->getPresenter()->flashMessage($e->getMessage(), 'error');
@@ -162,11 +150,9 @@ class PlayerControl extends Framework\Application\UI\BaseControl
 	{
 		$userId = (int)$this->getParameter('id');
 		try {
-			$user = $this->coraabiaFactory->access()->getPlayers()
-					->where('user_id = ?', $userId)
-					->fetch();
+			$user = $this->coraabia->getPlayerById($userId);
 			if (empty($user->password_orig)) {
-				$user->update(array(
+				$this->coraabia->updatePlayer($userId, array(
 					'password' => $this->authenticator->getPassword($this->getPresenter()
 							->getContext()
 							->parameters['borrowedAccountPassword']), //@todo better
@@ -174,7 +160,7 @@ class PlayerControl extends Framework\Application\UI\BaseControl
 				));
 				$this->getPresenter()->flashMessage("Uživatel '{$user->username}' je nyní půjčený.", 'info');
 			} else {
-				$user->update(array(
+				$this->coraabia->updatePlayer($userId, array(
 					'password' => $user->password_orig,
 					'password_orig' => NULL,
 				));
@@ -255,11 +241,7 @@ class PlayerControl extends Framework\Application\UI\BaseControl
 				throw new \Exception($result->errorMessage);
 			} else {
 				$this->getPresenter()->flashMessage('Uživatel byl založen.', 'success');
-				$userId = $this->coraabiaFactory->access()->getPlayers()
-						->select('user_id')
-						->where('username = ?', $values['username'])
-						->fetch()
-						->user_id;
+				$userId = $this->coraabia->getPlayerByName($values['username'])->user_id;
 			}
 			
 		} catch (\Exception $e) {
@@ -356,27 +338,14 @@ class PlayerControl extends Framework\Application\UI\BaseControl
 				->addRule(\Nette\Forms\Form::INTEGER);
 		
 		
-		
 		if ($this->userId !== NULL) {
-			$player = $this->coraabiaFactory->access()->getPlayers()
-					->where('user_id = ?', $this->userId)
-					->fetch()
-					->toArray();
+			$player = $this->coraabia->getPlayerById($this->userId)->toArray();
 			unset($player['password']);
 			
 			try {
-				$bPlayer = $this->bazaar->getPlayers()
-						->setParam('findUserFilter', array(
-							'userId' => $this->userId,
-							'includePayments' => FALSE,
-							'includeInstances' => FALSE,
-							'includeOffers' => FALSE
-						))
-						->load();
-				if (empty($bPlayer) || count($bPlayer) > 1) {
+				$bPlayer = $this->bazaar->getPlayerById($this->userId);
+				if (!$bPlayer) {
 					throw new \Exception("Hráč '{$player['username']}' nebyl nalezen.");
-				} else {
-					$bPlayer = $bPlayer[0];
 				}
 				foreach ($bPlayer->amounts as $amount) {
 					$player[strtolower($amount->currency)] = $amount->amount;
@@ -406,9 +375,6 @@ class PlayerControl extends Framework\Application\UI\BaseControl
 	{
 		$values = $form->getValues();
 		try {
-			//throw new Nette\NotImplementedException('Not yet implemented.');
-			
-			
 			$player = array(
 				'email' => $values->email,
 				'level' => $values->level,
@@ -420,28 +386,24 @@ class PlayerControl extends Framework\Application\UI\BaseControl
 				$player['password'] = $this->authenticator->getPassword($values->password);
 			}
 			
-			$this->coraabiaFactory->access()->updatePlayer($this->userId, $player);
+			$this->coraabia->updatePlayer($this->userId, $player);
 			
 			//money trin
 			if ((int)$values->add_tri != 0) {
-				$this->bazaar->rewardPlayer()
-						->setParam('rewardUserOperation', array(
-							'userId' => array($this->userId),
-							'amount' => array('currency' => 'TRI', 'amount' => (int)$values->add_tri),
-							'reasonCode' => 'EDITOR USER ' . $this->getPresenter()->getUser()->getId()
-						))
-						->load();
+				$this->bazaar->playerAddTrin(
+						$this->userId,
+						(int)$values->add_tri,
+						'EDITOR USER ' . $this->getPresenter()->getUser()->getId()
+				);
 			}
 			
 			//money xot
 			if ((int)$values->add_xot != 0) {
-				$this->bazaar->rewardPlayer()
-						->setParam('rewardUserOperation', array(
-							'userId' => array($this->userId),
-							'amount' => array('currency' => 'XOT', 'amount' => (int)$values->add_xot),
-							'reasonCode' => 'EDITOR USER ' . $this->getPresenter()->getUser()->getId()
-						))
-						->load();
+				$this->bazaar->playerAddXot(
+						$this->userId,
+						(int)$values->add_xot,
+						'EDITOR USER ' . $this->getPresenter()->getUser()->getId()
+				);
 			}
 			
 			$this->getPresenter()->flashMessage("Uživatel '{$this->userId}' byl uložen.", 'success');

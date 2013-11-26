@@ -7,11 +7,8 @@ use Framework;
 
 class DeckControl extends Framework\Application\UI\BaseControl
 {
-	/** @var \Model\Game @inject */
-	public $game;
-	
-	/** @var \Model\CoraabiaFactory @inject */
-	public $coraabiaFactory;
+	/** @var \Model\Coraabia @inject */
+	public $coraabia;
 	
 	/** @var \Framework\Grido\GridoFactory @inject */
 	public $gridoFactory;
@@ -35,7 +32,7 @@ class DeckControl extends Framework\Application\UI\BaseControl
 		$exportLink = $this->lazyLink('exportBotDeck');
 		
 		$grido = $this->gridoFactory->create($this, $name);
-		$grido->setModel($this->coraabiaFactory->access()->getDecks())
+		$grido->setModel(new Framework\Grido\DataSources\SmartDataSource($this->coraabia->getDecks()))
 				->setPrimaryKey('deck_id')
 				->setDefaultSort(array('name' => 'ASC'));
 		
@@ -56,15 +53,7 @@ class DeckControl extends Framework\Application\UI\BaseControl
 		
 		$grido->addColumn('username', 'Uživatel')
 				->setSortable()
-				->setColumn('user.username')
-				->setCustomRender(function ($item) {
-					return $item->user->username;
-				})
-				->setFilterText()
-						->setColumn('user.username')
-						->setSuggestion(function ($item) {
-							return $item->user->username;
-						});
+				->setFilterText();
 		
 		$grido->addColumn('name', 'Jméno')
 				->setSortable();
@@ -83,11 +72,12 @@ class DeckControl extends Framework\Application\UI\BaseControl
 	
 	
 	/**
+	 * @todo
 	 * @param mixed $deck 
 	 */
 	protected function exportBotDeck($deck)
 	{
-		if ($deck) {
+		/*if ($deck) {
 			$coraabia = $this->coraabiaFactory->access();
 			
 			$cards = $coraabia->getDeckInstances()->select('instance.card_id')
@@ -106,26 +96,32 @@ class DeckControl extends Framework\Application\UI\BaseControl
 
 		} else {
 			$this->getPresenter()->flashMessage("Balík není bot balík a nelze ho exportovat.", 'error');
-		}
+		}*/
 	}
 	
 	
+	/**
+	 * @todo
+	 */
 	public function handleExportBotDeck()
 	{
-		$coraabia = $this->coraabiaFactory->access();
+		/*$coraabia = $this->coraabiaFactory->access();
 		
 		$deckId = (int)$this->getParameter('id');
 		$deck = $coraabia->getDecks()->where('deck.deck_id = ?', $deckId)
 				->where('user.username ~ ?', '^b0t[1-9][0-9]*$')
 				->fetch();
 		
-		$this->exportBotDeck($deck);
+		$this->exportBotDeck($deck);*/
 	}
 	
 	
+	/**
+	 * @todo
+	 */
 	public function handleExportBotDecks()
 	{
-		$coraabia = $this->coraabiaFactory->access();
+		/*$coraabia = $this->coraabiaFactory->access();
 		
 		$decks = $coraabia->getDecks()->where('user.username ~ ?', '^b0t[1-9][0-9]*$')
 				->fetchAll();
@@ -139,6 +135,6 @@ class DeckControl extends Framework\Application\UI\BaseControl
 			}
 		}
 		
-		$this->redirect('this');
+		$this->redirect('this');*/
 	}
 }

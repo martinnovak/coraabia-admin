@@ -6,21 +6,40 @@ namespace Model;
 class Coraabia extends Model
 {
 	/**
-	 * @return \Nette\Database\Table\Selection
+	 * @return array
 	 */
 	public function getPlayers()
 	{
-		return $this->getSource()->getSelectionFactory()->table('userdata');
+		return $this->getDatasource()->getPlayers();
+	}
+	
+	
+	public function getPlayerById($userId)
+	{
+		foreach ($this->getPlayers() as $player) {
+			if ($player->user_id == (int)$userId) {
+				return $player;
+			}
+		}
+	}
+	
+	
+	public function getPlayerByName($username)
+	{
+		foreach ($this->getPlayers() as $player) {
+			if ($player->username == $username) {
+				return $player;
+			}
+		}
 	}
 	
 	
 	/**
-	 * @return \Nette\Database\Table\Selection
+	 * @return array
 	 */
 	public function getDecks()
 	{
-		return $this->getSource()->getSelectionFactory()->table('deck')
-				->select('deck.*, user.user_id, user.username');
+		return $this->getDatasource()->getDecks();
 	}
 	
 	
@@ -44,12 +63,34 @@ class Coraabia extends Model
 	
 	
 	/**
-	 * @return \Nette\Database\Table\Selection
+	 * @return array
 	 */
 	public function getNews()
 	{
-		return $this->getSource()->getSelectionFactory()->table('news')
-				->select('*, CASE WHEN valid_from IS NOT NULL THEN valid_from ELSE created END AS order_by');
+		return $this->getDatasource()->getNews();
+	}
+	
+	
+	/**
+	 * @param int $newsId
+	 * @return object
+	 */
+	public function getNewsById($newsId)
+	{
+		foreach ($this->getDatasource()->getNews() as $news) {
+			if ($news->news_id == (int)$newsId) {
+				return $news;
+			}
+		}
+	}
+	
+	
+	/**
+	 * @param int $newsId
+	 */
+	public function deleteNews($newsId)
+	{
+		return $this->getDatasource()->deleteNews((int)$newsId);
 	}
 	
 	
@@ -61,13 +102,9 @@ class Coraabia extends Model
 	public function updateNews($newsId, array $values)
 	{
 		if ($newsId !== NULL) { //update
-			$this->getSource()->getSelectionFactory()->table('news')
-					->where('news_id = ?', $newsId)
-					->fetch()
-					->update($values);
+			return $this->getDatasource()->updateNews((int)$newsId, $values);
 		} else { //insert
-			return $this->getSource()->getSelectionFactory()->table('news')
-					->insert($values);
+			return $this->getDatasource()->createNews($values);
 		}
 	}
 	
@@ -78,9 +115,11 @@ class Coraabia extends Model
 	 */
 	public function updatePlayer($userId, array $values)
 	{
-		$this->getSource()->getSelectionFactory()->table('userdata')
-				->where('user_id = ?', $userId)
-				->fetch()
-				->update($values);
+		if ($userId !== NULL) { //update
+			return $this->getDatasource()->updatePlayer((int)$userId, $values);
+		} else { //insert
+			throw new \Nette\NotSupportedException;
+			//return $this->getDatasource()->createPlayer($values);
+		}
 	}
 }

@@ -32,7 +32,8 @@ class GridoFactory extends Nette\Object
 		$grido->setDefaultPerPage(1000)
 				->setPerPageList(array(100, 200, 500, 1000))
 				->setTranslator($this->translator)
-				->setFilterRenderType(Grido\Components\Filters\Filter::RENDER_OUTER);
+				->setFilterRenderType(Grido\Components\Filters\Filter::RENDER_OUTER)
+				->setPropertyAccessor(new PropertyAccessors\SmartPropertyAccessor);
 		return $grido;
 	}
 }

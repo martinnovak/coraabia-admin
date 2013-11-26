@@ -27,9 +27,6 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 	/** @var \Framework\Grido\GridoFactory @inject */
 	public $gridoFactory;
 	
-	/** @var \Framework\Application\FormFactory @inject */
-	public $formFactory;
-	
 	/** @var \Framework\Kapafaa\KapafaaParser @inject */
 	public $kapafaaParser;
 	
@@ -60,13 +57,13 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 		$baseUri = $this->template->baseUri;
 		
 		$grido = $this->gridoFactory->create($this, $name);
-		$grido->setModel($this->game->getActivities())
+		$grido->setModel(new Framework\Grido\DataSources\SmartDataSource($this->game->getActivities()))
 				->setPrimaryKey('activity_id')
 				->setDefaultSort(array('fraction' => 'ASC', 'activity_id' => 'ASC'));
 		
 		$grido->addColumnText('activity_id', 'ID')
 				->setSortable()
-				->setCustomRender(function ($item) use ($self, $editLink) {
+				->setCustomRender(function ($item) use ($editLink) {
 					return '<a href="' . $editLink->setParameter('id', $item->activity_id) . '" class="' . strtolower($item->fraction) . '">' . $item->activity_id . '</a>';
 				});
 		

@@ -7,6 +7,10 @@ use Nette,
 
 
 /**
+ * Cora.g
+ * revision 6360
+ * retrieved 11.9.2013
+ * 
  * @method array getClasses()
  */
 class KapafaaParser extends Nette\Object
@@ -53,6 +57,7 @@ class KapafaaParser extends Nette\Object
 	public function loadClassData($rebuild = FALSE)
 	{
 		\Framework\Diagnostics\TimerPanel::timer(__METHOD__);
+		
 		$cache = new Nette\Caching\Cache($this->storage, str_replace('\\', '.', get_class()));
 		$indexed = $this->container->getService('robotLoader')->getIndexedClasses();
 		if ($rebuild) {
@@ -66,7 +71,9 @@ class KapafaaParser extends Nette\Object
 				}, $this->classes)
 			));
 		}
+		
 		\Framework\Diagnostics\TimerPanel::timer(__METHOD__);
+		
 		return $this;
 	}
 	
@@ -78,6 +85,7 @@ class KapafaaParser extends Nette\Object
 	protected function build(array $indexed)
 	{
 		\Framework\Diagnostics\TimerPanel::timer(__METHOD__);
+
 		$classes = array();
 		foreach ($indexed as $name => $file) {
 			$rc = Nette\Reflection\ClassType::from($name);
@@ -111,6 +119,7 @@ class KapafaaParser extends Nette\Object
 			$def['params'] = $params;
 			$classes[] = $def;
 		}
+
 		\Framework\Diagnostics\TimerPanel::timer(__METHOD__);
 		return $classes;
 	}
@@ -163,6 +172,7 @@ class KapafaaParser extends Nette\Object
 	public function parse($text)
 	{
 		\Framework\Diagnostics\TimerPanel::timer(__METHOD__);
+
 		$cache = new Nette\Caching\Cache($this->storage, str_replace('\\', '.', get_class()));
 		if (($scripts = $cache->load($text)) === NULL) {
 			$scripts = array();
@@ -178,6 +188,7 @@ class KapafaaParser extends Nette\Object
 			}
 			$cache->save($text, $scripts);
 		}
+		
 		\Framework\Diagnostics\TimerPanel::timer(__METHOD__);
 		return $scripts;
 	}
