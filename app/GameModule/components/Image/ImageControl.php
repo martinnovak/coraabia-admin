@@ -40,7 +40,7 @@ class ImageControl extends Framework\Application\UI\BaseControl
 		$removeLink = $this->lazyLink('deleteArtist');
 		
 		$grido = $this->gridoFactory->create($this, $name);
-		$grido->setModel($this->game->getArtists())
+		$grido->setModel(new Framework\Grido\DataSources\SmartDataSource($this->game->getArtists()))
 				->setPrimaryKey('artist_id')
 				->setDefaultSort(array('name' => 'ASC'));
 		

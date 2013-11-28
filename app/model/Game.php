@@ -93,8 +93,7 @@ class Game extends Model
 	{
 		return $this->getDatasource()->deleteGameText($key);
 	}
-
-
+	
 	
 	/**
 	 * @return \Nette\Database\Table\Selection
@@ -106,13 +105,11 @@ class Game extends Model
 	
 	
 	/**
-	 * @return \Nette\Database\Table\Selection
+	 * @return array
 	 */
 	public function getArtists()
 	{
-		return $this->getSource()->getSelectionFactory()->table('artist')
-				->select('artist.*, COUNT(:art.art_id) AS arts')
-				->group('artist.artist_id');
+		return $this->getDatasource()->getArtists();
 	}
 	
 	
@@ -230,11 +227,21 @@ class Game extends Model
 	
 	
 	/**
-	 * @return \Nette\Database\Table\Selection
+	 * @return array
 	 */
 	public function getGamerooms()
 	{
-		return $this->getSource()->getSelectionFactory()->table('gameroom');
+		return $this->getDatasource()->getGamerooms();
+	}
+	
+	
+	public function getGameroomById($gameroomId)
+	{
+		foreach ($this->getGamerooms() as $gameroom) {
+			if ($gameroom->gameroom_id == $gameroomId) {
+				return $gameroom;
+			}
+		}
 	}
 	
 	
@@ -404,13 +411,10 @@ class Game extends Model
 	}
 	
 	
-	public function saveConnection(array $connection, $server = NULL)
+	public function saveConnection($connection)
 	{
-		if (!$server) {
-			$server = $this->locales->server;
-		}
-		$this->getDatasource()->createConnection($connection, $server);
-		return $connection['connection_id'];
+		$this->getDatasource()->createConnection($connection);
+		return $connection->connection_id;
 	}
 	
 	
@@ -421,12 +425,45 @@ class Game extends Model
 	}
 	
 	
-	public function getConnectionVersions()
+	public function getAllConnectionsVersions()
 	{
 		$versions = array();
-		foreach ($this->getDatasource()->getConnectionVersions() as $data) {
+		foreach ($this->getDatasource()->getAllConnectionsVersions() as $data) {
 			$versions[$data->connection_id][$data->server] = $data->version;
 		}
 		return $versions;
+	}
+	
+	
+	public function getAllGameroomsVersions()
+	{
+		$versions = array();
+		foreach ($this->getDatasource()->getAllGameroomsVersions() as $data) {
+			$versions[$data->gameroom_id][$data->server] = $data->version;
+		}
+		return $versions;
+	}
+	
+	
+	public function deleteGameroom($gameroomId, $server = NULL)
+	{
+		if (!$server) {
+			$server = $this->locales->server;
+		}
+		$this->getDatasource()->deleteGameroom($gameroomId, $server);
+	}
+	
+	
+	public function saveGameroom($gameroom)
+	{
+		$this->getDatasource()->createGameroom($gameroom);
+		return $gameroom->gameroom_id;
+	}
+	
+	
+	public function readyGameroom($gameroomId, $server)
+	{
+		$version = $this->getGameroomById($gameroomId)->version;
+		return $this->getDatasource()->readyGameroom($gameroomId, $version, $server);
 	}
 }

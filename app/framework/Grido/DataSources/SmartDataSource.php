@@ -65,6 +65,7 @@ class SmartDataSource extends Nette\Object implements \Grido\DataSources\IDataSo
     public function filter(array $condition)
 	{
 		$this->condition = $condition;
+		Nette\Diagnostics\Debugger::dump($this->condition);
 	}
 
 	
@@ -115,14 +116,16 @@ class SmartDataSource extends Nette\Object implements \Grido\DataSources\IDataSo
 	
 	
 	/**
-	 * @todo
 	 * @param array $data
 	 */
 	protected function applySorting(array &$data)
 	{
 		if (is_array($this->sorting)) {
 			foreach ($this->sorting as $key => $order) {
-				
+				usort($data, function ($a, $b) use ($key, $order ){
+					$compared = Framework\Utils\SmartObject::access($a)->$key < Framework\Utils\SmartObject::access($b)->$key;
+					return $order == 'ASC' ? ($compared ? -1 : 1) : ($compared ? 1 : -1);
+				});
 			}
 		}
 	}

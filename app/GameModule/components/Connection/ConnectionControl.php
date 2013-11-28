@@ -64,50 +64,14 @@ class ConnectionControl extends Framework\Application\UI\BaseControl
 							->setText($self->translator->translate('connection-name.' . $item->connection_id . '.' . $item->version));
 				});
 				
-		$versions = $this->game->getConnectionVersions();
+		$versions = $this->game->getAllConnectionsVersions();
 		$grido->addColumnNumber('version', 'V')
 				->setCustomRender(function ($item) use ($self, $versions) {
-					$result = array();
-					if (isset($versions[$item->connection_id][\Coraabia\ServerEnum::DEV])) {
-						if ($self->locales->server == \Coraabia\ServerEnum::DEV) {
-							$result[] = '<strong>' . $versions[$item->connection_id][\Coraabia\ServerEnum::DEV] . '</strong>';
-						} else {
-							$result[] = $versions[$item->connection_id][\Coraabia\ServerEnum::DEV];
-						}
-					} else {
-						if ($self->locales->server == \Coraabia\ServerEnum::DEV) {
-							$result[] = '<strong>&times;</strong>';
-						} else {
-							$result[] = '&times;';
-						}
-					}
-					if (isset($versions[$item->connection_id][\Coraabia\ServerEnum::STAGE])) {
-						if ($self->locales->server == \Coraabia\ServerEnum::STAGE) {
-							$result[] = '<strong>' . $versions[$item->connection_id][\Coraabia\ServerEnum::STAGE] . '</strong>';
-						} else {
-							$result[] = $versions[$item->connection_id][\Coraabia\ServerEnum::STAGE];
-						}
-					} else {
-						if ($self->locales->server == \Coraabia\ServerEnum::STAGE) {
-							$result[] = '<strong>&times;</strong>';
-						} else {
-							$result[] = '&times;';
-						}
-					}
-					if (isset($versions[$item->connection_id][\Coraabia\ServerEnum::BETA])) {
-						if ($self->locales->server == \Coraabia\ServerEnum::BETA) {
-							$result[] = '<strong>' . $versions[$item->connection_id][\Coraabia\ServerEnum::BETA] . '</strong>';
-						} else {
-							$result[] = $versions[$item->connection_id][\Coraabia\ServerEnum::BETA];
-						}
-					} else {
-						if ($self->locales->server == \Coraabia\ServerEnum::BETA) {
-							$result[] = '<strong>&times;</strong>';
-						} else {
-							$result[] = '&times;';
-						}
-					}
-					return implode(' | ', $result);
+					return implode(' | ', array(
+						'<span class="' . \Coraabia\ServerEnum::DEV . '">' . (isset($versions[$item->connection_id][\Coraabia\ServerEnum::DEV]) ? $versions[$item->connection_id][\Coraabia\ServerEnum::DEV] : '&times;') . '</span>',
+						'<span class="' . \Coraabia\ServerEnum::STAGE . '">' . (isset($versions[$item->connection_id][\Coraabia\ServerEnum::STAGE]) ? $versions[$item->connection_id][\Coraabia\ServerEnum::STAGE] : '&times;') . '</span>',
+						'<span class="' . \Coraabia\ServerEnum::BETA . '">' . (isset($versions[$item->connection_id][\Coraabia\ServerEnum::BETA]) ? $versions[$item->connection_id][\Coraabia\ServerEnum::BETA] : '&times;') . '</span>'
+					));
 				});
 		
 		if ($this->locales->server == Coraabia\ServerEnum::DEV || $this->locales->server == Coraabia\ServerEnum::STAGE) {
@@ -115,6 +79,9 @@ class ConnectionControl extends Framework\Application\UI\BaseControl
 					->setIcon('share')
 					->setCustomHref(function ($item) use ($self, $readyLink) {
 						return $readyLink->setParameter('connId', $item->connection_id)->setParameter('srv', $self->locales->server == Coraabia\ServerEnum::DEV ? Coraabia\ServerEnum::STAGE : Coraabia\ServerEnum::BETA);
+					})
+					->setConfirm(function ($item) {
+						return 'Jste si jisti?';
 					});
 		}
 				
@@ -225,7 +192,7 @@ class ConnectionControl extends Framework\Application\UI\BaseControl
 		
 		try {
 			$this->kapafaaParser->parse($values->effect_data); //sanity check
-			$connectionId = $this->game->saveConnection((array)$values);
+			$connectionId = $this->game->saveConnection($values);
 		} catch (\Exception $e) {
 			$form->addError($e->getMessage());
 		}
@@ -255,6 +222,7 @@ class ConnectionControl extends Framework\Application\UI\BaseControl
 	{
 		$connectionId = $this->getParameter('connId');
 		$server = $this->getParameter('srv');
+		$follow = $this->getParameter('follow');
 		$saved = FALSE;
 		try {
 			$this->game->readyConnection($connectionId, $server);
@@ -263,12 +231,13 @@ class ConnectionControl extends Framework\Application\UI\BaseControl
 			$this->getPresenter()->flashMessage($e->getMessage(), 'error');
 		}
 		
-		if (!$saved) {
+		if ($this->translator instanceof \Framework\Localization\ICachingTranslator) {
+			$this->translator->clean();
+		}
+		
+		if (!$saved || !$follow) {
 			$this->redirect('this');
 		} else {
-			if ($this->translator instanceof \Framework\Localization\ICachingTranslator) {
-				$this->translator->clean();
-			}
 			$this->getPresenter()->redirect('Connection:editConnection', array('id' => $connectionId, 'server' => $server));
 		}
 	}

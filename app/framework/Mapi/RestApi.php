@@ -30,10 +30,10 @@ class RestApi extends Nette\Object
 		$context = stream_context_create(array('http' => array(
 			'method'  => 'POST',
 			'header'  => 'Content-type: application/json',
-			'content' => json_encode($obj)
+			'content' => Nette\Utils\Json::encode($obj)
 		)));
 		
-		$result = json_decode(file_get_contents($url, FALSE, $context));
+		$result = Nette\Utils\Json::decode(file_get_contents($url, FALSE, $context));
 		
 		Framework\Diagnostics\TimerPanel::timer(__METHOD__);
 		Framework\Diagnostics\RestPanel::log($result);
