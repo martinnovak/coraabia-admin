@@ -1,27 +1,23 @@
 <div class="navbar navbar-static-top navbar-inverse">
 	<div class="navbar-inner">
-		<a class="brand" href="{plink User:showProfile, module => game}">{_'Coraabia Admin'}</a>
+		<a class="brand" href="{plink User:showProfile}">{_'Coraabia Admin'}</a>
 		<ul class="nav pull-right" n:if="$user->isLoggedIn()">
-			{*if !($locales->module == \Coraabia\ModuleEnum::GAME)*}
-			<li n:class="$locales->server == \Coraabia\ServerEnum::DEV ? active"><a href="{plink User:changeServer!, server => \Coraabia\ServerEnum::DEV}">{_'DEV'}</a></li>
-			<li n:class="$locales->server == \Coraabia\ServerEnum::STAGE ? active"><a href="{plink User:changeServer!, server => \Coraabia\ServerEnum::STAGE}">{_'STAGE'}</a></li>
-			<li n:class="$locales->server == \Coraabia\ServerEnum::BETA ? active"><a href="{plink User:changeServer!, server => \Coraabia\ServerEnum::BETA}">{_'BETA'}</a></li>
+			<li n:class="$locales->server == \Coraabia\ServerEnum::DEV ? active"><a href="{plink this, server => \Coraabia\ServerEnum::DEV}">{_'DEV'}</a></li>
+			<li n:class="$locales->server == \Coraabia\ServerEnum::STAGE ? active"><a href="{plink this, server => \Coraabia\ServerEnum::STAGE}">{_'STAGE'}</a></li>
+			<li n:class="$locales->server == \Coraabia\ServerEnum::BETA ? active"><a href="{plink this, server => \Coraabia\ServerEnum::BETA}">{_'BETA'}</a></li>
 			<li class="divider-vertical"></li>
-			{*/if*}
-			<li n:class="$locales->module == \Coraabia\ModuleEnum::GAME ? active"><a href="{plink User:changeModule!, mdl => \Coraabia\ModuleEnum::GAME}">{_'GAME'}</a></li>
-			<li n:class="$locales->module == \Coraabia\ModuleEnum::CORAABIA ? active"><a href="{plink User:changeModule!, mdl => \Coraabia\ModuleEnum::CORAABIA}">{_'CORAABIA'}</a></li>
+			<li n:class="$locales->module == \Coraabia\ModuleEnum::GAME ? active"><a href="{plink :Game:User:profile}">{_'GAME'}</a></li>
+			<li n:class="$locales->module == \Coraabia\ModuleEnum::CORAABIA ? active"><a href="{plink :Coraabia:User:profile}">{_'CORAABIA'}</a></li>
 			<li class="divider-vertical"></li>
 			<li class="dropdown">
 				<a href="#" class="dropdown-toggle" data-toggle="dropdown">{$locales->lang|upper}<b class="caret"></b></a>
 				<ul class="dropdown-menu">
-					<li n:class="$locales->lang == cs ? active"><a href="{plink User:changeLang!, lang => cs}">{_'CS'}</a></li>
-					<li n:class="$locales->lang == en ? active"><a href="{plink User:changeLang!, lang => en}">{_'EN'}</a></li>
+					<li n:class="$locales->lang == cs ? active"><a href="{plink this, lang => cs}">{_'CS'}</a></li>
+					<li n:class="$locales->lang == en ? active"><a href="{plink this, lang => en}">{_'EN'}</a></li>
 				</ul>
 			</li>
-			{if $user->isLoggedIn()}
 			<li class="divider-vertical"></li>
 			<li><a href="{plink :Sign:out, server => ''}">{_'Odhlásit'}</a></li>
-			{/if}
 		</ul>
 	</div>
 </div>

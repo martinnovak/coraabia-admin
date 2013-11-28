@@ -98,7 +98,7 @@ class Authorizator extends Nette\Security\Permission
 		try {
 			return parent::isAllowed($role, $resource, $privilege);
 		} catch (\Exception $e) {
-			dlog($e);
+			//dlog($e);
 		}
 		return FALSE;
 	}

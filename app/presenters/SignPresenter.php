@@ -15,9 +15,6 @@ class SignPresenter extends Framework\Application\UI\BasePresenter
 	/** @var string @persistent */
 	public $backlink = '';
 	
-	/** @var \Model\Editor @inject */
-	public $editor;
-	
 	/** @var \Nette\Http\Request @inject */
 	public $httpRequest;
 	

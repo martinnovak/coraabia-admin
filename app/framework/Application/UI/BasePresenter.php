@@ -10,6 +10,9 @@ use Nette;
  */
 abstract class BasePresenter extends Nette\Application\UI\Presenter
 {
+	/** @var \Model\Editor @inject */
+	public $editor;
+	
 	/** @var \Nette\Localization\ITranslator @inject */
 	public $translator;
 	
@@ -69,9 +72,34 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 		parent::startup();
 		
 		if ($this->getUser()->isLoggedIn()) {
-			$lang = $this->getUser()->getIdentity()->lang;
-			if ($lang != $this->lang) { //intentionaly !=
-				$this->redirect('this', array('lang' => $lang));
+			$params = array();
+			
+			if ($this->getUser()->getIdentity()->lang != $this->locales->lang) {
+				$params['lang'] = $this->locales->lang;
+			}
+			if (!empty($this->locales->server) && $this->locales->server != $this->getUser()->getIdentity()->server) {
+				$params['server'] = $this->locales->server;
+			}
+			if (!empty($this->locales->module) && $this->locales->module != $this->getUser()->getIdentity()->module) {
+				$params['module'] = $this->locales->module;
+			}
+			
+			if (!empty($params)) {
+				try {
+					$this->editor->updateUser($this->getUser()->getId(), $params);
+				} catch (\Exception $e) {
+					
+				}
+				
+				if (isset($params['lang'])) {
+					$this->getUser()->getIdentity()->lang = $params['lang'];
+				}
+				if (isset($params['server'])) {
+					$this->getUser()->getIdentity()->server = $params['server'];
+				}
+				if (isset($params['module'])) {
+					$this->getUser()->getIdentity()->module = $params['module'];
+				}
 			}
 		}
 	}
