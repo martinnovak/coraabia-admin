@@ -164,8 +164,11 @@ class DatabaseSource extends Nette\Object implements ISource
 	 */
 	public function getActivities()
 	{
-		return $this->connection->getSelectionFactory()
-				->table('activity')
+		return $this->connection->query(
+				'SELECT activity.* FROM activity
+				LEFT JOIN activity_version USING (activity_id, version)
+				WHERE activity_version.server = ?',
+				$this->locales->server)
 				->fetchAll();
 	}
 	
@@ -176,12 +179,9 @@ class DatabaseSource extends Nette\Object implements ISource
 	public function getConnections()
 	{
 		return $this->connection->query(
-				'SELECT
-					connection.*
-				FROM connection
+				'SELECT connection.* FROM connection
 				LEFT JOIN connection_version USING (connection_id, version)
-				WHERE
-					connection_version.server = ?',
+				WHERE connection_version.server = ?',
 				$this->locales->server)
 				->fetchAll();
 	}
@@ -195,9 +195,7 @@ class DatabaseSource extends Nette\Object implements ISource
 	{
 		$this->connection->query(		
 				'DELETE FROM connection_version
-				WHERE
-					connection_id = ? AND
-					server = ?',
+				WHERE connection_id = ? AND server = ?',
 				$connectionId, $server
 		);
 	}
@@ -363,12 +361,9 @@ class DatabaseSource extends Nette\Object implements ISource
 	public function getGamerooms()
 	{
 		return $this->connection->query(
-				'SELECT
-					gameroom.*
-				FROM gameroom
+				'SELECT gameroom.* FROM gameroom
 				LEFT JOIN gameroom_version USING (gameroom_id, version)
-				WHERE
-					gameroom_version.server = ?',
+				WHERE gameroom_version.server = ?',
 				$this->locales->server)
 				->fetchAll();
 	}
@@ -390,9 +385,7 @@ class DatabaseSource extends Nette\Object implements ISource
 	{
 		$this->connection->query(		
 				'DELETE FROM gameroom_version
-				WHERE
-					gameroom_id = ? AND
-					server = ?',
+				WHERE gameroom_id = ? AND server = ?',
 				$gameroomId, $server
 		);
 	}
@@ -471,5 +464,25 @@ class DatabaseSource extends Nette\Object implements ISource
 				'INSERT INTO gameroom_version (gameroom_id, version, server) SELECT ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM gameroom_version WHERE gameroom_id = ? AND server = ?)',
 				$gameroomId, (int)$version, $server, $gameroomId, $server
 		);
+	}
+	
+	
+	/**
+	 * @return array
+	 */
+	public function getBots()
+	{
+		return $this->connection->getSelectionFactory()
+				->table('bot')
+				->fetchAll();
+	}
+	
+	
+	public function getFilterByVersionId($versionId)
+	{
+		return $this->connection->getSelectionFactory()
+				->table('filter')
+				->where(':filter_version.filter_version_id = ?', (int)$versionId)
+				->fetch();
 	}
 }

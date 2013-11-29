@@ -171,8 +171,8 @@ class NewsControl extends Framework\Application\UI\BaseControl
 			
 			$form->addGroup(strtoupper($lang));
 			
-			$form->addText('title_' . $lang, 'Titulek')
-				->addRule(Nette\Forms\Form::FILLED, 'Vyplňte titulek ' . strtoupper($lang) . ' novinky.');
+			$form->addText('title_' . $lang, 'Titulek')/*
+				->addRule(Nette\Forms\Form::FILLED, 'Vyplňte titulek ' . strtoupper($lang) . ' novinky.')*/;
 			
 			$form->addTextArea('text_' . $lang, 'Text')
 				->setAttribute('rows', 15);

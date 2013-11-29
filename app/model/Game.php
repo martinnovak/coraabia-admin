@@ -135,11 +135,21 @@ class Game extends Model
 	
 	
 	/**
-	 * @return \Nette\Database\Table\Selection
+	 * @return array
 	 */
 	public function getActivities()
 	{
 		return $this->getDatasource()->getActivities();
+	}
+	
+	
+	public function getActivityById($activityId)
+	{
+		foreach ($this->getActivities() as $activity) {
+			if ($activity->activity_id == $activityId) {
+				return $activity;
+			}
+		}
 	}
 	
 	
@@ -152,17 +162,23 @@ class Game extends Model
 	}
 	
 	
+	public function getFilterByVersionId($versionId)
+	{
+		return $this->getDatasource()->getFilterByVersionId($versionId);
+	}
+	
+	
 	/**
 	 * @return array
 	 */
 	public function getFractions()
 	{
 		return array(
-			'GUARDIAN',
-			'XENNO',
-			'MERCENARY',
-			'UNLIVING',
-			'OUTLAW'
+			'GUARDIAN' => 'Strážce',
+			'XENNO' => 'Xeňan',
+			'MERCENARY' => 'Žoldák',
+			'UNLIVING' => 'Neživý',
+			'OUTLAW' => 'Padouch'
 		);
 	}
 	
@@ -170,12 +186,13 @@ class Game extends Model
 	/**
 	 * @return array
 	 */
-	public function getActivityVariants()
+	public function getRarities()
 	{
 		return array(
-			'ACTIVITY',
-			'TITLE',
-			'GRIND'
+			'C' => 'Common',
+			'U' => 'Uncommon',
+			'R' => 'Rare',
+			'G' => 'Guru'
 		);
 	}
 	
@@ -183,12 +200,26 @@ class Game extends Model
 	/**
 	 * @return array
 	 */
-	public function getActivityTypes()
+	public function getActivityVariantTypes()
 	{
 		return array(
-			'CLASSIC',
-			'SPECIAL',
-			'TOURNAMENT'
+			'ACTIVITY' => 'Aktivita',
+			'TITLE' => 'Titul',
+			'GRIND' => 'Grind'
+		);
+	}
+	
+	
+	/**
+	 * @return array
+	 */
+	public function getActivityActivityTypes()
+	{
+		return array(
+			'NEW' => 'Nová',
+			'SPECIAL' => 'Speciální',
+			'TOURNAMENT' => 'Turnaj',
+			'CLASSIC' => 'Klasická'
 		);
 	}
 	
@@ -199,9 +230,9 @@ class Game extends Model
 	public function getActivityStartTypes()
 	{
 		return array(
-			'MM',
-			'PVP',
-			'ELO'
+			'MM' => 'MM',
+			'PVP' => 'PVP',
+			'ELO' => 'ELO'
 		);
 	}
 		
@@ -282,11 +313,21 @@ class Game extends Model
 	
 	
 	/**
-	 * @return \Nette\Database\Table\Selection
+	 * @return array
 	 */
 	public function getBots()
 	{
-		return $this->getSource()->getSelectionFactory()->table('bot');
+		return $this->getDatasource()->getBots();
+	}
+	
+	
+	public function getBotsAsSelect()
+	{
+		$bots = array();
+		foreach ($this->getBots() as $bot) {
+			$bots[$bot->bot_id] = $bot->name;
+		}
+		return $bots;
 	}
 	
 	
@@ -296,12 +337,12 @@ class Game extends Model
 	public function getActivityRewardTypes()
 	{
 		return array(
-			'CONNECTION',
-			'TRIN',
-			'CARD',
-			'EXP',
-			'XOT',
-			'AVATAR'
+			'CONNECTION' => 'Konexe',
+			'TRIN' => 'Triny',
+			'CARD' => 'Karta',
+			'EXP' => 'Exp',
+			'XOT' => 'Xot',
+			'AVATAR' => 'Avatar'
 		);
 	}
 	

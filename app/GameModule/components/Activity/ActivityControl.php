@@ -30,9 +30,6 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 	/** @var \Framework\Kapafaa\KapafaaParser @inject */
 	public $kapafaaParser;
 	
-	/** @var \Nette\Caching\IStorage @inject */
-	public $storage;
-	
 	/** @var string */
 	private $activityId;
 	
@@ -64,12 +61,12 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 		$grido->addColumnText('activity_id', 'ID')
 				->setSortable()
 				->setCustomRender(function ($item) use ($editLink) {
-					return '<a href="' . $editLink->setParameter('id', $item->activity_id) . '" class="' . strtolower($item->fraction) . '">' . $item->activity_id . '</a>';
+					return '<a href="' . $editLink->setParameter('id', $item->activity_id) . '">' . $item->activity_id . '</a>';
 				});
 		
-		$grido->addColumn('translated_name', 'Jméno')
+		$grido->addColumn('name', 'Jméno')
 				->setCustomRender(function ($item) use ($self, $editLink) {
-					return '<a href="' . $editLink->setParameter('id', $item->activity_id) . '" class="' . strtolower($item->fraction) . '">' . trim($self->translator->translate('activity-name.' . $item->activity_id)) . '</a>';
+					return '<a href="' . $editLink->setParameter('id', $item->activity_id) . '" class="' . strtolower($item->fraction) . '">' . trim($self->translator->translate('activity-name.' . $item->activity_id . '.' . $item->version)) . '</a>';
 				});
 				
 		$grido->addColumn('fraction', 'Frakce')
@@ -79,25 +76,21 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 							($item->fraction ? strtolower($item->fraction) : 'card') .
 							".png");
 				});
-				
+		
+		$bots = $this->game->getBotsAsSelect();
 		$grido->addColumn('bot_id', 'Bot')
 				->setSortable()
-				->setCustomRender(function ($item) {
-					return $item->bot_id ? ('<i class="icon-user"></i>&nbsp;' . $item->bot->name) : '';
+				->setCustomRender(function ($item) use ($bots) {
+					return $item->bot_id ? ('<i class="icon-user"></i>&nbsp;' . $bots[$item->bot_id]) : '';
 				});
 		
-		$grido->addColumn('ready', '')
-				->setCustomRender(function ($item) {
-					return $item->ready ? '<i class="icon-ok"></i>' : '';
-				});
-				
 		$grido->addAction('remove', 'Smazat')
 				->setIcon('remove')
 				->setCustomHref(function ($item) use ($removeLink) {
 					return $removeLink->setParameter('id', $item->activity_id);
 				})
 				->setConfirm(function ($item) use ($self) {
-					return "Opravdu chcete smazat aktivitu '" . $self->translator->translate('activity-name.' . $item->activity_id) . "'?";
+					return "Opravdu chcete smazat aktivitu '" . $self->translator->translate('activity-name.' . $item->activity_id . '.' . $item->version) . "'?";
 				});
 		
 		return $grido;
@@ -121,26 +114,7 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 			$tmpl = $self->createTemplate();
 			$tmpl->setFile(__DIR__ . '/activityScripts.latte');
 			
-			$tmpl->activityData = array(
-				'gamerooms' => array_values(array_map(function ($item) use ($self) {
-					return array(
-						'id' => $item->gameroom_id,
-						'name' => $self->translator->translate('gameroom.' . $item->gameroom_id),
-						'ready' => $item->ready,
-						'ag_ready' => FALSE
-					);
-				}, $self->game->getGamerooms()->fetchAll())),
-				'activities' => array_values(array_map(function ($item) use ($self) {
-					return array(
-						'id' => $item->activity_id,
-						'name' => $self->translator->translate('activity-name.' . $item->activity_id),
-						'ready' => $item->ready
-					);
-				}, $self->game->getActivities()->fetchAll()))
-			);
-			
 			$tmpl->kapafaaDefinitions = $self->kapafaaParser->classes;
-			
 			$tmpl->parserLink = $self->link('parseScript');
 			
 			$hook->addTemplate($tmpl);
@@ -159,26 +133,7 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 			$tmpl = $self->createTemplate();
 			$tmpl->setFile(__DIR__ . '/activityScripts.latte');
 			
-			$tmpl->activityData = array(
-				'gamerooms' => array_values(array_map(function ($item) use ($self) {
-					return array(
-						'id' => $item->gameroom_id,
-						'name' => $self->translator->translate('gameroom.' . $item->gameroom_id),
-						'ready' => $item->ready,
-						'ag_ready' => FALSE
-					);
-				}, $self->game->getGamerooms()->fetchAll())),
-				'activities' => array_values(array_map(function ($item) use ($self) {
-					return array(
-						'id' => $item->activity_id,
-						'name' => $self->translator->translate('activity-name.' . $item->activity_id),
-						'ready' => $item->ready
-					);
-				}, $self->game->getActivities()->fetchAll()))
-			);
-			
 			$tmpl->kapafaaDefinitions = $self->kapafaaParser->classes;
-			
 			$tmpl->parserLink = $self->link('parseScript');
 			
 			$hook->addTemplate($tmpl);
@@ -194,7 +149,6 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 	 */
 	public function createComponentActivityForm($name)
 	{
-		$self = $this;
 		$form = $this->formFactory->create($this, $name);
 
 		$form->addGroup('Nastavení');
@@ -204,44 +158,47 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 				->setAttribute('class', 'activityId')
 				->setRequired('Vyplňte ID aktivity.')
 				->addRule(Nette\Forms\Form::MAX_LENGTH, 'Maximální délka ID je %value znaků.', 20)
-				->addRule(Nette\Forms\Form::PATTERN, 'ID musí končit jednou z přípon _C, _U, _R, _G a nesmí obsahovat pomlčku', '[^-]+_[CURG]');
+				->addRule(Nette\Forms\Form::PATTERN, 'ID nesmí obsahovat pomlčku', '[^-]+');
 		
-		$fractions = $this->game->getFractions();
-		$fractions = array_combine(
-				array_merge(array(''), $fractions),
-				array_merge(array(''), array_map(function ($item) use ($self) {
-					return $self->translator->translate('fraction.' . $item);
-				}, $fractions))
-		);
-		$form->addSelect('fraction', 'Frakce', $fractions);
+		$form->addText('version', 'Verze')
+				->setDisabled()
+				->setOmitted();
 		
-		$variantTypes = $this->game->getActivityVariants();
-		$variantTypes = array_combine($variantTypes, $variantTypes);
-		$form->addSelect('variant_type', 'Varianta', $variantTypes)
+		$form->addSelect('rarity', 'Rarita', $this->game->getRarities())
 				->setRequired();
 		
-		$activityTypes = $this->game->getActivityTypes();
-		$activityTypes = array_combine($activityTypes, $activityTypes);
-		$form->addSelect('activity_type', 'Typ aktivity', $activityTypes)
+		$form->addSelect('fraction', 'Frakce', $this->game->getFractions());
+		
+		$form->addSelect('variant_type', 'Varianta', $this->game->getActivityVariantTypes())
 				->setRequired();
 		
-		$activityStartTypes = $this->game->getActivityStartTypes();
-		$activityStartTypes = array_combine($activityStartTypes, $activityStartTypes);
-		$form->addSelect('start_type', 'Typ startu', $activityStartTypes)
+		$form->addSelect('activity_type', 'Typ aktivity', $this->game->getActivityActivityTypes())
 				->setRequired();
 		
-		$bots = array('' => '');
-		foreach ($this->game->getBots()->fetchAll() as $bot) {
-			$bots[$bot->bot_id] = $bot->name;
+		$form->addSelect('start_type', 'Typ startu', $this->game->getActivityStartTypes())
+				->setRequired();
+		
+		$form->addSelect('bot_id', 'Bot', array('' => '') + $this->game->getBotsAsSelect());
+		
+		$gamerooms = array();
+		foreach ($this->game->getGamerooms() as $gameroom) {
+			$gamerooms[$gameroom->gameroom_id] = $this->translator->translate('gameroom-name.' . $gameroom->gameroom_id . '.' . $gameroom->version);
 		}
-		$form->addSelect('bot_id', 'Bot', $bots);
+		$form->addSelect('gameroom_id', 'Gameroom', $gamerooms)
+				->setRequired();
+		
+		$parents = array('' => '');
+		foreach ($this->game->getActivities() as $parent) {
+			$parents[$parent->activity_id] = $this->translator->translate('activity-name.' . $parent->activity_id . '.' . $parent->version);
+		}
+		$form->addSelect('parent_id', 'Rodičovská aktivita', $parents);
 		
 		$form->addGroup('Pozice');
 		
 		$form->addText('tree', 'Strom')
 				->setRequired('Vyplňte strom.')
 				->addRule(Nette\Forms\Form::INTEGER, 'Hodnota musí být celé číslo.')
-				->setOption('description', 'Stromy 0-5 jsou frakční a obecný.');
+				->setOption('description', 'Strom 0 jsou staré aktivity, stromy 1-6 jsou frakční a obecný.');
 		
 		$form->addText('posx', 'Pozice X')
 				->setRequired('Vyplňte x-ovou pozici ve stromě.')
@@ -255,24 +212,22 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 		
 		$form->addGroup('Odměna');
 		
-		$rewardTypes = $this->game->getActivityRewardTypes();
-		$rewardTypes = array('' => '') + array_combine($rewardTypes, $rewardTypes);
-		$form->addSelect('reward_type', 'Typ odměny', $rewardTypes);
+		$form->addSelect('reward_type', 'Typ odměny', array('' => '') + $this->game->getActivityRewardTypes());
 		
 		$form->addText('reward_value', 'Hodnota');
 		
 		$form->addGroup('Obrázky');
 		
-		$form->addText('authority', 'Zadavatel');
+		$form->addText('mentor', 'Mentor');
 		
-		$form->addText('art_id', 'Art (todo)');
+		$form->addText('art_id', 'Art (@todo)');
 		
 		foreach ($this->locales->langs as $lang) {
 			
 			$form->addGroup(strtoupper($lang));
 			
-			$form->addText('activity_name_' . $lang, 'Jméno')
-					->setRequired('Vyplňte jméno ' . strtoupper($lang) . ' aktivity');
+			$form->addText('activity_name_' . $lang, 'Jméno')/*
+					->setRequired('Vyplňte jméno ' . strtoupper($lang) . ' aktivity')*/;
 			
 			$form->addTextArea('activity_flavor_' . $lang, 'Flavor')
 					->setAttribute('rows', 10);
@@ -302,16 +257,18 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 				->setAttribute('readonly', 'readonly')
 				->setAttribute('data-bind', 'value: toKapafaa');
 		
-		$form->addText('local_var', 'Lokální proměnná')
+		$form->addText('variable_id', 'Lokální proměnná')
 				->setRequired()
 				->setAttribute('readonly', 'readonly')
 				->setAttribute('class', 'local_var');
 		$form->addText('global_var', 'Globální proměnná');
 		$form->addText('time_start', 'Začátek')
 				->setRequired()
-				->addRule(Nette\Forms\Form::PATTERN, 'Čas ve formátu YYYY-MM-DD HH:MM:SS.', '\d{4}-\d{2}-\d{2} \d{2}\:\d{2}\:\d{2}');
+				->addRule(Nette\Forms\Form::PATTERN, 'Čas ve formátu YYYY-MM-DD HH:MM:SS.', '\d{4}-\d{2}-\d{2} \d{2}\:\d{2}\:\d{2}')
+				->setAttribute('placeholder', 'YYYY-MM-DD HH:MM:SS');
 		$form->addText('time_end', 'Konec')
-				->addRule(Nette\Forms\Form::PATTERN, 'Čas ve formátu YYYY-MM-DD HH:MM:SS.', '|\d{4}-\d{2}-\d{2} \d{2}\:\d{2}\:\d{2}');
+				->addRule(Nette\Forms\Form::PATTERN, 'Čas ve formátu YYYY-MM-DD HH:MM:SS.', '|\d{4}-\d{2}-\d{2} \d{2}\:\d{2}\:\d{2}')
+				->setAttribute('placeholder', 'YYYY-MM-DD HH:MM:SS');
 		$form->addText('level_min', 'Min. level')
 				->setRequired()
 				->addRule(Nette\Forms\Form::INTEGER);
@@ -322,8 +279,8 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 				->addRule(Nette\Forms\Form::INTEGER);
 		$form->addText('influence_max', 'Max. vliv')
 				->addRule(Nette\Forms\Form::PATTERN, 'Zadejte celé kladné číslo.', '|0|[1-9]\d*');
-		$form->addTextArea('filter_scripts', '')
-				->setAttribute('class', 'max-width filterScripts')
+		$form->addTextArea('filter_script', '')
+				->setAttribute('class', 'max-width filterScript')
 				->setAttribute('rows', 15)
 				->setAttribute('readonly', 'readonly')
 				->setAttribute('data-bind', 'value: filterToKapafaa');
@@ -333,7 +290,6 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 
 		if ($this->activityId === NULL) {
 			$form->setDefaults(array(
-				'activity_id' => '_C',
 				'time_start' => $this->locales->timestamp,
 				'level_min' => 1,
 				'influence_min' => 15
@@ -341,16 +297,21 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 			$form->onSuccess[] = $this->activityCreateFormSuccess;
 		} else {
 			//activity
-			$activity = $this->game->getActivities()
-					->where('activity_id = ?', $this->activityId)
-					->fetch();
+			$activity = $this->game->getActivityById($this->activityId);
+			$form->setDefaults($activity);
 			//texts
 			$texts = array();
 			foreach ($this->locales->getLangs() as $lang) {
 				foreach ($this->textKeys as $key) {
-					$texts[$key . '_' . $lang] = $this->translator->getTranslation(str_replace('_', '-', $key) . '.' . $this->activityId, $lang);
+					$texts[$key . '_' . $lang] = $this->translator->getTranslation(str_replace('_', '-', $key) . '.' . $this->activityId . '.' . $activity->version, $lang);
 				}
 			}
+			$form->setDefaults($texts);
+
+			$filter = $this->game->getFilterByVersionId($activity->filter_version_playable_id);
+			$form->setDefaults($filter);
+			
+			/*
 			//filter
 			$filter = $this->game->getFilters()
 					->where(':activity_filter_playable.activity_id = ?', $this->activityId)
@@ -384,6 +345,8 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 				$gamerooms,
 				$parents
 			));
+			
+			*/
 			$form->onSuccess[] = $this->activityEditFormSuccess;
 		}
 		
