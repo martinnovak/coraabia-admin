@@ -33,6 +33,27 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	
 
 	/**
+	 * @param mixed $element
+	 */
+	public function checkRequirements($element)
+	{
+		if (!$this->__checkRequirements($element)) {
+			throw new Nette\Application\ForbiddenRequestException;
+		}
+	}
+	
+	
+	/**
+	 * @param mixed $element
+	 * @return boolean
+	 */
+	public function __checkRequirements($element)
+	{
+		return TRUE;
+	}
+	
+	
+	/**
 	 * @param string|NULL $class
 	 * @return \Nette\Templating\ITemplate 
 	 */
@@ -87,9 +108,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 			if (!empty($params)) {
 				try {
 					$this->editor->updateUser($this->getUser()->getId(), $params);
-				} catch (\Exception $e) {
-					
-				}
+				} catch (\Exception $e) { }
 				
 				if (isset($params['lang'])) {
 					$this->getUser()->getIdentity()->lang = $params['lang'];
@@ -102,5 +121,23 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 				}
 			}
 		}
+	}
+	
+	
+	/**
+	 * @param \Nette\Application\Request $request
+	 * @return boolean
+	 */
+	public function checkRequestRequirements(Nette\Application\Request $request)
+	{
+		$presenter = $request->getPresenterName() === $this->getName() ? $this :
+				$this->context->getService('nette.presenterFactory')
+					->createPresenter($request->getPresenterName());
+		try {
+			$check = $presenter->__checkRequirements($presenter->getReflection());
+		} catch (\Exception $e) {
+			$check = FALSE;
+		}
+		return $check;
 	}
 }

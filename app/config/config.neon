@@ -73,4 +73,4 @@ services:
 
 factories:
 	nette.latte:
-		setup: [ Framework\Hooks\HookMacros::setup ]
+		setup: [ Framework\Hooks\HookMacros::setup, Framework\Latte\Macros\UIMacros::setup ]
