@@ -36,6 +36,24 @@ class MapiSource extends Nette\Object implements ISource
 	}
 	
 	
+	public function beginTransaction()
+	{
+		//not supported
+	}
+	
+	
+	public function commit()
+	{
+		//not supported
+	}
+	
+	
+	public function rollBack()
+	{
+		//not supported
+	}
+	
+	
 	/**
 	 * @return array
 	 */

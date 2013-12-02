@@ -114,13 +114,40 @@ class Game extends Model
 	
 	
 	/**
-	 * @return \Nette\Database\Table\Selection
+	 * @return array
+	 */
+	public function getArtistById($artistId)
+	{
+		foreach ($this->getArtists() as $artist) {
+			if ($artist->artist_id == (int)$artistId) {
+				return $artist;
+			}
+		}
+	}
+	
+	
+	public function deleteArtist($artistId)
+	{
+		return $this->getDatasource()->deleteArtist((int)$artistId);
+	}
+	
+	
+	/**
+	 * @return array
 	 */
 	public function getCountries()
 	{
-		return $this->getSource()->getSelectionFactory()->table('translation')
-				->where('key LIKE ?', 'country.%')
-				->where('lang = ?', $this->locales->lang);
+		return $this->getDatasource()->getCountries();
+	}
+	
+	
+	public function getCountriesAsSelect()
+	{
+		$countries = array();
+		foreach ($this->getCountries() as $country) {
+			$countries[substr($country->key, -2)] = $country->value;
+		}
+		return $countries;
 	}
 	
 	
@@ -153,12 +180,9 @@ class Game extends Model
 	}
 	
 	
-	/**
-	 * @return \Nette\Database\Table\Selection
-	 */
-	public function getFilters()
+	public function getActivityByVersionId($versionId)
 	{
-		return $this->getSource()->getSelectionFactory()->table('filter');
+		return $this->getDatasource()->getActivityByVersionId($versionId);
 	}
 	
 	
@@ -276,12 +300,9 @@ class Game extends Model
 	}
 	
 	
-	/**
-	 * @return \Nette\Database\Table\Selection
-	 */
-	public function getObservers()
+	public function getObserverByVersionId($versionId)
 	{
-		return $this->getSource()->getSelectionFactory()->table('observer');
+		return $this->getDatasource()->getObserverByVersionId($versionId);
 	}
 	
 	
@@ -347,28 +368,114 @@ class Game extends Model
 	}
 	
 	
-	/**
-	 * @param array $values
-	 * @return \Nette\Database\ResultSet|NULL
-	 */
-	public function createActivity(array $values)
+	public function createActivity($values)
 	{
-		return $this->getSource()->query('INSERT INTO activity', array(
-						'activity_id' => $values['activity_id'],
-						'fraction' => $values['fraction'] ?: NULL,
-						'posx' => (int)$values['posx'],
-						'posy' => (int)$values['posy'],
-						'authority' => $values['authority'],
-						'art_id' => $values['art_id'] ? (int)$values['art_id'] : NULL,
-						'bot_id' => $values['bot_id'] ? (int)$values['bot_id'] : NULL,
-						'variant_type' => $values['variant_type'],
-						'activity_type' => $values['activity_type'],
-						'start_type' => $values['start_type'],
-						'reward_type' => $values['reward_type'] ?: NULL,
-						'reward_value' => $values['reward_type'] && $values['reward_value'] ? $values['reward_value'] : NULL,
-						'tree' => (int)$values['tree'],
-						'ready' => FALSE
-					));
+		try {
+			$this->getDatasource()->beginTransaction();
+			
+			//local variable
+			$variableId = $this->saveLocalPlayableVariableForActivity($values->activity_id);
+			
+			//global variable
+			if (!empty($values->global_var)) {
+				$this->getDatasource()->saveGlobalVariable($values->global_var, 0, '');
+			}
+			
+			//filter
+			$values = (object)array_merge((array)$values, array(
+				'filter_id' => $this->getDatasource()->getNewFilterId(),
+				'variable_id' => $variableId
+			));
+			$this->getDatasource()->saveFilter($values);
+			$values = (object)array_merge((array)$values, array(
+				'filter_version_playable_id' => $this->getDatasource()->getFilterVersionId($values->filter_id, $this->locales->server)->filter_version_id
+			));
+			
+			//observer
+			$values = (object)array_merge((array)$values, array(
+				'observer_id' => $this->getDatasource()->getNewObserverId()
+			));
+			$this->getDatasource()->saveObserver($values);
+			$values = (object)array_merge((array)$values, array(
+				'observer_version_id' => $this->getDatasource()->getObserverVersionId($values->observer_id, $this->locales->server)->observer_version_id
+			));
+			
+			//gameroom
+			$values = (object)array_merge((array)$values, array(
+				'gameroom_version_id' => $this->getDatasource()->getGameroomVersionId($values->gameroom_id, $this->locales->server)->gameroom_version_id
+			));
+			
+			//parent activity
+			$values = (object)array_merge((array)$values, array(
+				'parent_version_id' => empty($values->parent_id) ? NULL : $this->getDatasource()->getActivityVersionId($values->parent_id, $this->locales->server)->activity_version_id
+			));
+			
+			//activity
+			$this->getDatasource()->saveActivity($values);
+			
+			$this->getDatasource()->commit();
+		} catch (\Exception $e) {
+			$this->getDatasource()->rollBack();
+			throw $e;
+		}
+		return $values;
+	}
+	
+	
+	public function updateActivity($values)
+	{
+		try {
+			$this->getDatasource()->beginTransaction();
+			
+			//old values
+			$activity = $this->getActivityById($values->activity_id);
+			
+			//local variable
+			$variableId = $this->saveLocalPlayableVariableForActivity($values->activity_id);
+			
+			//global variable
+			if (!empty($values->global_var)) {
+				$this->getDatasource()->saveGlobalVariable($values->global_var, 0, '');
+			}
+			
+			//filter
+			$values = (object)array_merge((array)$values, array(
+				'filter_id' => $this->getDatasource()->getFilterByVersionId($activity->filter_version_playable_id)->filter_id,
+				'variable_id' => $variableId
+			));
+			$this->getDatasource()->saveFilter($values);
+			$values = (object)array_merge((array)$values, array(
+				'filter_version_playable_id' => $this->getDatasource()->getFilterVersionId($values->filter_id, $this->locales->server)->filter_version_id
+			));
+			
+			//observer
+			$values = (object)array_merge((array)$values, array(
+				'observer_id' => $this->getDatasource()->getObserverByVersionId($activity->observer_version_id)->observer_id
+			));
+			$this->getDatasource()->saveObserver($values);
+			$values = (object)array_merge((array)$values, array(
+				'observer_version_id' => $this->getDatasource()->getObserverVersionId($values->observer_id, $this->locales->server)->observer_version_id
+			));
+			
+			//gameroom
+			$values = (object)array_merge((array)$values, array(
+				'gameroom_version_id' => $this->getDatasource()->getGameroomVersionId($values->gameroom_id, $this->locales->server)->gameroom_version_id
+			));
+			
+			//parent activity
+			$values = (object)array_merge((array)$values, array(
+				'parent_version_id' => empty($values->parent_id) ? NULL : $this->getDatasource()->getActivityVersionId($values->parent_id, $this->locales->server)->activity_version_id
+			));
+			
+			//activity
+			$this->getDatasource()->saveActivity($values);
+			
+			$this->getDatasource()->commit();
+		} catch (\Exception $e) {
+			$this->getDatasource()->rollBack();
+			throw $e;
+		}
+		return $values;
 	}
 	
 	
@@ -454,15 +561,29 @@ class Game extends Model
 	
 	public function saveConnection($connection)
 	{
-		$this->getDatasource()->createConnection($connection);
-		return $connection->connection_id;
+		try {
+			$this->getDatasource()->beginTransaction();
+			$this->getDatasource()->saveConnection($connection);
+			$this->getDatasource()->commit();
+		} catch (\Exception $e) {
+			$this->getDatasource()->rollBack();
+			throw $e;
+		}
+		return $connection;
 	}
 	
 	
 	public function readyConnection($connectionId, $server)
 	{
-		$version = $this->getConnectionById($connectionId)->version;
-		return $this->getDatasource()->readyConnection($connectionId, $version, $server);
+		try {
+			$this->getDatasource()->beginTransaction();
+			$version = $this->getConnectionById($connectionId)->version;
+			$this->getDatasource()->readyConnection($connectionId, $version, $server);
+			$this->getDatasource()->commit();
+		} catch (\Exception $e) {
+			$this->getDatasource()->rollBack();
+			throw $e;
+		}
 	}
 	
 	
@@ -486,6 +607,12 @@ class Game extends Model
 	}
 	
 	
+	public function getGameroomByVersionId($versionId)
+	{
+		return $this->getDatasource()->getGameroomByVersionId($versionId);
+	}
+	
+	
 	public function deleteGameroom($gameroomId, $server = NULL)
 	{
 		if (!$server) {
@@ -497,14 +624,55 @@ class Game extends Model
 	
 	public function saveGameroom($gameroom)
 	{
-		$this->getDatasource()->createGameroom($gameroom);
-		return $gameroom->gameroom_id;
+		try {
+			$this->getDatasource()->beginTransaction();
+			$this->getDatasource()->saveGameroom($gameroom);
+			$this->getDatasource()->commit();
+		} catch (\Exception $e) {
+			$this->getDatasource()->rollBack();
+			throw $e;
+		}
+		return $gameroom;
 	}
 	
 	
 	public function readyGameroom($gameroomId, $server)
 	{
-		$version = $this->getGameroomById($gameroomId)->version;
-		return $this->getDatasource()->readyGameroom($gameroomId, $version, $server);
+		try {
+			$this->getDatasource()->beginTransaction();
+			$version = $this->getGameroomById($gameroomId)->version;
+			$this->getDatasource()->readyGameroom($gameroomId, $version, $server);
+			$this->getDatasource()->commit();
+		} catch (\Exception $e) {
+			$this->getDatasource()->rollBack();
+			throw $e;
+		}
+	}
+	
+	
+	protected function saveLocalPlayableVariableForActivity($activityId)
+	{
+		$variableId = substr($activityId . '_PL', -20);
+		$this->getDatasource()->saveLocalVariable($variableId, 0, $activityId . ' playable');
+		return $variableId;
+	}
+	
+	
+	public function deleteActivity($activityId, $server = NULL)
+	{
+		if (!$server) {
+			$server = $this->locales->server;
+		}
+		$this->getDatasource()->deleteActivity($activityId, $server);
+	}
+	
+	
+	public function getAllActivitiesVersions()
+	{
+		$versions = array();
+		foreach ($this->getDatasource()->getAllActivitiesVersions() as $data) {
+			$versions[$data->activity_id][$data->server] = $data->version;
+		}
+		return $versions;
 	}
 }

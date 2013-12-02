@@ -69,6 +69,16 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 					return '<a href="' . $editLink->setParameter('id', $item->activity_id) . '" class="' . strtolower($item->fraction) . '">' . trim($self->translator->translate('activity-name.' . $item->activity_id . '.' . $item->version)) . '</a>';
 				});
 				
+		$versions = $this->game->getAllActivitiesVersions();
+		$grido->addColumnNumber('version', 'V')
+				->setCustomRender(function ($item) use ($self, $versions) {
+					return implode(' | ', array(
+						'<span class="' . \Coraabia\ServerEnum::DEV . '">' . (isset($versions[$item->activity_id][\Coraabia\ServerEnum::DEV]) ? $versions[$item->activity_id][\Coraabia\ServerEnum::DEV] : '&times;') . '</span>',
+						'<span class="' . \Coraabia\ServerEnum::STAGE . '">' . (isset($versions[$item->activity_id][\Coraabia\ServerEnum::STAGE]) ? $versions[$item->activity_id][\Coraabia\ServerEnum::STAGE] : '&times;') . '</span>',
+						'<span class="' . \Coraabia\ServerEnum::BETA . '">' . (isset($versions[$item->activity_id][\Coraabia\ServerEnum::BETA]) ? $versions[$item->activity_id][\Coraabia\ServerEnum::BETA] : '&times;') . '</span>'
+					));
+				});
+				
 		$grido->addColumn('fraction', 'Frakce')
 				->setSortable()
 				->setCustomRender(function ($item) use ($baseUri) {
@@ -99,8 +109,12 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 	
 	public function handleDeleteActivity()
 	{
-		$this->getPresenter()->flashMessage('Aktivita byla smazána.', 'success');
-		$this->getPresenter()->flashMessage('NOT IMPLEMENTED', 'warning');
+		try {
+			$this->game->deleteActivity($this->getParameter('id'));
+			$this->getPresenter()->flashMessage('Aktivita byla smazána.', 'success');
+		} catch (\Exception $e) {
+			$this->getPresenter()->flashMessage($e->getMessage(), 'error');
+		}
 		$this->redirect('this');
 	}
 	
@@ -251,10 +265,10 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 			->setAttribute('data-bind', 'value: parentList()')
 			->setAttribute('class', 'parentList');
 		
-		$form->addTextArea('observer_scripts', '')
+		$form->addTextArea('effect_data', '')
 				->setAttribute('class', 'max-width observerScripts')
 				->setAttribute('rows', 15)
-				->setAttribute('readonly', 'readonly')
+				//->setAttribute('readonly', 'readonly')
 				->setAttribute('data-bind', 'value: toKapafaa');
 		
 		$form->addText('variable_id', 'Lokální proměnná')
@@ -282,7 +296,7 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 		$form->addTextArea('filter_script', '')
 				->setAttribute('class', 'max-width filterScript')
 				->setAttribute('rows', 15)
-				->setAttribute('readonly', 'readonly')
+				//->setAttribute('readonly', 'readonly')
 				->setAttribute('data-bind', 'value: filterToKapafaa');
 		
 		
@@ -307,46 +321,18 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 				}
 			}
 			$form->setDefaults($texts);
-
-			$filter = $this->game->getFilterByVersionId($activity->filter_version_playable_id);
-			$form->setDefaults($filter);
-			
-			/*
-			//filter
-			$filter = $this->game->getFilters()
-					->where(':activity_filter_playable.activity_id = ?', $this->activityId)
-					->fetch()
-					->toArray();
-			$filter['local_var'] = $filter['variable_id'];
-			$filter['filter_scripts'] = $filter['script'];
+			//filter playable
+			$form->setDefaults($this->game->getFilterByVersionId($activity->filter_version_playable_id));
 			//observer
-			$observer = array('observer_scripts' => $this->game->getObservers()
-					->where(':activity_observer.activity_id = ?', $this->activityId)
-					->fetch()
-					->effect_data);
-			//gamerooms
-			$gamerooms = array('gameroomList' => implode('--', array_map(function ($gr) {
-				return $gr->gameroom_id . '-' . ($gr->ag_ready ? '1' : '0');
-			}, $this->game->getGamerooms()
-					->select('gameroom.*, :activity_gameroom.ready AS ag_ready')
-					->where(':activity_gameroom.activity_id = ?', $this->activityId)
-					->fetchAll())));
-			//parent activities
-			$parents = array('parentList' => implode('--', array_map(function ($item) {
-				return $item->activity_id;
-			}, $this->game->getParentActivities($this->activityId)
-					->fetchAll())));
+			$form->setDefaults($this->game->getObserverByVersionId($activity->observer_version_id));
+			//gameroom
+			$form->setDefaults(array('gameroom_id' => $this->game->getGameroomByVersionId($activity->gameroom_version_id)->gameroom_id));
+			//parent activity
+			$parent = $this->game->getActivityByVersionId($activity->parent_version_id);
+			if ($parent) {
+				$form->setDefaults(array('parent_id' => $parent->activity_id));
+			}
 			
-			$form->setDefaults(array_merge(
-				$activity->toArray(),
-				$texts,
-				$filter,
-				$observer,
-				$gamerooms,
-				$parents
-			));
-			
-			*/
 			$form->onSuccess[] = $this->activityEditFormSuccess;
 		}
 		
@@ -362,63 +348,55 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 		$values = $form->getValues();
 		$row = NULL;
 		try {
-			$this->game->getSource()->beginTransaction();
+			$this->kapafaaParser->parse($values->filter_script); //sanity check
+			$this->kapafaaParser->parse($values->effect_data); //sanity check
 			
-			//activity, texts, gamerooms
-			$row = $this->game->createActivity((array)$values);
-			$this->createActivityTexts($values->activity_id, (array)$values);
-			$this->updateActivityGamerooms($values->activity_id, array_filter(explode('--', $values->gameroomList)), array());
+			$row = $this->game->createActivity($values);
 			
-			//filter
-			$values->local_var = $this->createPlayableVar($values);
-			$this->kapafaaParser->parse($values->filter_scripts); //sanity check
-			$this->createAndConnectFilter($values);
-			
-			//observer
-			$observerScripts = $this->kapafaaParser->parse($values->observer_scripts); //sanity check
-			$finished = FALSE;
-			$obj = Framework\Kapafaa\ObjectFactory::getActivityFinishedSetter($values->activity_id);
-			foreach ($observerScripts as $script) {
-				if ($this->kapafaaParser->find($script, $obj)) {
-					$finished = TRUE;
-				}
-			}
-			if (!$finished) {
-				throw new KapafaaException("Observer nenastavuje splňující proměnnou '{$values->activity_id}_FI'.");
-			}
-			$this->createAndConnectObserver($values);
-			
-			//parent activities
-			$this->updateParentActivities($values->activity_id, array_filter(explode('--', $values->parentList)), array());
-			
-			$this->game->getSource()->commit();
 			$this->getPresenter()->flashMessage('Aktivita byla uložena', 'success');
 		} catch (\Exception $e) {
-			$this->game->getSource()->rollBack();
 			$form->addError($e->getMessage());
 			$row = NULL;
 		}
 		
+		if ($this->translator instanceof Framework\Localization\ICachingTranslator) {
+			$this->translator->clean();
+		}
+		
 		if ($row) {
-			$this->getPresenter()->redirect('Activity:editActivity', array('id' => $values['activity_id']));
+			$this->getPresenter()->redirect('Activity:editActivity', array('id' => $values->activity_id));
 		}
 	}
 	
 	
 	/**
-	 * @todo
 	 * @param \Nette\Application\UI\Form $form
 	 */
 	public function activityEditFormSuccess(Nette\Application\UI\Form $form)
 	{
 		$values = $form->getValues();
+		$row = NULL;
+		try {
+			$this->kapafaaParser->parse($values->filter_script); //sanity check
+			$this->kapafaaParser->parse($values->effect_data); //sanity check
+			
+			$row = $this->game->updateActivity($values);
+			
+			$this->getPresenter()->flashMessage('Aktivita byla uložena', 'success');
+		} catch (\Exception $e) {
+			$form->addError($e->getMessage());
+			$row = NULL;
+		}
+		
+		if ($this->translator instanceof Framework\Localization\ICachingTranslator) {
+			$this->translator->clean();
+		}
+		
+		$this->redirect('this');
 	}
 	
-
-	/**
-	 * @param string $activityId
-	 * @param array $values
-	 */
+	
+	/*
 	protected function createActivityTexts($activityId, array $values)
 	{
 		//@todo optimize
@@ -437,11 +415,6 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 	}
 	
 	
-	/**
-	 * @param string $activityId
-	 * @param array $new
-	 * @param array $original
-	 */
 	protected function updateActivityGamerooms($activityId, array $new, array $original)
 	{
 		$toRemove = array_diff($original, $new);
@@ -472,9 +445,6 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 	}
 	
 	
-	/**
-	 * @param \Nette\ArrayHash|array $values
-	 */
 	protected function createPlayableVar($values)
 	{
 		$variableId = substr($values->activity_id . '_PL', -20);
@@ -488,9 +458,6 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 	}
 	
 	
-	/**
-	 * @param \Nette\ArrayHash|array $values
-	 */
 	protected function createAndConnectFilter($values)
 	{
 		$filter = $this->game->createFilter(array(
@@ -514,14 +481,11 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 	}
 
 
-	/**
-	 * @param \Nette\ArrayHash|array $values
-	 */
 	protected function createAndConnectObserver($values)
 	{
 		$observer = $this->game->createObserver(array(
 			'description' => $values->activity_id,
-			'effect_data' => $values->observer_scripts,
+			'effect_data' => $values->effect_data,
 			'effect_desc' => ''
 		));
 		
@@ -533,11 +497,6 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 	}
 	
 	
-	/**
-	 * @param string $activityId
-	 * @param array $new
-	 * @param array $original
-	 */
 	protected function updateParentActivities($activityId, array $new, array $original)
 	{
 		$toRemove = array_diff($original, $new);
@@ -593,11 +552,10 @@ class ActivityControl extends Framework\Application\UI\BaseControl
 				throw new KapafaaException("Nepodařilo se uložit rodičovskou aktivitu '" . $this->translator->translate('activity-name.' . $observer->activity_id) . "', protože nenastavuje splňující proměnnou '" . substr($observer->activity_id . '_FI', -20) . "'.");
 			}
 		}
-	}
+	}*/
 	
 	
 	/**
-	 * @todo
 	 * @param string $observerScript
 	 * @param string $filterScript
 	 */

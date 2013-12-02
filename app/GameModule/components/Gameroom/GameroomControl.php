@@ -170,10 +170,10 @@ class GameroomControl extends Framework\Application\UI\BaseControl
 	public function gameroomFormSuccess(Nette\Application\UI\Form $form)
 	{
 		$values = $form->getValues();
-		$gameroomId = NULL;
+		$gameroom = NULL;
 		
 		try {
-			$gameroomId = $this->game->saveGameroom($values);
+			$gameroom = $this->game->saveGameroom($values);
 		} catch (\Exception $e) {
 			$form->addError($e->getMessage());
 		}
@@ -182,8 +182,8 @@ class GameroomControl extends Framework\Application\UI\BaseControl
 			$this->translator->clean();
 		}
 		
-		if ($gameroomId) {
-			$this->getPresenter()->redirect('Gameroom:editGameroom', array('id' => $gameroomId));
+		if ($gameroom) {
+			$this->getPresenter()->redirect('Gameroom:editGameroom', array('id' => $gameroom->gameroom_id));
 		}
 	}
 	

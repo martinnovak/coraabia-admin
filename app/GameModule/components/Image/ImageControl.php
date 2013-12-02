@@ -72,10 +72,7 @@ class ImageControl extends Framework\Application\UI\BaseControl
 				})
 				->setFilter();
 		
-		$countries = array('' => '');
-		foreach ($this->game->getCountries()->order('value')->fetchAll() as $country) {
-			$countries[substr($country->key, -2)] = $country->value;
-		}
+		$countries = array_merge(array('' => ''), $this->game->getCountriesAsSelect());
 		$grido->addColumn('country', 'Země')
 				->setSortable()
 				->setCustomRender(function ($item) use ($self) {
@@ -103,10 +100,7 @@ class ImageControl extends Framework\Application\UI\BaseControl
 	{
 		$id = (int)$this->getParameter('id');
 		try {
-			$this->game->getArtists()
-					->where('artist.artist_id = ?', $id)
-					->fetch()
-					->delete();
+			$this->game->deleteArtist($id);
 			$this->getPresenter()->flashMessage('Artista byl smazán.', 'success');
 		} catch (\Exception $e) {
 			$this->getPresenter()->flashMessage($e->getMessage(), 'error');
@@ -145,11 +139,8 @@ class ImageControl extends Framework\Application\UI\BaseControl
 				
 		$form->addText('web', 'Web');
 		
-		$countries = array();
-		foreach ($this->game->getCountries()->order('value ASC')->fetchAll() as $country) {
-			$countries[substr($country->key, 8)] = $country->value;
-		}
-		$form->addSelect('country', 'Země', array('' => '') + $countries);
+		$countries = array_merge(array('' => ''), $this->game->getCountriesAsSelect());
+		$form->addSelect('country', 'Země',  + $countries);
 		
 		$form->addTextArea('description', 'Poznámka')
 				->setAttribute('rows', 15);
@@ -163,9 +154,7 @@ class ImageControl extends Framework\Application\UI\BaseControl
 		$form->addSubmit('submit', 'Uložit');
 		
 		if ($this->artistId != NULL) {
-			$defaults = $this->game->getArtists()
-					->where('artist.artist_id = ?', $this->artistId)
-					->fetch();
+			$defaults = $this->game->getArtistById($this->artistId);
 			$form->setDefaults($defaults);
 		}
 		
@@ -182,7 +171,7 @@ class ImageControl extends Framework\Application\UI\BaseControl
 		$values = $form->getValues();
 		$row = NULL;
 		try {
-			$row = $this->game->update('artist', $this->artistId, (array)$values);
+			$row = $this->game->updateArtist($this->artistId, $values);
 			$this->getPresenter()->flashMessage('Artista byl uložen.', 'success');
 		} catch (\Exception $e) {
 			$form->addError($e->getMessage());

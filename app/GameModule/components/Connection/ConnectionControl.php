@@ -133,10 +133,12 @@ class ConnectionControl extends Framework\Application\UI\BaseControl
 				->setDisabled()
 				->setOmitted();
 		
-		$form->addText('influence_cost', 'Vliv');
+		$form->addText('influence_cost', 'Vliv')
+				->setRequired();
 		
 		$types = $this->game->getConnectionTypes();
-		$form->addSelect('type', 'Typ', array_combine($types, $types));
+		$form->addSelect('type', 'Typ', array_combine($types, $types))
+				->setRequired();
 		
 		$form->addText('art_id', 'Art ID');
 		
@@ -188,11 +190,11 @@ class ConnectionControl extends Framework\Application\UI\BaseControl
 	public function connectionFormSuccess(Nette\Application\UI\Form $form)
 	{
 		$values = $form->getValues();
-		$connectionId = NULL;
+		$connection = NULL;
 		
 		try {
 			$this->kapafaaParser->parse($values->effect_data); //sanity check
-			$connectionId = $this->game->saveConnection($values);
+			$connection = $this->game->saveConnection($values);
 		} catch (\Exception $e) {
 			$form->addError($e->getMessage());
 		}
@@ -201,8 +203,8 @@ class ConnectionControl extends Framework\Application\UI\BaseControl
 			$this->translator->clean();
 		}
 		
-		if ($connectionId) {
-			$this->getPresenter()->redirect('Connection:editConnection', array('id' => $connectionId));
+		if ($connection) {
+			$this->getPresenter()->redirect('Connection:editConnection', array('id' => $connection->connection_id));
 		}
 	}
 	

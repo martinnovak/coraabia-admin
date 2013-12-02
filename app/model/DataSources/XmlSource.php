@@ -39,4 +39,22 @@ class XmlSource extends Nette\Object implements ISource
 	{
 		return $this->element;
 	}
+	
+	
+	public function beginTransaction()
+	{
+		//not supported
+	}
+	
+	
+	public function commit()
+	{
+		//not supported
+	}
+	
+	
+	public function rollBack()
+	{
+		//not supported
+	}
 }
